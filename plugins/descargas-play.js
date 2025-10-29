@@ -42,7 +42,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     }, { quoted: m })
 
-    if (command === 'playaudio') {
+    if (command === 'play') {
       try {
         const apiUrl = `https://api.vreden.my.id/api/v1/download/youtube/audio?url=${encodeURIComponent(url)}&quality=128`
         const res = await fetch(apiUrl)
@@ -76,7 +76,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     }
 
-    else if (command === 'playvideo') {
+    else if (command === 'play2') {
       try {
         const apiUrl = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`
         const res = await fetch(apiUrl)
@@ -126,8 +126,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.command = ['playaudio', 'playvideo']
-handler.help = ['playaudio', 'playvideo']
+handler.command = ['play', 'play2']
+handler.help = ['play', 'play2']
 handler.tags = ['download']
 export default handler
 
