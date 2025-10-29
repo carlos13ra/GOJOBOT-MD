@@ -22,11 +22,11 @@ let handler = async (m, { conn, usedPrefix }) => {
     let dia = fechaObj.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
     
     let videos = [
-        'https://files.catbox.moe/fonk1r.mp4',
-        'https://files.catbox.moe/bxhw5h.mp4',
-        'https://files.catbox.moe/cxwc0n.mp4',
-        'https://files.catbox.moe/6s1oso.mp4',
-        'https://files.catbox.moe/zdeutu.mp4'
+        'https://cdn.yupra.my.id/yp/h4s6aynd.mp4',
+        'https://cdn.yupra.my.id/yp/6ccechec.mp4',
+        'https://cdn.yupra.my.id/yp/pvv17ywo.mp4',
+        'https://cdn.yupra.my.id/yp/wbcrmb93.mp4',
+        'https://cdn.yupra.my.id/yp/tronrmvn.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
 
@@ -99,7 +99,7 @@ ${secciones}
 `.trim()
 
  await m.react('🎃')
-await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: packname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
+await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
 }, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
 
   } catch (e) {
@@ -131,4 +131,4 @@ function ucapan() {
   else if (time >= 12 && time < 18) res = "ʙᴜᴇɴᴀs ᴛᴀʀᴅᴇs 🌤️"
   else if (time >= 18) res = "ʙᴜᴇɴᴀs ɴᴏᴄʜᴇs 🌙"
   return res
-   }
+}
