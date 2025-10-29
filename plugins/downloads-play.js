@@ -60,7 +60,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
 
-    if (['play', 'mp3'].includes(command)) {
+    if (['playaudio', 'mp3'].includes(command)) {
       await m.react('🎧');
 
       const audio = await savetube.download(url, "audio");
@@ -79,7 +79,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await m.react('✔️');
     }
 
-    else if (['play2', 'mp4'].includes(command)) {
+    else if (['playvideo', 'mp4'].includes(command)) {
       await m.react('🎬');
 
       const video = await getVid(url);
@@ -109,7 +109,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.command = handler.help = ['play', 'play2', 'mp3', 'mp4'];
+handler.command = handler.help = ['playaudio', 'playvideo', 'mp3', 'mp4'];
 handler.tags = ['download'];
 export default handler;
 
