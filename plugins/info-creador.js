@@ -1,6 +1,4 @@
 // by dv.shadow - https://github.com/Yuji-XDev
-
-import { proto } from '@whiskeysockets/baileys';
 import PhoneNumber from 'awesome-phonenumber';
 
 const handler = async (m, { conn }) => {
