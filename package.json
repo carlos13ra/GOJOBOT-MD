@@ -1,5 +1,5 @@
 {
-"name": "Kaneki-Bot-AI",
+"name": "Gojo-Bot",
 "version": "1.8.2",
 "description": "WhatsApp Bot Multi Device",
 "main": "index.js",
@@ -13,14 +13,14 @@
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/Shadow-nex/KanekiBot-V3.git"
+"url": "git+https://github.com/Carlos13ra/GOJOBOT-MD.git"
 },  
 "author": "Shadow.xyz",
 "license": "MIT-License",
 "bugs": {
-"url": "https://github.com/Shadow-nex/KanekiBot-V3/issues"
+"url": "https://github.com/Carlos13ra/GOJOBOT-MD/issues"
 },
-"homepage": "https://github.com/Shadow-nex/KanekiBot-V3#readme",
+"homepage": "https://github.com/Carlos13ra/GOJOBOT-MD#readme",
 "dependencies": {
 "@hapi/boom": "^10.0.1",
 "@vitalets/google-translate-api": "^8.0.0",
