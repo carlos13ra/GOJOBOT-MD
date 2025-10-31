@@ -37,8 +37,8 @@ global.fkontak = { key: { participants:"0@s.whatsapp.net", "remoteJid": "status@
 
 global.icono = [
 'https://files.catbox.moe/r1y3s0.jpg', 
-'https://files.catbox.moe/2vwn2d.jpg', 
-'https://files.catbox.moe/svaupe.jpg',
+'https://files.catbox.moe/2tqywz.jpg', 
+'https://files.catbox.moe/9csrem.jpg',
 'https://files.catbox.moe/e6br3k.jpg',
 'https://files.catbox.moe/5biv5v.jpg',
 'https://files.catbox.moe/qkzial.jpg'
