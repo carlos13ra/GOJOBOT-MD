@@ -60,7 +60,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
           message: {
             interactiveMessage: proto.Message.InteractiveMessage.fromObject({
               body: proto.Message.InteractiveMessage.Body.fromObject({
-                text: `☯ 𝙆𝘼𝙉𝙀𝙆𝙄 𝘽𝙊𝙏 𝙈𝘿 ☯  
+                text: `☯ 𝑮𝒐𝒋𝒐𝑩𝒐𝒕 - 𝑴𝑫 ☯  
 “ᴇʟ sɪʟᴇɴᴄɪᴏ ᴛᴀᴍʙɪᴇ́ɴ ᴄᴀɴᴛᴀ, ᴘᴇʀᴏ sᴏʟᴏ ʟᴏ ᴇsᴄᴜᴄʜᴀ ᴇʟ ᴅᴏʟᴏʀ.” 🕯️  
 
 🥭 *Título:* ${title}  
