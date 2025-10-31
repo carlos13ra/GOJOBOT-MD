@@ -50,11 +50,11 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     };
 
     const info = `🕸️ *Título:* ${title}
-💫 *Canal:* ${author.name || 'Desconocido'}
-🎭 *Vistas:* ${vistas}
-⏳ *Duración:* ${timestamp}
-✨ *Publicado:* ${ago}
-🌐 *Link:* ${url}`;
+> 💫 *Canal:* ${author.name || 'Desconocido'}
+> 🎭 *Vistas:* ${vistas}
+> ⏳ *Duración:* ${timestamp}
+> ✨ *Publicado:* ${ago}
+> 🌐 *Link:* ${url}`;
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
@@ -88,7 +88,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await conn.sendMessage(
         m.chat,
         {
-          video: { url: video.url },
+         video: { url: video.url },
           fileName: `${title}.mp4`,
           mimetype: 'video/mp4',
           caption: `> 🍃 *${title}*`
