@@ -6,7 +6,7 @@ export async function before(m, { conn }) {
   const usedPrefix = global.prefix.exec(m.text)[0];
   const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
   
-  const thumbRes = await fetch("https://files.catbox.moe/xydiwe.jpg");
+  const thumbRes = await fetch("https://files.catbox.moe/9csrem.jpg");
   const thumbBuffer = await thumbRes.buffer();
   const fkontak = {
         key: {
@@ -24,7 +24,7 @@ export async function before(m, { conn }) {
         participant: "0@s.whatsapp.net"
   };
   const channelRD = { 
-    id: '120363401008003732@newsletter', 
+    id: '120363421367237421@newsletter', 
     name: '💫🥭 𝙶𝙾𝙹𝙾𝙱𝙾𝚃 - 𝙼𝙳 🥭💫'
   };
 
@@ -65,7 +65,7 @@ export async function before(m, { conn }) {
         externalAdReply: {
           title: '◌*̥₊ 𝗚𝗼𝗷𝗼𝗕𝗼𝘁 𝗠𝗗 ◌💫༉',
           body: '',
-          thumbnailUrl: 'https://files.catbox.moe/6fj9u7.jpg',
+          thumbnailUrl: 'https://files.catbox.moe/e6br3k.jpg',
           sourceUrl: '',
           mediaType: 1,
           renderLargerThumbnail: true
@@ -103,7 +103,7 @@ export async function before(m, { conn }) {
   ];
 
   const texto = mensajesNoEncontrado[Math.floor(Math.random() * mensajesNoEncontrado.length)];
-  const thumb = 'https://files.catbox.moe/6fj9u7.jpg';
+  const thumb = 'https://files.catbox.moe/2tqywz.jpg';
 
   
   await conn.sendMessage(m.chat, {
