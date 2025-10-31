@@ -38,7 +38,7 @@ global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝙲𝙰𝚁𝙻𝙾𝚂.𝚁𝚅"
 global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ ƈαɾʅσʂ.ɾʋ"
 global.etiqueta = "✫.ƚԋҽ ƈαɾʅσʂ.ɾʋ  ⊹꙰ "
 global.currency = "ᴅᴏʟᴀʀᴇs💶"
-global.banner = "https://files.catbox.moe/svaupe.jpg"
+global.banner = "https://files.catbox.moe/2tqywz.jpg"
 global.icono = "https://files.catbox.moe/e6br3k.jpg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
