@@ -97,7 +97,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
         {
           name: 'quick_reply',
           buttonParamsJson: JSON.stringify({
-            display_text: '🥭 ᴍᴇɴᴜ - ɢᴏᴊᴏ ʙᴏᴛ 💫',
+            display_text: '.menu - ɢᴏᴊᴏ ʙᴏᴛ 💫',
             id: '.menu'
           })
         }
