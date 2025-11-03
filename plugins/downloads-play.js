@@ -49,7 +49,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     };
 
-    const info = `🕸️ *Título:* ${title}
+    const info = `📌 *Título:* ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
 > 💫 *Vistas:* ${vistas}
 > ⏳ *Duración:* ${timestamp}
@@ -60,7 +60,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
 
-    if (['play', 'audio'].includes(command)) {
+    if (['playaudio', 'mp3'].includes(command)) {
       await m.react('🎧');
 
       const audio = await savetube.download(url, "audio");
@@ -79,7 +79,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await m.react('✔️');
     }
 
-    else if (['play2', 'video'].includes(command)) {
+    else if (['playvideo', 'mp4'].includes(command)) {
       await m.react('🎬');
 
       const video = await getVid(url);
