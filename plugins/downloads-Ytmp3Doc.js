@@ -1,243 +1,236 @@
-// - 𝙲𝙾𝙳𝙸𝙶𝙾 𝙲𝚁𝙴𝙰𝙳𝙾 𝚇 𝚂𝙷𝙰𝙳𝙾𝚆-𝙽𝙴𝚇 𝚇𝙳 👑
-// - https://github.com/Shadow-nex/
-// - 𝙽𝙾 𝙴𝙳𝙸𝚃𝙰𝚁 𝙴𝙻 𝙲𝙾𝙳𝙸𝙶𝙾 
-
 import fetch from 'node-fetch'
-import Jimp from 'jimp'
+import yts from 'yt-search'
+import ytdl from 'ytdl-core'
 import axios from 'axios'
-import crypto from 'crypto'
+import {youtubedl, youtubedlv2} from '@bochilteam/scraper'
 
-const savetube = {
-  api: {
-    base: "https://media.savetube.me/api",
-    cdn: "/random-cdn",
-    info: "/v2/info",
-    download: "/download"
-  },
-  headers: {
-    'accept': '*/*',
-    'content-type': 'application/json',
-    'origin': 'https://yt.savetube.me',
-    'referer': 'https://yt.savetube.me/',
-    'user-agent': 'Postify/1.0.0'
-  },
-  crypto: {
-    hexToBuffer: (hexString) => {
-      const matches = hexString.match(/.{1,2}/g);
-      return Buffer.from(matches.join(''), 'hex');
-    },
-    decrypt: async (enc) => {
-      const secretKey = 'C5D58EF67A7584E4A29F6C35BBC4EB12';
-      const data = Buffer.from(enc, 'base64');
-      const iv = data.slice(0, 16);
-      const content = data.slice(16);
-      const key = savetube.crypto.hexToBuffer(secretKey);
+const handler = async (m, {conn, command, args, text, usedPrefix}) => {
 
-      const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-      let decrypted = decipher.update(content);
-      decrypted = Buffer.concat([decrypted, decipher.final()]);
+if (!text) return conn.reply(m.chat, `💥 *Ingrese el nombre de un video de YouTube*\n\nEjemplo, !${command} Huellas - Maiye Torrex`,  m, rcanal, )
+m.react(rwait)
 
-      return JSON.parse(decrypted.toString());
-    }
-  },
-  isUrl: str => { 
-    try { new URL(str); return true } catch { return false } 
-  },
-  youtube: url => {
-    const patterns = [
-      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
-      /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-      /youtu\.be\/([a-zA-Z0-9_-]{11})/
-    ];
-    for (let regex of patterns) {
-      if (regex.test(url)) return url.match(regex)[1];
-    }
-    return null;
-  },
-  request: async (endpoint, data = {}, method = 'post') => {
-    try {
-      const { data: response } = await axios({
-        method,
-        url: `${endpoint.startsWith('http') ? '' : savetube.api.base}${endpoint}`,
-        data: method === 'post' ? data : undefined,
-        params: method === 'get' ? data : undefined,
-        headers: savetube.headers
-      });
-      return { status: true, code: 200, data: response };
-    } catch (error) {
-      return {
-        status: false,
-        code: error.response?.status || 500,
-        error: error.message
-      };
-    }
-  },
-  getCDN: async () => {
-    const response = await savetube.request(savetube.api.cdn, {}, 'get');
-    if (!response.status) return response;
-    return { status: true, code: 200, data: response.data.cdn };
-  },
-  download: async (link) => {
-    if (!link) return { status: false, code: 400, error: "Falta el enlace de YouTube." };
-    if (!savetube.isUrl(link)) return { status: false, code: 400, error: "URL inválida de YouTube." };
+try {
 
-    const id = savetube.youtube(link);
-    if (!id) return { status: false, code: 400, error: "No se pudo extraer el ID del video." };
+conn.reply(m.chat, wait, m, {
+contextInfo: { externalAdReply :{ mediaUrl: null, mediaType: 1, showAdAttribution: true,
+title: packname,
+body: wm,
+previewType: 0, thumbnail: icons,
+sourceUrl: channel }}})
 
-    try {
-      const cdnRes = await savetube.getCDN();
-      if (!cdnRes.status) return cdnRes;
-      const cdn = cdnRes.data;
+const yt_play = await search(args.join(' '))
+let additionalText = ''
+if (command === 'ytmp3doc' || command == 'playdoc') {
+additionalText = 'audio'
+} else if (command === 'ytmp4doc' || command == 'playdoc2') {
+additionalText = 'video'}
 
-      const infoRes = await savetube.request(`https://${cdn}${savetube.api.info}`, {
-        url: `https://www.youtube.com/watch?v=${id}`
-      });
-      if (!infoRes.status) return infoRes;
+let texto1 = `・₊✧★。..・✫・🎸🎧°⋆♡₊˚ 🔮
+> 🌩 τιτυℓο:
+> • ${yt_play[0].title}
+> ◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸─ׅ─ׅ┈ ─๋︩︪───ׅ──ׅ─ׅ─ׅ┈ ─๋︩︪─◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸
+> 🌦 ρυϐℓιϲα∂ο єи: 
+> • ${yt_play[0].ago}
+> ◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎─ׅ─ׅ┈ ─๋︩︪───ׅ──ׅ─ׅ─ׅ┈ ─๋︩︪─⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸
+> 🍭 єиℓαϲє:
+> • ${yt_play[0].url}
+> ◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸─ׅ─ׅ┈ ─๋︩︪───ׅ──ׅ─ׅ─ׅ┈ ─๋︩︪─⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸
+> 🍒 αմԵօɾ:
+> • ${yt_play[0].author.name}
+> ◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸─ׅ─ׅ┈ ─๋︩︪──ׅ──ׅ──ׅ─ׅ┈ ─๋︩︪─◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸
+> 🧃 cαɳαℓ:
+> • ${yt_play[0].author.url}
+> ◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸─ׅ─ׅ┈ ─๋︩︪───ׅ──ׅ─ׅ─ׅ┈ ─๋︩︪─◌⃘࣭ٜ࣪࣪࣪۬☪︎︎︎︎̸
+> 🍇 ժմɾαcíօ́ղ:
+> • ${secondString(yt_play[0].duration.seconds)}
+・₊✧。..・★🎸🎧°⋆♡₊˚ 🔮
 
-      const decrypted = await savetube.crypto.decrypt(infoRes.data.data);
+> _*🍬 εɳѵเαɳ∂σ รµ ${additionalText}, αɠµαɾ∂ε µɳ ɱσɱεɳƭσ 🍓...*_`.trim()
+await conn.sendMessage(m.chat, { text: texto1, contextInfo: { externalAdReply: { title: yt_play[0].title, body: dev, thumbnailUrl: yt_play[0].thumbnail, mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true }}} , { quoted: fkontak })
 
-      const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
-        id: id,
-        downloadType: 'audio',
-        quality: '128',
-        key: decrypted.key
-      });
+if (command == 'ytmp3doc' || command == 'playdoc') {
 
-      return {
-        status: true,
-        code: 200,
-        result: {
-          title: decrypted.title || "Desconocido",
-          thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
-          download: dl.data.data.downloadUrl,
-          duration: decrypted.duration,
-          quality: '128',
-          id
-        }
-      };
+try {
 
-    } catch (error) {
-      return { status: false, code: 500, error: error.message };
-    }
-  }
-};
+let q = '128kbps'
+let v = yt_play[0].url
+let yt = await youtubedl(v).catch(async (_) => await youtubedlv2(v))
+let dl_url = await yt.audio[q].download()
+let ttl = await yt.title
+let size = await yt.audio[q].fileSizeH
+await conn.sendMessage(m.chat, {document: {url: dl_url}, mimetype: 'audio/mpeg', fileName: `${ttl}.mp3`}, {quoted: fkontak})
+} catch {
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-  let q = args.join(" ").trim()
-  if (!q) {
-    return conn.sendMessage(m.chat, {
-      text: `*\`🍉 ɪɴɢʀᴇsᴇ ᴇʟ ɴᴏᴍʙʀᴇ ᴅᴇʟ ᴀᴜᴅɪᴏ ᴀ ᴅᴇsᴄᴀʀɢᴀʀ.\`*`,
-      ...rcanal
-    }, { quoted: m })
-  }
+try {
 
-  await conn.sendMessage(m.chat, {
-    text: `૮₍｡˃ ᵕ ˂ ｡₎ა 🎶 *¡𝙳𝙴𝚂𝙲𝙰𝚁𝙶𝙰𝙽𝙳𝙾 𝚃𝚄 𝙰𝚄𝙳𝙸𝙾!*
-╰─────────────────────────────❀
+let lolhuman = await fetch(`https://api.lolhuman.xyz/api/ytaudio2?apikey=${lolkeysapi}&url=${yt_play[0].url}`)
+let lolh = await lolhuman.json()
+let n = lolh.result.title || 'error'
+await conn.sendMessage(m.chat, {document: {url: lolh.result.link}, fileName: `${n}.mp3`, mimetype: 'audio/mpeg'}, {quoted: fkontak})
+} catch {
 
-> 🌐 *Por favor espera un momento...*
-> 📀 *Esto puede tardar según el tamaño del archivo.*
+try {
 
-˚₊· ͟͟͞͞➳❥ 📀 *Progreso:*  
-    [▓▓▓▓▓▓▓░░░] 70%
+const searchh = await yts(yt_play[0].url);
+const __res = searchh.all.map((v) => v).filter((v) => v.type == 'video')
+const infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId)
+const ress = await ytdl.chooseFormat(infoo.formats, {filter: 'audioonly'})
+conn.sendMessage(m.chat, {audio: {url: ress.url}, fileName: __res[0].title + '.mp3', mimetype: 'audio/mp4'}, {quoted: fkontak})
+} catch {
+await conn.reply(m.chat, '🌟 *Ocurrió un fallo*', m, rcanal, )
+}}}}
 
-🎧 *No te desesperes, tu canción está casi lista...*`
-  }, { quoted: fkontak })
+if (command == 'ytmp4doc' || command == 'playdoc2') {
 
-  try {
-    // 🔍 Buscar en YT
-    let res = await fetch(`https://delirius-apiofc.vercel.app/search/ytsearch?q=${encodeURIComponent(q)}`)
-    let json = await res.json()
-    if (!json.status || !json.data || !json.data.length) {
-      return conn.sendMessage(m.chat, { text: `❌ No encontré resultados para *${q}*.` }, { quoted: m })
-    }
+try {
+const qu = '360'
+const q = qu + 'p'
+const v = yt_play[0].url
+const yt = await youtubedl(v).catch(async (_) => await youtubedlv2(v))
+const dl_url = await yt.video[q].download()
+const ttl = await yt.title
+const size = await yt.video[q].fileSizeH
+await await conn.sendMessage(m.chat, {document: {url: dl_url}, fileName: `${ttl}.mp4`, mimetype: 'video/mp4', thumbnail: await fetch(yt.thumbnail)}, {quoted: fkontak})
+} catch {
 
-    let vid = json.data[0]
+try {
 
-    // 📥 Descargar con SAVETUBE
-    let info = await savetube.download(vid.url)
-    if (!info.status) {
-      return conn.sendMessage(m.chat, { text: `🌿 No se pudo obtener el audio de *${vid.title}*.` }, { quoted: m })
-    }
+let mediaa = await ytMp4(yt_play[0].url)
+await await conn.sendMessage(m.chat, {document: {url: dl_url}, mimetype: 'video/mp4', fileName: ttl + `.mp4`}, {quoted: fkontak})
+} catch {
 
-    let { result } = info
+try {
 
-    let caption = `
-╭─❖『 *🎧 𝚈𝙾𝚄𝚃𝚄𝙱𝙴 𝙼𝙿𝟹 𝙳𝙾𝙲* 』
-│ ° 📌 *Título:* ${result.title}
-│ ° ⏱️ *Duración:* ${vid.duration}
-│ ° 📡 *Canal:* ${vid.author?.name || "Desconocido"}
-│ ° 💫 *Calidad:* ${result.quality}p
-│ ° 🔗 *Link:* ${vid.url}
-╰───────────────⬣
+const lolhuman = await fetch(`https://api.lolhuman.xyz/api/ytvideo2?apikey=${lolkeysapi}&url=${yt_play[0].url}`)
+const lolh = await lolhuman.json()
+const n = lolh.result.title || 'error'
+const n2 = lolh.result.link
+const n3 = lolh.result.size
+const n4 = lolh.result.thumbnail
+await conn.sendMessage(m.chat, {document: {url: n2}, fileName: `${n}.mp4`, mimetype: 'video/mp4', thumbnail: await fetch(n4)}, {quoted: fkontak})
+} catch {
 
-૮₍｡˃ ᵕ ˂ ｡₎ა 🚀 *¡Descarga Completa con exito!*
+await conn.reply(m.chat, '🌟 *Ocurrió un fallo*', m, rcanal, )
+}}}}
 
-> 💫 𝙶𝙾𝙹𝙾𝙱𝙾𝚃 - 𝙼𝙳 | © 𝙿𝙾𝚆𝙴𝚁𝙴𝙳 𝙱𝚈 𝙲𝙰𝚁𝙻𝙾𝚂.𝚁𝚅 💫`.trim()
+} catch {
+return conn.reply(m.chat, '🌟 *Inténtelo de nuevo*', m, rcanal, )}
 
-    let thumb = null
-    try {
-      const img = await Jimp.read(result.thumbnail)
-      img.resize(300, Jimp.AUTO)
-      thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch (err) {
-      console.log("⚠️ Error al procesar miniatura:", err)
-    }
-
-    const Shadow_url = await (await fetch("https://files.catbox.moe/qm569c.jpg")).buffer()
-    const fkontak = {
-      key: {
-        fromMe: false,
-        participant: "0@s.whatsapp.net",
-        remoteJid: "status@broadcast"
-      },
-      message: {
-        productMessage: {
-          product: {
-            productImage: {
-              mimetype: "image/jpeg",
-              jpegThumbnail: Shadow_url
-            },
-            title: "💾 𝐃𝐄𝐒𝐂𝐀𝐑𝐆𝐀 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐀 💫",
-            description: "",
-            currencyCode: "USD",
-            priceAmount1000: 100000,
-            retailerId: "descarga-premium"
-          },
-          businessOwnerJid: "51900922660@s.whatsapp.net"
-        }
-      }
-    }
-    
-    await conn.sendMessage(m.chat, {
-      document: { url: result.download },
-      mimetype: "audio/mpeg",
-      fileName: `${result.title}.mp3`,
-      caption,
-      ...(thumb ? { jpegThumbnail: thumb } : {}),
-      contextInfo: {
-        externalAdReply: {
-          title: result.title,
-          body: "",
-          mediaUrl: vid.url,
-          sourceUrl: vid.url,
-          thumbnailUrl: result.thumbnail,
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
-      }
-    }, { quoted: fkontak })
-
-  } catch (err) {
-    console.error("[Error en ytmp3doc]", err)
-    conn.sendMessage(m.chat, { text: `Error: ${err.message}` }, { quoted: m })
-  }
 }
+handler.help = ['ytmp3doc', 'ytmp4doc']
+handler.tags = ['descargas']
+handler.command = ['playdoc','playdoc2','ytmp3doc','ytmp4doc']
 
-handler.command = ['ytmp3doc', 'ytadoc']
-handler.help = ['ytmp3doc <texto>']
-handler.tags = ['download']
+//handler.estrellas = 1
+handler.group = true;
+handler.register = true
 
 export default handler
+
+async function search(query, options = {}) {
+var search = await yts.search({query, hl: 'es', gl: 'ES', ...options})
+return search.videos
+}
+
+function MilesNumber(number) {
+var exp = /(\d)(?=(\d{3})+(?!\d))/g
+var rep = '$1.'
+var arr = number.toString().split('.')
+arr[0] = arr[0].replace(exp, rep)
+return arr[1] ? arr.join('.') : arr[0]
+}
+
+function secondString(seconds) {
+seconds = Number(seconds);
+var d = Math.floor(seconds / (3600 * 24))
+var h = Math.floor((seconds % (3600 * 24)) / 3600)
+var m = Math.floor((seconds % 3600) / 60)
+var s = Math.floor(seconds % 60)
+var dDisplay = d > 0 ? d + (d == 1 ? ' día, ' : ' días, ') : ''
+var hDisplay = h > 0 ? h + (h == 1 ? ' hora, ' : ' horas, ') : ''
+var mDisplay = m > 0 ? m + (m == 1 ? ' minuto, ' : ' minutos, ') : ''
+var sDisplay = s > 0 ? s + (s == 1 ? ' segundo' : ' segundos') : ''
+return dDisplay + hDisplay + mDisplay + sDisplay
+}
+
+function bytesToSize(bytes) {
+return new Promise((resolve, reject) => {
+var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+if (bytes === 0) return 'n/a'
+const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
+if (i === 0) resolve(`${bytes} ${sizes[i]}`)
+resolve(`${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`)
+})
+}
+
+async function ytMp3(url) {
+return new Promise((resolve, reject) => {
+ytdl.getInfo(url).then(async (getUrl) => {
+var result = []
+for (let i = 0; i < getUrl.formats.length; i++) {
+var item = getUrl.formats[i]
+if (item.mimeType == 'audio/webm; codecs=\"opus\"') {
+var {contentLength} = item
+var bytes = await bytesToSize(contentLength)
+result[i] = {audio: item.url, size: bytes}
+}
+}
+var resultFix = result.filter((x) => x.audio != undefined && x.size != undefined)
+var tiny = await axios.get(`https://tinyurl.com/api-create.php?url=${resultFix[0].audio}`)
+var tinyUrl = tiny.data;
+var title = getUrl.videoDetails.title;
+var thumb = getUrl.player_response.microformat.playerMicroformatRenderer.thumbnail.thumbnails[0].url
+resolve({title, result: tinyUrl, result2: resultFix, thumb})
+}).catch(reject)
+})
+}
+
+async function ytMp4(url) {
+return new Promise(async (resolve, reject) => {
+ytdl.getInfo(url).then(async (getUrl) => {
+var result = []
+for (let i = 0; i < getUrl.formats.length; i++) {
+var item = getUrl.formats[i]
+if (item.container == 'mp4' && item.hasVideo == true && item.hasAudio == true) {
+var {qualityLabel, contentLength} = item
+var bytes = await bytesToSize(contentLength)
+result[i] = {video: item.url, quality: qualityLabel, size: bytes}
+}}
+var resultFix = result.filter((x) => x.video != undefined && x.size != undefined && x.quality != undefined)
+var tiny = await axios.get(`https://tinyurl.com/api-create.php?url=${resultFix[0].video}`)
+var tinyUrl = tiny.data
+var title = getUrl.videoDetails.title
+var thumb = getUrl.player_response.microformat.playerMicroformatRenderer.thumbnail.thumbnails[0].url
+resolve({title, result: tinyUrl, rersult2: resultFix[0].video, thumb})
+}).catch(reject)
+})
+}
+
+async function ytPlay(query) {
+return new Promise((resolve, reject) => {
+yts(query).then(async (getData) => {
+var result = getData.videos.slice( 0, 5 )
+var url = []
+for (let i = 0; i < result.length; i++) {
+url.push(result[i].url)
+}
+var random = url[0]
+var getAudio = await ytMp3(random)
+resolve(getAudio)
+}).catch(reject)
+})
+}
+
+async function ytPlayVid(query) {
+return new Promise((resolve, reject) => {
+yts(query).then(async (getData) => {
+var result = getData.videos.slice( 0, 5 )
+var url = []
+for (let i = 0; i < result.length; i++) {
+url.push(result[i].url)
+}
+var random = url[0]
+var getVideo = await ytMp4(random)
+resolve(getVideo)
+}).catch(reject)
+})}
