@@ -6,9 +6,9 @@ import axios from "axios"
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(m.chat, `*🔥 Por favor, ingresa el nombre o enlace del video.*`, m, rcanal)
+      return conn.reply(m.chat, `*💫 Por favor, ingresa el nombre o enlace del video.*`, m, rcanal)
 
-    await m.react('🔎')
+    await m.react('🎶')
 
     const videoMatch = text.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/|v\/)?([a-zA-Z0-9_-]{11})/)
     const query = videoMatch ? `https://youtu.be/${videoMatch[1]}` : text
@@ -49,27 +49,24 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     };
 
-    const info = `*𖹭.╭╭ִ╼࣪━ִﮩ٨ـﮩ♡̫📀𝔾𝕆𝕁𝕆 𝔹𝕆𝕋💫♡ִ̫ﮩ٨ـﮩ━ִ╾࣪╮╮.𖹭*
-> ♡ *Título:* ${title.name | | 'Desconocido'}
+    const info = `🎃 *Título:* ${title}
+> ▶️ *Canal:* ${author.name || 'Desconocido'}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> ♡ *Canal:* ${canal}
+> 💫 *Vistas:* ${vistas}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> ♡ *Vistas:* ${vistas}
+> ⏳ *Duración:* ${timestamp}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> ♡ *Duración:* ${timestamp}
+> ✨ *Publicado:* ${ago}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> ♡   *Publicado:* ${ago}
-*°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> ♡   *Link:*${url}
-
+> 🌐 *Link:* ${url}
 *⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ׄۛ۫۫۫۫۫۫ۜ*`;
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
 
-    if (['audio', 'play'].includes(command)) {
-      await m.react('🎶');
+    if (['play', 'audio'].includes(command)) {
+      await m.react('🎧');
 
       const audio = await savetube.download(url, "audio");
       if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`;
@@ -87,8 +84,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await m.react('✔️');
     }
 
-    else if (['video', 'play2'].includes(command)) {
-      await m.react('▶️');
+    else if (['play2', 'video'].includes(command)) {
+      await m.react('🎬');
 
       const video = await getVid(url);
       if (!video?.url) throw 'No se pudo obtener el video.';
@@ -96,10 +93,10 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await conn.sendMessage(
         m.chat,
         {
-         video: { url: video.url },
+          video: { url: video.url },
           fileName: `${title}.mp4`,
           mimetype: 'video/mp4',
-          caption: `> 🍃 *${title}*`
+          caption: `> 🎵 *${title}*`
         },
         { quoted: fkontak }
       );
@@ -117,7 +114,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.command = handler.help = ['audio', 'video', 'play', 'play2'];
+handler.command = handler.help = ['play', 'play2', 'audio', 'video'];
 handler.tags = ['download'];
 export default handler;
 
