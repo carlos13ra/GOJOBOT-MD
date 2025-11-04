@@ -22,7 +22,6 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
     text += `│ ✰ ${startIndex + i + 1}. *${name}*\n│ Total ⤷ ¥${total.toLocaleString()} ${currency}\n│\n`
   }
   text += `│ • Página *${page}* de *${totalPages}*\n╰━━━━━━━━━━━━━━━━━━⬣`
-  await conn.reply(m.chat, text.trim(), m)
 await conn.reply(m.chat, text.trim(), m, rcanal)
 }
 
