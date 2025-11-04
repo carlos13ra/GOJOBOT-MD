@@ -22,7 +22,9 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
     video: { url: 'https://files.catbox.moe/67rrf3.mp4' },
     caption: texto,
     gifPlayback: true,
-    mimetype: 'video/mp4'
+    mimetype: 'video/mp4',
+   mentions: [who],
+    ...rcanal
   }, { quoted: m })
 }
 
