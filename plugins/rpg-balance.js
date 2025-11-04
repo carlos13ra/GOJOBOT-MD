@@ -22,8 +22,14 @@ let handler = async (m, { conn, usedPrefix }) => {
   let total = coin + bank
   let currency = 'USD' // Define la moneda
 
-  const texto = `ᥫ᭡ Informacion - Balance ❀ ᰔᩚ Usuario » *${name}* ⛀ Cartera » *${coin.toLocaleString()} ${currency}* ⚿ Banco » *${bank.toLocaleString()} ${currency}* ⛁ Total » *${total.toLocaleString()} ${currency}* > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
+  const texto = `ᥫ᭡ Informacion -  Balance ❀
+ 
+ᰔᩚ Usuario » *${name}*   
+⛀ Cartera » *¥${coin.toLocaleString()} ${currency}*
+⚿ Banco » *¥${bank.toLocaleString()} ${currency}*
+⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
+> *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
   await conn.sendMessage(m.chat, {
     video: { url: 'https://files.catbox.moe/67rrf3.mp4' },
     caption: texto,
