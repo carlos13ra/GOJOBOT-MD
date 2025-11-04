@@ -6,15 +6,23 @@ let handler = async (m, { conn, usedPrefix }) => {
   let mentionedJid = await m.mentionedJid
   let who = mentionedJid[0] ? mentionedJid[0] : m.quoted ? await m.quoted.sender : m.sender
   let name = await (async () => global.db.data.users[who].name || (async () => {
-  try {
-    const n = await conn.getName(who)
-    return typeof n === 'string' && n.trim() ? n : who.split('@')[0]
-  } catch {
-    return who.split('@')[0]
-  }
-})())()
+    try {
+      const n = await conn.getName(who)
+      return typeof n === 'string' && n.trim() ? n : who.split('@')[0]
+    } catch {
+      return who.split('@')[0]
+    }
+  })())()
 
-const texto = `ᥫ᭡ Informacion - Balance ❀ ᰔᩚ Usuario » *${name}* ⛀ Cartera » *¥${coin.toLocaleString()} USD* ⚿ Banco » *¥${bank.toLocaleString()} USD* ⛁ Total » *¥${total.toLocaleString()} USD* > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
+  if (!(who in global.db.data.users)) return m.reply(`ꕥ El usuario no se encuentra en mi base de datos.`)
+
+  let user = global.db.data.users[who]
+  let coin = user.coin || 0
+  let bank = user.bank || 0
+  let total = coin + bank
+  let currency = 'USD'
+
+  const texto = `ᥫ᭡ Informacion - Balance ❀ ᰔᩚ Usuario » *${name}* ⛀ Cartera » *¥${coin.toLocaleString()} ${currency}* ⚿ Banco » *¥${bank.toLocaleString()} ${currency}* ⛁ Total » *¥${total.toLocaleString()} ${currency}* > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
 
   await conn.sendMessage(m.chat, {
     video: { url: 'https://files.catbox.moe/67rrf3.mp4' },
