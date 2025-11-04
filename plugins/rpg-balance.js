@@ -21,7 +21,7 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
   await conn.sendMessage(m.chat, {
     gifPlayback: { url: 'https://files.catbox.moe/67rrf3.mp4' },
     caption: texto,
-    fileName: 'bal.mp4',
+    fileName: 'bal.gifPlayback',
     mentions: [who],
     ...rcanal
   }, { quoted: m })
