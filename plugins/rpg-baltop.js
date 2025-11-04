@@ -23,7 +23,9 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   }
   text += `│ • Página *${page}* de *${totalPages}*\n╰━━━━━━━━━━━━━━━━━━⬣`
   await conn.reply(m.chat, text.trim(), m)
+await conn.reply(m.chat, text.trim(), m, rcanal)
 }
+
 
 handler.help = ['baltop']
 handler.tags = ['rpg']
