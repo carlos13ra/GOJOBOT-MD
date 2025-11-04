@@ -19,9 +19,9 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
   await conn.sendMessage(m.chat, {
-    image: { url: 'https://files.catbox.moe/r1y3s0.jpg' },
+    video: { url: 'https://files.catbox.moe/67rrf3.mp4' },
     caption: texto,
-    fileName: 'bal.jpg',
+    fileName: 'bal.mp4',
     mentions: [who],
     ...rcanal
   }, { quoted: m })
