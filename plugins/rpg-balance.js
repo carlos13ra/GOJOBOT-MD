@@ -41,5 +41,22 @@ let handler = async (m, { conn, usedPrefix }) => {
   let total = (user.coin || 0) + (user.bank || 0)
 
   let texto = `ᥫ᭡ Informacion - Balance ❀ ᰔᩚ Usuario » *${name}* ⛀ Cartera » *¥${coin.toLocaleString()} ${currency}* ⚿ Banco » *¥${bank.toLocaleString()} ${currency}* ⛁ Total » *¥${total.toLocaleString()} ${currency}* > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
+      
+     await conn.sendMessage(m.chat, {
+      video: { url: video },
+      caption: texto,
+      gifPlayback: true,
+      mimetype: 'video/mp4'
+    }, { quoted: m })
+  } catch (error) {
+    console.log(error)
+    m.reply('Error al enviar el mensaje')
+  }
+}
 
-  await conn.sendMessage(m
+handler.help = ['bal']
+handler.tags = ['rpg']
+handler.command = ['bal', 'balance', 'bank']
+handler.group = true
+
+export default handler
