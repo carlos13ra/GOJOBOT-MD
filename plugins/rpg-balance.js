@@ -2,6 +2,20 @@ let handler = async (m, { conn, usedPrefix }) => {
 if (!db.data.chats[m.chat].economy && m.isGroup) {
 return m.reply(`《✦》Los comandos de *Economía* están desactivados en este grupo.\n\nUn *administrador* puede activarlos con el comando:\n» *${usedPrefix}economy on*`)
 }
+ let videos = [
+        'https://files.catbox.moe/vvrxck.mp4',
+        'https://files.catbox.moe/c26j4n.mp4',
+        'https://files.catbox.moe/fazi1o.mp4',
+        'https://files.catbox.moe/bxhw5h.mp4',
+        'https://files.catbox.moe/esb1sa.mp4',
+        'https://files.catbox.moe/xthtfx.mp4',
+        'https://files.catbox.moe/70legl.mp4',
+        'https://files.catbox.moe/70legl.mp4',
+        'https://files.catbox.moe/prem4p.mp4',
+        'https://files.catbox.moe/xthtfx.mp4'
+    ]
+    let video = videos[Math.floor(Math.random() * videos.length)]
+ 
 let mentionedJid = await m.mentionedJid
 let who = mentionedJid[0] ? mentionedJid[0] : m.quoted ? await m.quoted.sender : m.sender
 let name = await (async () => global.db.data.users[who].name || (async () => { try { const n = await conn.getName(who); return typeof n === 'string' && n.trim() ? n : who.split('@')[0] } catch { return who.split('@')[0] } })())()
