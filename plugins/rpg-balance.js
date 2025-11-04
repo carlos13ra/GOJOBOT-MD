@@ -18,14 +18,10 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 ⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
-  await conn.sendMessage(m.chat, {
-    gifPlayback: { url: 'https://files.catbox.moe/67rrf3.mp4' },
-    caption: texto,
-    fileName: 'bal.gifPlayback',
-    mentions: [who],
-    ...rcanal
-  }, { quoted: m })
-}
+  await m.react('🎃')
+await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
+}, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
+
 
 handler.help = ['bal']
 handler.tags = ['rpg']
