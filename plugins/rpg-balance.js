@@ -32,8 +32,7 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 ⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
-  await m.react('🎃')
-await conn.sendMessage(m.chat, { video: { url: video }, caption: constText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: }, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
+await conn.sendMessage(m.chat, { video: { url: video }, caption: const Texto, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: }, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
 
 
 handler.help = ['bal']
