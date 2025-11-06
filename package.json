@@ -1,6 +1,6 @@
 {
 "name": "Gojo-Bot",
-"version": "1.8.2",
+"version": "1.0.0-personalizado",
 "description": "WhatsApp Bot Multi Device",
 "main": "index.js",
 "type": "module",
