@@ -33,72 +33,75 @@ let handler = async (m, { conn, usedPrefix }) => {
     let video = videos[Math.floor(Math.random() * videos.length)]
 
     const emojis = {
-      'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
-      'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-      'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-      'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+const emojis = {
+  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
+  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
+  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+}
+
+let grupos = {}
+for (let plugin of Object.values(global.plugins || {})) {
+  if (!plugin.help || !plugin.tags) continue
+  for (let tag of plugin.tags) {
+    if (!grupos[tag]) grupos[tag] = []
+    for (let help of plugin.help) {
+      if (/^\$|^=>|^>/.test(help)) continue
+      grupos[tag].push(`${usedPrefix}${help}`)
     }
+  }
+}
 
-    let grupos = {}
-    for (let plugin of Object.values(global.plugins || {})) {
-      if (!plugin.help || !plugin.tags) continue
-      for (let tag of plugin.tags) {
-        if (!grupos[tag]) grupos[tag] = []
-        for (let help of plugin.help) {
-          if (/^\$|^=>|^>/.test(help)) continue
-          grupos[tag].push(`${usedPrefix}${help}`)
-        }
-      }
-    }
+for (let tag in grupos) {
+  grupos[tag].sort((a, b) => a.localeCompare(b))
+}
 
-    for (let tag in grupos) {
-      grupos[tag].sort((a, b) => a.localeCompare(b))
-    }
+const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+  const emoji = emojis[tag] || '⭐'
+  return `╭━━🎄〔 ${emoji} ${tag.toUpperCase()} 〕🎅━━⬣\n`
+   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
+   + `\n╰━━🎁〔 🎅 〕🎁━━⬣`
+}).join('\n\n')
 
-    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-      const emoji = emojis[tag] || '⭐'
-      return `╭───🎄「 ${emoji} *${tag.toUpperCase()}* 」🎁───❄️\n`
-      + cmds.map(cmd => `│ ✨ ${cmd}`).join('\n')
-      + `\n╰───────────────────────🎀`
-    }).join('\n\n')
+let menuText = `
+❄️｡･:*˚:🎅˚:*･｡❄️  
+     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎄 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
+｡･:*˚:🎄˚:*･｡
+⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
 
-    let menuText = `
-🎀 *꧁ 𝐆𝐎𝐉𝐎 - 𝐁𝐎𝐓 🎄 𝐍𝐀𝐕𝐈𝐃𝐀𝐃 & 𝐀Ñ𝐎 𝐍𝐔𝐄𝐕𝐎 ꧂* 🎀
+🎁 ¡Felices fiestas, ${ucapan()} @${userId.split('@')[0]}! 🎄
 
-╭──────────────────────╮
-│ ✨ ${ucapan()} @${userId.split('@')[0]} ✨
-│ ❄️ Que la magia de la Navidad ilumine tu día.
-╰──────────────────────╯
+╭── 🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
+│
+│ 🎅 ᴜsᴇʀ: *${name}*
+│ 🎅 ɴɪᴠᴇʟ: *${level}*
+│ 🎅 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
+│ 🎅 ʀᴀɴɢᴏ: *${role}*
+╰─────────────────🎁
 
-╭─🎄「 *INFORMACIÓN DEL USUARIO* 」─╮
-│ 👤 Nombre: *${name}*
-│ 💎 Nivel: *${level}*
-│ 🎁 Experiencia: *${exp}*
-│ 🏆 Rango: *${role}*
-╰─────────────────────────────╯
+╭── 🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
+│
+│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
+│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
+│ 🎄 🧦 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
+│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
+│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
+╰─────────────────🎄
 
-╭─🎁「 *INFORMACIÓN DEL BOT* 」─╮
-│ 👑 Owner: *wa.me/${suittag}*
-│ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🌟 Oficial' : '🎄 Sub-Bot')}
-│ 📜 Comandos: *${totalCommands}*
-│ 👥 Usuarios: *${totalreg}*
-│ ⏰ Uptime: *${uptime}*
-╰─────────────────────────────╯
+╭── ⛄「 *ᴛɪᴇᴍᴘᴏ* 」──
+│
+│ 🎁 🎄 ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
+│ 🎁 🎅 ғᴇᴄʜᴀ: *${fecha}*
+│ 🎁 ❄️ ᴅɪᴀ: *${dia}*
+╰─────────────────🎅
 
-╭─⛄「 *FECHA & HORA* 」─╮
-│ 🕒 Hora Perú: *${hora}*
-│ 📅 Fecha: *${fecha}*
-│ 🌤️ Día: *${dia}*
-╰──────────────────────╯
-
-🎄✨ *𝐅𝐄𝐋𝐈𝐂𝐄𝐒 𝐅𝐈𝐄𝐒𝐓𝐀𝐒* ✨🎄
-🎆 Que la paz, amor y alegría estén contigo 🎇
-💫 Y que el 2025 esté lleno de logros y magia 💫
+🎄✨ 𝙵𝙴𝙻𝙸𝙲𝙴𝚂 𝙵𝙸𝙴𝚂𝚃𝙰𝚂 ✨🎁  
+🎅 ¡Que esta Navidad y Año Nuevo estén llenos de comandos, alegría y magia! 🎆
 
 ${secciones}
 `.trim()
 
-    await m.react('☃️')
+await m.react('❄️')
 
     await conn.sendMessage(m.chat, { 
       video: { url: video },
