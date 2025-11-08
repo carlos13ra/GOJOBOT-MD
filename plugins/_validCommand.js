@@ -17,7 +17,7 @@ export async function before(m, { conn }) {
         },
         message: {
             locationMessage: {
-                name: `*̥₊🥭 ɢᴏᴊᴏʙᴏᴛ - ᴍᴅ | © 𝘣𝘺 ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ ◌🥭`,
+                name: `*̥₊🥭☃️ ɢᴏᴊᴏʙᴏᴛ - ᴍᴅ | © 𝘣𝘺 ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ ◌🥭`,
                 jpegThumbnail: thumbBuffer
             }
         },
@@ -25,7 +25,7 @@ export async function before(m, { conn }) {
   };
   const channelRD = { 
     id: '120363421367237421@newsletter', 
-    name: '💫🥭 𝙶𝙾𝙹𝙾𝙱𝙾𝚃 - 𝙼𝙳 🥭💫'
+    name: '❄️🥭 𝙶𝙾𝙹𝙾𝙱𝙾𝚃 - 𝙼𝙳 🥭❄️'
   };
 
   if (!command || command === 'bot') return;
@@ -63,7 +63,7 @@ export async function before(m, { conn }) {
           newsletterName: channelRD.name
         },
         externalAdReply: {
-          title: '◌*̥₊ 𝗚𝗼𝗷𝗼𝗕𝗼𝘁 𝗠𝗗 ◌💫༉',
+          title: '◌*̥₊ 𝗚𝗼𝗷𝗼𝗕𝗼𝘁 𝗠𝗗 ◌❄️༉',
           body: '',
           thumbnailUrl: 'https://files.catbox.moe/e6br3k.jpg',
           sourceUrl: '',
@@ -117,7 +117,7 @@ export async function before(m, { conn }) {
         newsletterName: channelRD.name
       },
       externalAdReply: {
-        title: ' 🎃 𝗚𝗼𝗝𝗢 𝗕𝗢𝗧 🥭',
+        title: ' ❄️ 𝗚𝗼𝗝𝗢 𝗕𝗢𝗧 🥭',
         body: '',
         thumbnailUrl: thumb,
         sourceUrl: '',
