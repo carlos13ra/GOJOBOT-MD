@@ -33,86 +33,83 @@ let handler = async (m, { conn, usedPrefix }) => {
     let video = videos[Math.floor(Math.random() * videos.length)]
 
     const emojis = {
-const emojis = {
-  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
-  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
-}
-
-let grupos = {}
-for (let plugin of Object.values(global.plugins || {})) {
-  if (!plugin.help || !plugin.tags) continue
-  for (let tag of plugin.tags) {
-    if (!grupos[tag]) grupos[tag] = []
-    for (let help of plugin.help) {
-      if (/^\$|^=>|^>/.test(help)) continue
-      grupos[tag].push(`${usedPrefix}${help}`)
+      'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
+      'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
+      'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+      'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
     }
-  }
-}
 
-for (let tag in grupos) {
-  grupos[tag].sort((a, b) => a.localeCompare(b))
-}
+    let grupos = {}
+    for (let plugin of Object.values(global.plugins || {})) {
+      if (!plugin.help || !plugin.tags) continue
+      for (let tag of plugin.tags) {
+        if (!grupos[tag]) grupos[tag] = []
+        for (let help of plugin.help) {
+          if (/^\$|^=>|^>/.test(help)) continue
+          grupos[tag].push(`${usedPrefix}${help}`)
+        }
+      }
+    }
 
-const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-  const emoji = emojis[tag] || '⭐'
-  return `╭━━🎄〔 ${emoji} ${tag.toUpperCase()} 〕🎅━━⬣\n`
-   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
-   + `\n╰━━🎁〔 🎅 〕🎁━━⬣`
-}).join('\n\n')
+    for (let tag in grupos) grupos[tag].sort((a, b) => a.localeCompare(b))
 
-let menuText = `
-❄️｡･:*˚:🎅˚:*･｡❄️  
-     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎄 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
-｡･:*˚:🎄˚:*･｡
-⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
+    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+      const emoji = emojis[tag] || '⭐'
+      return `╭━━🎄『 ${emoji} *${tag.toUpperCase()}* 』━━💫
+${cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n')}
+╰━━━━━━━━━━━━━━━━━━🎁`
+    }).join('\n\n')
 
-🎁 ¡Felices fiestas, ${ucapan()} @${userId.split('@')[0]}! 🎄
+    let menuText = `
+╭──────────────────────────╮
+│  🎀 *꧁ 𝐆𝐎𝐉𝐎 - 𝐁𝐎𝐓 🎄* ꧂ 🎀
+│  🎅 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎆
+╰──────────────────────────╯
 
-╭── 🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
-│
-│ 🎅 ᴜsᴇʀ: *${name}*
-│ 🎅 ɴɪᴠᴇʟ: *${level}*
-│ 🎅 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
-│ 🎅 ʀᴀɴɢᴏ: *${role}*
-╰─────────────────🎁
+💫 ${ucapan()} @${userId.split('@')[0]}  
+🎄 Que la magia de la Navidad te acompañe hoy y siempre 🎁  
 
-╭── 🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
-│
-│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
-│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
-│ 🎄 🧦 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
-│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
-│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
-╰─────────────────🎄
+╭───🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」───🎀
+│ 👤 *Nombre:* ${name}
+│ 💎 *Nivel:* ${level}
+│ 🎁 *Experiencia:* ${exp}
+│ 🏆 *Rango:* ${role}
+╰──────────────────────╯
 
-╭── ⛄「 *ᴛɪᴇᴍᴘᴏ* 」──
-│
-│ 🎁 🎄 ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
-│ 🎁 🎅 ғᴇᴄʜᴀ: *${fecha}*
-│ 🎁 ❄️ ᴅɪᴀ: *${dia}*
-╰─────────────────🎅
+╭───🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」───🎄
+│ 👑 *Owner:* wa.me/${suittag}
+│ 🤖 *Estado:* ${(conn.user.jid == global.conn.user.jid ? '🎅 Oficial' : '🎁 Sub-Bot')}
+│ 📜 *Comandos:* ${totalCommands}
+│ 👥 *Usuarios:* ${totalreg}
+│ ⏰ *Uptime:* ${uptime}
+╰──────────────────────╯
 
-🎄✨ 𝙵𝙴𝙻𝙸𝙲𝙴𝚂 𝙵𝙸𝙴𝚂𝚃𝙰𝚂 ✨🎁  
-🎅 ¡Que esta Navidad y Año Nuevo estén llenos de comandos, alegría y magia! 🎆
+╭───⛄「 *ᴛɪᴇᴍᴘᴏ* 」───❄️
+│ 🕒 *Hora Perú:* ${hora}
+│ 📅 *Fecha:* ${fecha}
+│ 🌤️ *Día:* ${dia}
+╰──────────────────────╯
+
+🎄✨ *𝐅𝐄𝐋𝐈𝐂𝐄𝐒 𝐅𝐈𝐄𝐒𝐓𝐀𝐒* ✨🎄  
+🎆 Que la paz, el amor y la alegría  
+te acompañen este fin de año 🎇  
+💫 ¡Y que el 2025 llegue lleno de éxitos! 💫  
 
 ${secciones}
 `.trim()
 
-await m.react('❄️')
+    await m.react('🎅')
 
-    await conn.sendMessage(m.chat, { 
+    await conn.sendMessage(m.chat, {
       video: { url: video },
       caption: menuText,
-      contextInfo: { 
+      contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
         isForwarded: true,
-        externalAdReply: { 
-          title: "🎄 GOJO-BOT 𝑵𝒂𝒗𝒊𝒅𝒂𝒅 𝑬𝒍𝒆𝒈𝒂𝒏𝒕𝒆 🎁",
-          body: "✨ Creado con estilo por Carlos Ramírez 🎅",
+        externalAdReply: {
+          title: "🎄 𝐆𝐎𝐉𝐎 - 𝐁𝐎𝐓 𝐄𝐋𝐄𝐆𝐀𝐍𝐓𝐄 🎁",
+          body: "✨ Edición especial Navidad & Año Nuevo 🎅",
           thumbnailUrl: icono,
           sourceUrl: redes,
           mediaType: 1,
@@ -146,7 +143,7 @@ function clockString(ms) {
 
 function ucapan() {
   const time = moment.tz('America/Lima').format('HH')
-  if (time >= 5 && time < 12) return "Buenos días ☀️"
-  if (time >= 12 && time < 18) return "Buenas tardes 🌤️"
-  return "Buenas noches 🌙"
-}
+  if (time >= 5 && time < 12) return "☀️ Buenos días"
+  if (time >= 12 && time < 18) return "🌤️ Buenas tardes"
+  return "🌙 Buenas noches"
+      }
