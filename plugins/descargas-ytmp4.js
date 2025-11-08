@@ -19,40 +19,35 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     await m.react('🕒')
-    await conn.reply(m.chat, '*_👻 Descargando video uwu_*', m, rcanal)
+    await conn.reply(m.chat, '*_👻 Descargando tu video onichan_*', m)
 
-    const apiUrl = `https://api.vreden.my.id/api/v1/download/youtube/video?url=${encodeURIComponent(text)}&quality=360`
+    const apiUrl = `https://api-shadowxyz.vercel.app/download/ytmp4V2?url=${encodeURIComponent(text)}`
     const response = await fetch(apiUrl)
-    if (!response.ok) throw `Error en la API.`
+    if (!response.ok) throw `No se pudo obtener información del video.`
+
     const data = await response.json()
+    const res = data.result
+    if (!res?.download_url) throw `No se pudo obtener el enlace de descarga.`
 
-    const meta = data?.result?.metadata
-    const down = data?.result?.download
-    if (!down?.url) throw `No se pudo obtener el enlace de descarga.`
+    const head = await fetch(res.download_url, { method: "HEAD" })
+    const size = Number(head.headers.get("content-length") || 0)
+    const sizeMB = size / 1024 / 1024
 
-    const head = await fetch(down.url, { method: "HEAD" })
-    const size = head.headers.get("content-length")
-    const sizeMB = size ? Number(size) / (1024 * 1024) : 0
-
-    const caption = `╔═══❖•ೋ° ⚜️ °ೋ•❖═══╗
-🎬 *ＹＯＵＴＵＢＥ ＶＩＤＥＯ* ▶️
-╚═══❖•ೋ° ⚜️ °ೋ•❖═══╝
-📢 *Título:* ${meta.title}
-📡 *Canal:* ${meta.author?.name}
-🕒 *Duración:* ${meta.duration?.timestamp || "Desconocida"}
-👁 *Vistas:* ${meta.views?.toLocaleString() || "?"}
-📆 *Publicado:* ${meta.ago}
-🎚 *Calidad:* ${down.quality}p
+    let caption = `🍃 *Título:* ${res.title}
+🕒 *Duración:* ${res.duration}
+📺 *Enlace:* ${res.youtube_url}
 💾 *Tamaño:* ${formatSize(size)}
 ────────────────────
 ✨ *Descarga Completa...*`
 
+    let sendType = sizeMB > 100 ? "document" : "video"
+
     await conn.sendMessage(m.chat, {
-      video: { url: down.url },
+      [sendType]: { url: res.download_url },
       mimetype: "video/mp4",
-      fileName: down.filename || `${meta.title}.mp4`,
+      fileName: `${res.title}.mp4`,
       caption,
-      thumbnail: await (await fetch(meta.thumbnail)).buffer()
+      thumbnail: res.thumbnail ? await (await fetch(res.thumbnail)).buffer() : null
     }, { quoted: m })
 
     await m.react('✔️')
