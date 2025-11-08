@@ -6,7 +6,7 @@ import axios from "axios"
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.*`, m, rcanal)
+      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.* ☃️`, m, rcanal)
 
     await m.react('🎶')
 
@@ -49,7 +49,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     };
 
-    const info = `🎃 *Título:* ${title}
+    const info = `❄️ *Título:* ☃️ ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
 > 💫 *Vistas:* ${vistas}
