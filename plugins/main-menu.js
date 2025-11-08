@@ -31,75 +31,77 @@ let handler = async (m, { conn, usedPrefix }) => {
       'https://files.catbox.moe/prem4p.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
+const emojis = {
+  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
+  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
+  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+}
 
-    const emojis = {
-      'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
-      'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-      'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-      'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+let grupos = {}
+for (let plugin of Object.values(global.plugins || {})) {
+  if (!plugin.help || !plugin.tags) continue
+  for (let tag of plugin.tags) {
+    if (!grupos[tag]) grupos[tag] = []
+    for (let help of plugin.help) {
+      if (/^\$|^=>|^>/.test(help)) continue
+      grupos[tag].push(`${usedPrefix}${help}`)
     }
+  }
+}
 
-    let grupos = {}
-    for (let plugin of Object.values(global.plugins || {})) {
-      if (!plugin.help || !plugin.tags) continue
-      for (let tag of plugin.tags) {
-        if (!grupos[tag]) grupos[tag] = []
-        for (let help of plugin.help) {
-          if (/^\$|^=>|^>/.test(help)) continue
-          grupos[tag].push(`${usedPrefix}${help}`)
-        }
-      }
-    }
+for (let tag in grupos) {
+  grupos[tag].sort((a, b) => a.localeCompare(b))
+}
 
-    for (let tag in grupos) grupos[tag].sort((a, b) => a.localeCompare(b))
+const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+  const emoji = emojis[tag] || '⭐'
+  return `╭━━🎁〔 ${emoji} ${tag.toUpperCase()} 〕🎄━━⬣\n`
+   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
+   + `\n╰━━🎅〔 🎁 〕🎄━━⬣`
+}).join('\n\n')
 
-    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-      const emoji = emojis[tag] || '⭐'
-      return `╭━━🎄『 ${emoji} *${tag.toUpperCase()}* 』━━💫
-${cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n')}
-╰━━━━━━━━━━━━━━━━━━🎁`
-    }).join('\n\n')
+let menuText = `
+🎀｡･:*˚:🎄˚:*･｡🎀  
+     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎅 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
+｡･:*˚:❄️˚:*･｡
+⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
 
-    let menuText = `
-╭──────────────────────────╮
-│  🎀 *꧁ 𝐆𝐎𝐉𝐎 - 𝐁𝐎𝐓 🎄* ꧂ 🎀
-│  🎅 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎆
-╰──────────────────────────╯
+🎄 ${ucapan()} @${userId.split('@')[0]} 🎁
 
-💫 ${ucapan()} @${userId.split('@')[0]}  
-🎄 Que la magia de la Navidad te acompañe hoy y siempre 🎁  
+╭── 🎅「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
+│
+│ 🎁 ᴜsᴇʀ: *${name}*
+│ 🎁 ɴɪᴠᴇʟ: *${level}*
+│ 🎁 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
+│ 🎁 ʀᴀɴɢᴏ: *${role}*
+╰─────────────────🎄
 
-╭───🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」───🎀
-│ 👤 *Nombre:* ${name}
-│ 💎 *Nivel:* ${level}
-│ 🎁 *Experiencia:* ${exp}
-│ 🏆 *Rango:* ${role}
-╰──────────────────────╯
+╭── 🎀「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
+│
+│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
+│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
+│ 🎄 📜 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
+│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
+│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
+╰─────────────────🎁
 
-╭───🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」───🎄
-│ 👑 *Owner:* wa.me/${suittag}
-│ 🤖 *Estado:* ${(conn.user.jid == global.conn.user.jid ? '🎅 Oficial' : '🎁 Sub-Bot')}
-│ 📜 *Comandos:* ${totalCommands}
-│ 👥 *Usuarios:* ${totalreg}
-│ ⏰ *Uptime:* ${uptime}
-╰──────────────────────╯
+╭── ❄️「 *ᴛɪᴇᴍᴘᴏ* 」──
+│
+│ 🎅 🕒 ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
+│ 🎅 📅 ғᴇᴄʜᴀ: *${fecha}*
+│ 🎅 🌤️ ᴅɪᴀ: *${dia}*
+╰─────────────────🎄
 
-╭───⛄「 *ᴛɪᴇᴍᴘᴏ* 」───❄️
-│ 🕒 *Hora Perú:* ${hora}
-│ 📅 *Fecha:* ${fecha}
-│ 🌤️ *Día:* ${dia}
-╰──────────────────────╯
-
-🎄✨ *𝐅𝐄𝐋𝐈𝐂𝐄𝐒 𝐅𝐈𝐄𝐒𝐓𝐀𝐒* ✨🎄  
-🎆 Que la paz, el amor y la alegría  
-te acompañen este fin de año 🎇  
-💫 ¡Y que el 2025 llegue lleno de éxitos! 💫  
+🎁 𝓕𝓔𝓛𝓘𝓒𝓔𝓢 𝓕𝓘𝓔𝓢𝓣𝓐𝓢 🎅  
+🎄 ¡Que la alegría, la paz y los comandos te acompañen! 🎆  
+✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
+© 2024 - 2025 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐂𝐚𝐫𝐥𝐨𝐬 𝐑𝐚𝐦í𝐫𝐞𝐳
 
 ${secciones}
 `.trim()
 
-    await m.react('🎅')
-
+await m.react('❄️')
     await conn.sendMessage(m.chat, {
       video: { url: video },
       caption: menuText,
