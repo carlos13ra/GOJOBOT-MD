@@ -20,7 +20,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let hora = new Date().toLocaleTimeString('es-PE', { timeZone: 'America/Lima' })
     let fecha = fechaObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Lima' })
     let dia = fechaObj.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
-
+    
     let videos = [
       'https://files.catbox.moe/vvrxck.mp4',
       'https://files.catbox.moe/fazi1o.mp4',
@@ -103,9 +103,9 @@ ${secciones}
 `.trim()
 
 await m.react('❄️')
-    await conn.sendMessage(m.chat, {
-    await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: packname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
+await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: packname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
 }, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
+
   } catch (e) {
     console.error(e)
     await conn.sendMessage(m.chat, {
@@ -130,7 +130,9 @@ function clockString(ms) {
 
 function ucapan() {
   const time = moment.tz('America/Lima').format('HH')
-  if (time >= 5 && time < 12) return "☀️ Buenos días"
-  if (time >= 12 && time < 18) return "🌤️ Buenas tardes"
-  return "🌙 Buenas noches"
-      }
+  let res = "ʙᴜᴇɴᴀs ɴᴏᴄʜᴇs 🌙"
+  if (time >= 5 && time < 12) res = "ʙᴜᴇɴᴏs ᴅɪᴀs ☀️"
+  else if (time >= 12 && time < 18) res = "ʙᴜᴇɴᴀs ᴛᴀʀᴅᴇs 🌤️"
+  else if (time >= 18) res = "ʙᴜᴇɴᴀs ɴᴏᴄʜᴇs 🌙"
+  return res
+}
