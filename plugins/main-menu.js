@@ -56,34 +56,34 @@ for (let tag in grupos) {
 
 const secciones = Object.entries(grupos).map(([tag, cmds]) => {
   const emoji = emojis[tag] || '⭐'
-  return `╭━━🎁〔 ${emoji} ${tag.toUpperCase()} 〕🎄━━⬣\n`
-   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
-   + `\n╰━━🎅〔 🎁 〕🎄━━⬣`
+  return `╭━━❄️〔 ${emoji} ${tag.toUpperCase()} 〕🎄━━⬣\n`
+   + cmds.map(cmd => `┃ ❄️ ${cmd}`).join('\n') 
+   + `\n╰━━🎅〔 ☃️ 〕🎉━━⬣`
 }).join('\n\n')
 
 let menuText = `
-🎀｡･:*˚:🎄˚:*･｡🎀  
-     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎅 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
-｡･:*˚:❄️˚:*･｡
+❄️｡･:*˚☃️˚:*･｡❄️ 
+     𝑮𝑶𝑱𝑶 - 𝑩𝑶𝑻 🎅 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
+｡･:*˚❄️˚:*･｡
 ⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
 
 🎄 ${ucapan()} @${userId.split('@')[0]} 🎁
 
-╭── 🎅「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
+╭── 🎅「 ɪɴꜰᴏ ᴜꜱᴇʀ 」──
 │
-│ 🎁 ᴜsᴇʀ: *${name}*
-│ 🎁 ɴɪᴠᴇʟ: *${level}*
-│ 🎁 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
-│ 🎁 ʀᴀɴɢᴏ: *${role}*
+│ ❄️ ᴜsᴇʀ: ${name}
+│ ❄️ ɴɪᴠᴇʟ: ${level}
+│ ❄️ ᴇxᴘ ᴛᴏᴛᴀʟ: ${exp}
+│ ❄️ ʀᴀɴɢᴏ: Cachud@
 ╰─────────────────🎄
 
-╭── 🎀「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
+╭── 🎄「 ɪɴꜰᴏ ʙᴏᴛ 」──
 │
-│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
-│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
-│ 🎄 📜 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
-│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
-│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
+│  👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
+│  🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
+│  📜 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
+│  🎉 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
+│  ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
 ╰─────────────────🎁
 
 ╭── ❄️「 *ᴛɪᴇᴍᴘᴏ* 」──
