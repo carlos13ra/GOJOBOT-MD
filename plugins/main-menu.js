@@ -36,74 +36,74 @@ let handler = async (m, { conn, usedPrefix }) => {
     let video = videos[Math.floor(Math.random() * videos.length)]
 
     const emojis = {
-      'main': '🦋', 'tools': '🛠️', 'audio': '🎧', 'group': '👥',
-      'owner': '👑', 'fun': '🎮', 'info': 'ℹ️', 'internet': '🌐',
-      'downloads': '⬇️', 'admin': '🧰', 'anime': '✨', 'nsfw': '🔞',
-      'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
+  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
+  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+}
+
+let grupos = {}
+for (let plugin of Object.values(global.plugins || {})) {
+  if (!plugin.help || !plugin.tags) continue
+  for (let tag of plugin.tags) {
+    if (!grupos[tag]) grupos[tag] = []
+    for (let help of plugin.help) {
+      if (/^\$|^=>|^>/.test(help)) continue
+      grupos[tag].push(`${usedPrefix}${help}`)
     }
+  }
+}
 
-    let grupos = {}
-    for (let plugin of Object.values(global.plugins || {})) {
-      if (!plugin.help || !plugin.tags) continue
-      for (let tag of plugin.tags) {
-        if (!grupos[tag]) grupos[tag] = []
-        for (let help of plugin.help) {
-          if (/^\$|^=>|^>/.test(help)) continue
-          grupos[tag].push(`${usedPrefix}${help}`)
-        }
-      }
-    }
+for (let tag in grupos) {
+  grupos[tag].sort((a, b) => a.localeCompare(b))
+}
 
-    for (let tag in grupos) {
-      grupos[tag].sort((a, b) => a.localeCompare(b))
-    }
+const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+  const emoji = emojis[tag] || '⭐'
+  return `╭━━🎄〔 ${emoji} ${tag.toUpperCase()} 〕🎅━━⬣\n`
+   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
+   + `\n╰━━🎁〔 🎅 〕🎁━━⬣`
+}).join('\n\n')
 
-    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-      const emoji = emojis[tag] || '⭐'
-      return `╭━━🎃〔 ${emoji} ${tag.toUpperCase()} 〕🎃━━⬣\n`
-     + cmds.map(cmd => `┃ 🕯️ ${cmd}`).join('\n') 
-     + `\n╰━━🕸️〔 👁️ 〕🕸️━━⬣`
-    }).join('\n\n')
+let menuText = `
+❄️｡･:*˚:🎅˚:*･｡❄️  
+     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎄 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
+｡･:*˚:🎄˚:*･｡
+⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
 
-    let menuText = `
-🕸️｡･:*˚:🎃˚:*･｡🕸️  
-     𝑮𝑶𝑱𝑶 - ʙᴏᴛ ʜᴀʟʟᴏᴡᴇᴇɴ 🎃  
-｡･:*˚:🕯️˚:*･｡
-⊱ ────── {.⋅ 🕷️ ⋅.} ────── ⊰
+🎁 ¡Felices fiestas, ${ucapan()} @${userId.split('@')[0]}! 🎄
 
-💀 ${ucapan()} @${userId.split('@')[0]} 🦇
-
-╭── 🎃「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
+╭── 🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
 │
-│ 🕯️ ᴜsᴇʀ: *${name}*
-│ 🕯️ ɴɪᴠᴇʟ: *${level}*
-│ 🕯️ ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
-│ 🕯️ ʀᴀɴɢᴏ: *${role}*
-╰─────────────────🎃
+│ 🎅 ᴜsᴇʀ: *${name}*
+│ 🎅 ɴɪᴠᴇʟ: *${level}*
+│ 🎅 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
+│ 🎅 ʀᴀɴɢᴏ: *${role}*
+╰─────────────────🎁
 
-╭── 🦴「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
+╭── 🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
 │
-│ 🕸️ 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
-│ 🕸️ 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🌑 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🕯️ ꜱᴜʙ ʙᴏᴛ')}
-│ 🕸️ 📜 ᴄᴏᴍᴀɴᴅᴏs: *${totalCommands}*
-│ 🕸️ ☠️ ᴜsᴇʀs ᴛᴏᴛᴀʟᴇs: *${totalreg}*
-│ 🕸️ ⏳ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
-╰─────────────────🦴
+│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
+│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
+│ 🎄 🧦 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
+│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
+│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
+╰─────────────────🎄
 
-╭── 👁️「 *ᴛɪᴇᴍᴘᴏ* 」──
+╭── ⛄「 *ᴛɪᴇᴍᴘᴏ* 」──
 │
-│ 🎃 ⚡ ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
-│ 🎃 🕷️ ғᴇᴄʜᴀ: *${fecha}*
-│ 🎃 🦇 ᴅɪᴀ: *${dia}*
-╰─────────────────👻
+│ 🎁 🎄 ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
+│ 🎁 🎅 ғᴇᴄʜᴀ: *${fecha}*
+│ 🎁 ❄️ ᴅɪᴀ: *${dia}*
+╰─────────────────🎅
 
-🎃 𝕳𝖆𝖕𝖕𝖞 𝕳𝖆𝖑𝖑𝖔𝖜𝖊𝖊𝖓 👻  
-🕸️ ¡Que los comandos te acompañen en la oscuridad! 🕯️
+🎄✨ 𝙵𝙴𝙻𝙸𝙲𝙴𝚂 𝙵𝙸𝙴𝚂𝚃𝙰𝚂 ✨🎁  
+🎅 ¡Que esta Navidad y Año Nuevo estén llenos de comandos, alegría y magia! 🎆
 
 ${secciones}
 `.trim()
 
- await m.react('🎃')
+await m.react('☃️'))
 await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
 }, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
 
