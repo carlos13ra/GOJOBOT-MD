@@ -20,92 +20,104 @@ let handler = async (m, { conn, usedPrefix }) => {
     let hora = new Date().toLocaleTimeString('es-PE', { timeZone: 'America/Lima' })
     let fecha = fechaObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Lima' })
     let dia = fechaObj.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
-    
+
     let videos = [
-        'https://files.catbox.moe/vvrxck.mp4',
-        'https://files.catbox.moe/c26j4n.mp4',
-        'https://files.catbox.moe/fazi1o.mp4',
-        'https://files.catbox.moe/bxhw5h.mp4',
-        'https://files.catbox.moe/esb1sa.mp4',
-        'https://files.catbox.moe/xthtfx.mp4',
-        'https://files.catbox.moe/70legl.mp4',
-        'https://files.catbox.moe/70legl.mp4',
-        'https://files.catbox.moe/prem4p.mp4',
-        'https://files.catbox.moe/xthtfx.mp4'
+      'https://files.catbox.moe/vvrxck.mp4',
+      'https://files.catbox.moe/fazi1o.mp4',
+      'https://files.catbox.moe/bxhw5h.mp4',
+      'https://files.catbox.moe/esb1sa.mp4',
+      'https://files.catbox.moe/xthtfx.mp4',
+      'https://files.catbox.moe/70legl.mp4',
+      'https://files.catbox.moe/prem4p.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
 
     const emojis = {
-  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
-  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
-}
-
-let grupos = {}
-for (let plugin of Object.values(global.plugins || {})) {
-  if (!plugin.help || !plugin.tags) continue
-  for (let tag of plugin.tags) {
-    if (!grupos[tag]) grupos[tag] = []
-    for (let help of plugin.help) {
-      if (/^\$|^=>|^>/.test(help)) continue
-      grupos[tag].push(`${usedPrefix}${help}`)
+      'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
+      'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
+      'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+      'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
     }
-  }
-}
 
-for (let tag in grupos) {
-  grupos[tag].sort((a, b) => a.localeCompare(b))
-}
+    let grupos = {}
+    for (let plugin of Object.values(global.plugins || {})) {
+      if (!plugin.help || !plugin.tags) continue
+      for (let tag of plugin.tags) {
+        if (!grupos[tag]) grupos[tag] = []
+        for (let help of plugin.help) {
+          if (/^\$|^=>|^>/.test(help)) continue
+          grupos[tag].push(`${usedPrefix}${help}`)
+        }
+      }
+    }
 
-const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-  const emoji = emojis[tag] || '⭐'
-  return `╭━━🎄〔 ${emoji} ${tag.toUpperCase()} 〕🎅━━⬣\n`
-   + cmds.map(cmd => `┃ ✨ ${cmd}`).join('\n') 
-   + `\n╰━━🎁〔 🎅 〕🎁━━⬣`
-}).join('\n\n')
+    for (let tag in grupos) {
+      grupos[tag].sort((a, b) => a.localeCompare(b))
+    }
 
-let menuText = `
-❄️｡･:*˚:🎅˚:*･｡❄️  
-     𝑮𝑶𝑱𝑶 - ʙᴏᴛ 🎄 ɴᴀᴠɪᴅᴀᴅ & ᴀñᴏ ɴᴜᴇᴠᴏ 🎁  
-｡･:*˚:🎄˚:*･｡
-⊱ ────── {.⋅ 🎅 ⋅.} ────── ⊰
+    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+      const emoji = emojis[tag] || '⭐'
+      return `╭───🎄「 ${emoji} *${tag.toUpperCase()}* 」🎁───❄️\n`
+      + cmds.map(cmd => `│ ✨ ${cmd}`).join('\n')
+      + `\n╰───────────────────────🎀`
+    }).join('\n\n')
 
-🎁 ¡Felices fiestas, ${ucapan()} @${userId.split('@')[0]}! 🎄
+    let menuText = `
+🎀 *꧁ 𝐆𝐎𝐉𝐎 - 𝐁𝐎𝐓 🎄 𝐍𝐀𝐕𝐈𝐃𝐀𝐃 & 𝐀Ñ𝐎 𝐍𝐔𝐄𝐕𝐎 ꧂* 🎀
 
-╭── 🎄「 *ɪɴꜰᴏ ᴜꜱᴇʀ* 」──
-│
-│ 🎅 ᴜsᴇʀ: *${name}*
-│ 🎅 ɴɪᴠᴇʟ: *${level}*
-│ 🎅 ᴇxᴘ ᴛᴏᴛᴀʟ: *${exp}*
-│ 🎅 ʀᴀɴɢᴏ: *${role}*
-╰─────────────────🎁
+╭──────────────────────╮
+│ ✨ ${ucapan()} @${userId.split('@')[0]} ✨
+│ ❄️ Que la magia de la Navidad ilumine tu día.
+╰──────────────────────╯
 
-╭── 🎁「 *ɪɴꜰᴏ ʙᴏᴛ* 」──
-│
-│ 🎄 👑 ᴏᴡɴᴇʀ: *wa.me/${suittag}*
-│ 🎄 🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎁 ꜱᴜʙ ʙᴏᴛ')}
-│ 🎄 🧦 ᴄᴏᴍᴀɴᴅᴏꜱ: *${totalCommands}*
-│ 🎄 🎀 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: *${totalreg}*
-│ 🎄 ⏰ ʀᴜɴᴛɪᴍᴇ: *${uptime}*
-╰─────────────────🎄
+╭─🎄「 *INFORMACIÓN DEL USUARIO* 」─╮
+│ 👤 Nombre: *${name}*
+│ 💎 Nivel: *${level}*
+│ 🎁 Experiencia: *${exp}*
+│ 🏆 Rango: *${role}*
+╰─────────────────────────────╯
 
-╭── ⛄「 *ᴛɪᴇᴍᴘᴏ* 」──
-│
-│ 🎁 🎄 ʜᴏʀᴀ ᴘᴇʀᴜ: *${hora}*
-│ 🎁 🎅 ғᴇᴄʜᴀ: *${fecha}*
-│ 🎁 ❄️ ᴅɪᴀ: *${dia}*
-╰─────────────────🎅
+╭─🎁「 *INFORMACIÓN DEL BOT* 」─╮
+│ 👑 Owner: *wa.me/${suittag}*
+│ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🌟 Oficial' : '🎄 Sub-Bot')}
+│ 📜 Comandos: *${totalCommands}*
+│ 👥 Usuarios: *${totalreg}*
+│ ⏰ Uptime: *${uptime}*
+╰─────────────────────────────╯
 
-🎄✨ 𝙵𝙴𝙻𝙸𝙲𝙴𝚂 𝙵𝙸𝙴𝚂𝚃𝙰𝚂 ✨🎁  
-🎅 ¡Que esta Navidad y Año Nuevo estén llenos de comandos, alegría y magia! 🎆
+╭─⛄「 *FECHA & HORA* 」─╮
+│ 🕒 Hora Perú: *${hora}*
+│ 📅 Fecha: *${fecha}*
+│ 🌤️ Día: *${dia}*
+╰──────────────────────╯
+
+🎄✨ *𝐅𝐄𝐋𝐈𝐂𝐄𝐒 𝐅𝐈𝐄𝐒𝐓𝐀𝐒* ✨🎄
+🎆 Que la paz, amor y alegría estén contigo 🎇
+💫 Y que el 2025 esté lleno de logros y magia 💫
 
 ${secciones}
 `.trim()
 
-await m.react('☃️'))
-await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
-}, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
+    await m.react('☃️')
+
+    await conn.sendMessage(m.chat, { 
+      video: { url: video },
+      caption: menuText,
+      contextInfo: { 
+        mentionedJid: [m.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        externalAdReply: { 
+          title: "🎄 GOJO-BOT 𝑵𝒂𝒗𝒊𝒅𝒂𝒅 𝑬𝒍𝒆𝒈𝒂𝒏𝒕𝒆 🎁",
+          body: "✨ Creado con estilo por Carlos Ramírez 🎅",
+          thumbnailUrl: icono,
+          sourceUrl: redes,
+          mediaType: 1,
+          renderLargerThumbnail: true
+        }
+      },
+      gifPlayback: true
+    }, { quoted: m })
 
   } catch (e) {
     console.error(e)
@@ -131,9 +143,7 @@ function clockString(ms) {
 
 function ucapan() {
   const time = moment.tz('America/Lima').format('HH')
-  let res = "ʙᴜᴇɴᴀs ɴᴏᴄʜᴇs 🌙"
-  if (time >= 5 && time < 12) res = "ʙᴜᴇɴᴏs ᴅɪᴀs ☀️"
-  else if (time >= 12 && time < 18) res = "ʙᴜᴇɴᴀs ᴛᴀʀᴅᴇs 🌤️"
-  else if (time >= 18) res = "ʙᴜᴇɴᴀs ɴᴏᴄʜᴇs 🌙"
-  return res
+  if (time >= 5 && time < 12) return "Buenos días ☀️"
+  if (time >= 12 && time < 18) return "Buenas tardes 🌤️"
+  return "Buenas noches 🌙"
 }
