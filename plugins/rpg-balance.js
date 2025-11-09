@@ -19,7 +19,7 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
   await conn.sendMessage(m.chat, {
-    image: { url: 'https://files.catbox.moe/eisgt7.mp4', 'https://files.catbox.moe/xthtfx.mp4' },
+    image: { url: 'https://files.catbox.moe/kzqkio.jpg' },
     caption: texto,
     mimetype: 'image/jpg',
    mentions: [who],
