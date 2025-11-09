@@ -18,7 +18,12 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 ⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
-await conn.reply(m.chat, texto, m)
+await conn.sendMessage(m.chat, {
+      image: { url: 'https://files.catbox.moe/kzqkio.jpg' },
+      caption: texto,
+      mentions: [who],
+      ...rcanal
+ }, { quoted: fkontak })
 }
 
 handler.help = ['bal']
