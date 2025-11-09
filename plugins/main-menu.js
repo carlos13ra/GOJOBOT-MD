@@ -23,6 +23,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     
     let videos = [
       'https://files.catbox.moe/vvrxck.mp4',
+      'https://files.catbox.moe/eisgt7.mp4',
       'https://files.catbox.moe/fazi1o.mp4',
       'https://files.catbox.moe/bxhw5h.mp4',
       'https://files.catbox.moe/esb1sa.mp4',
