@@ -18,18 +18,12 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 ⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
-  await conn.sendMessage(m.chat, {
-    image: { url: 'https://files.catbox.moe/kzqkio.jpg' },
-    caption: texto,
-    mimetype: 'image/jpg',
-   mentions: [who],
-    ...rcanal
-  }, { quoted: m })
+await conn.reply(m.chat, texto, m)
 }
 
 handler.help = ['bal']
 handler.tags = ['rpg']
-handler.command = ['bal', 'balance', 'bank']
-handler.group = true
+handler.command = ['bal', 'balance', 'bank'] 
+handler.group = true 
 
 export default handler
