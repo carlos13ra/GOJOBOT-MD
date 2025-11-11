@@ -1,6 +1,27 @@
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   global.db.data.sticker = global.db.data.sticker || {};
 
+  if (m.quoted && m.quoted.fileSha256) {
+    let hash = m.quoted.fileSha256.toString('base64');
+    let sticker = global.db.data.sticker[hash];
+
+    if (sticker) {
+      let cmd = sticker.text;
+      if (cmd) {
+        m.reply(`Ejecutando comando: ${cmd}`);
+        conn.emit('message', { ...m, text: `${usedPrefix}${cmd}` });
+      }
+    }
+  }
+};
+
+handler.command = /^.*$/;
+handler.exp = 0;
+
+export default handler;
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  global.db.data.sticker = global.db.data.sticker || {};
+
   if (!m.quoted || !m.quoted.fileSha256) {
     return m.reply(`🍃 Responda a un sticker para agregar un comando.`);
   }
