@@ -11,7 +11,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!data.status || !data.data?.length)
       return m.reply(`No se encontraron wallpapers para "${text}"`)
 
-    // Selecciona un wallpaper aleatorio
     let result = data.data[Math.floor(Math.random() * data.data.length)]
 
     let txt = `
