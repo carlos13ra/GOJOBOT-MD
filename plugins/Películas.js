@@ -12,16 +12,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.reply(`🔎 Buscando *${text}*...`);
 
   try {
-    // 🔍 Buscar película o serie
-    const { data } = await axios.get(`${BASE}/search/multi`, {
-      params: { api_key: TMDB_KEY, query: text, language: "es-ES" },
-    });
+    // Buscar película o serie
+    const searchUrl = `${BASE}/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(text)}&language=es-ES`;
+    const { data } = await axios.get(searchUrl);
 
-    if (!data.results.length) return m.reply("❌ No se encontraron resultados.");
+    if (!data.results || data.results.length === 0)
+      return m.reply("❌ No se encontraron resultados.");
 
     const res = data.results[0];
     const tipo = res.media_type === "tv" ? "📺 Serie" : "🎥 Película";
-    const titulo = res.title || res.name;
+    const titulo = res.title || res.name || "Sin título";
     const fecha = res.release_date || res.first_air_date || "Desconocida";
     const descripcion = res.overview || "Sin descripción disponible.";
     const rating = res.vote_average ? `⭐ ${res.vote_average.toFixed(1)}/10` : "⭐ Sin puntuación";
@@ -29,12 +29,11 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const poster = res.poster_path ? IMG + res.poster_path : null;
     const enlace = `https://www.themoviedb.org/${res.media_type}/${id}`;
 
-    // 🌍 Proveedores legales
+    // Obtener proveedores legales
     let proveedores = "Sin información disponible.";
     try {
-      const prov = await axios.get(`${BASE}/${res.media_type}/${id}/watch/providers`, {
-        params: { api_key: TMDB_KEY },
-      });
+      const provUrl = `${BASE}/${res.media_type}/${id}/watch/providers?api_key=${TMDB_KEY}`;
+      const prov = await axios.get(provUrl);
       const info = prov.data.results[COUNTRY];
       if (info) {
         const sub = info.flatrate?.map(p => p.provider_name).join(", ");
@@ -45,47 +44,64 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         if (rent) proveedores += `💸 *Alquiler:* ${rent}\n`;
         if (buy) proveedores += `🛒 *Compra:* ${buy}\n`;
       }
-    } catch {
-      proveedores = "❌ No hay información de proveedores en tu país.";
+    } catch (e) {
+      console.error("Error obteniendo proveedores:", e.message);
     }
 
-    // 🎞️ Tráiler oficial
+    // Buscar tráiler
     let trailerUrl = null;
     try {
-      const videos = await axios.get(`${BASE}/${res.media_type}/${id}/videos`, {
-        params: { api_key: TMDB_KEY, language: "es-ES" },
-      });
+      const videosUrl = `${BASE}/${res.media_type}/${id}/videos?api_key=${TMDB_KEY}&language=es-ES`;
+      const videos = await axios.get(videosUrl);
       const trailer = videos.data.results.find(
         (v) => v.type === "Trailer" && v.site === "YouTube"
       );
       if (trailer) trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
-    } catch {}
+    } catch (e) {
+      console.error("Error obteniendo tráiler:", e.message);
+    }
 
-    // 📥 Búsqueda de descarga o streaming
+    // Enlace de descarga (Google)
     const tituloQuery = encodeURIComponent(titulo + " ver online latino");
     const enlaceDescarga = `https://www.google.com/search?q=${tituloQuery}+película+completa`;
 
-    // 📝 Texto principal
+    // Mensaje final
     const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n\n🔗 *Más info:* ${enlace}`;
 
-    // 🔘 Enviar con botones clásicos
+    // Botones
     const buttons = [
-      { buttonId: `#trailer ${titulo}`, buttonText: { displayText: "🎞️ Ver Tráiler" }, type: 1 },
+      { buttonId: `#vertrailer ${titulo}`, buttonText: { displayText: "🎞️ Ver Tráiler" }, type: 1 },
       { buttonId: enlaceDescarga, buttonText: { displayText: "📥 Buscar Descarga" }, type: 1 },
     ];
 
-    const buttonMessage = {
-      image: { url: poster },
-      caption: texto,
-      footer: "🎬 Buscador de Películas • Santaflow-Bot",
-      buttons: buttons,
-      headerType: 4,
-    };
-
-    await conn.sendMessage(m.chat, buttonMessage, { quoted: m });
-  } catch (e) {
-    console.error(e);
-    m.reply("⚠️ Error al buscar la información. Intenta nuevamente.");
+    // Enviar mensaje con imagen y botones
+    if (poster) {
+      await conn.sendMessage(
+        m.chat,
+        {
+          image: { url: poster },
+          caption: texto,
+          footer: "🎬 Buscador de Películas • Santaflow-Bot",
+          buttons,
+          headerType: 4,
+        },
+        { quoted: m }
+      );
+    } else {
+      await conn.sendMessage(
+        m.chat,
+        {
+          text: texto,
+          footer: "🎬 Buscador de Películas • Santaflow-Bot",
+          buttons,
+          headerType: 1,
+        },
+        { quoted: m }
+      );
+    }
+  } catch (err) {
+    console.error("Error general:", err.message);
+    m.reply("⚠️ Ocurrió un error al buscar la película. Revisa la consola para más detalles.");
   }
 };
 
@@ -93,6 +109,5 @@ handler.help = ["pelicula <nombre>", "movie <nombre>", "serie <nombre>", "film <
 handler.tags = ["buscador"];
 handler.command = ["pelicula", "movie", "serie", "film"];
 handler.register = true;
-handler.limit = false;
 
 module.exports = handler;
