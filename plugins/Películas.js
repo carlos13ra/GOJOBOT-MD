@@ -3,7 +3,7 @@ import axios from "axios";
 const TMDB_KEY = "d337714ae1fe5cc5aeb43cebcd8db834"; // ✅ Tu API Key
 const BASE = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
-const COUNTRY = "PE"; // 🇵🇪 Cambia por tu país si quieres (MX, ES, AR, CL, etc.)
+const COUNTRY = "PE"; // 🇵🇪 Cambia por tu país (MX, ES, AR, CL, etc.)
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text)
@@ -61,8 +61,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       if (trailer) trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
     } catch {}
 
+    // 📥 Enlace de descarga o streaming alternativo (búsqueda automática)
+    const tituloQuery = encodeURIComponent(titulo + " ver online latino");
+    const enlaceDescarga = `https://www.google.com/search?q=${tituloQuery}+película+completa`;
+
     // 📝 Mensaje final
-    const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n${trailerUrl ? `🎞️ *Tráiler:* ${trailerUrl}\n` : ""}🔗 *Más info:* ${enlace}`;
+    const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n${trailerUrl ? `🎞️ *Tráiler:* ${trailerUrl}\n` : ""}📥 *Descargar o ver online:*\n${enlaceDescarga}\n\n🔗 *Más info:* ${enlace}`;
 
     if (poster) {
       await conn.sendMessage(m.chat, { image: { url: poster }, caption: texto }, { quoted: m });
@@ -78,8 +82,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
 // 📌 Configuración
 handler.help = ["pelicula <nombre>", "movie <nombre>", "serie <nombre>", "film <nombre>"];
-handler.tags = ["buscador"];
-handler.command = ["pelicula", "movie", "serie", "film"]; // ✅ comandos activos
+handler.tags = ["buscador", "descargas"];
+handler.command = ["pelicula", "movie", "serie", "film"];
 handler.register = true;
 handler.limit = false;
 
