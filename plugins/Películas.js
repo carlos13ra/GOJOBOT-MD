@@ -1,11 +1,11 @@
-import axios from "axios";
+const axios = require("axios");
 
 const TMDB_KEY = "d337714ae1fe5cc5aeb43cebcd8db834"; // ✅ Tu API Key
 const BASE = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
-const COUNTRY = "PE"; // 🇵🇪 Cambia por tu país (MX, ES, AR, CL, etc.)
+const COUNTRY = "PE"; // 🇵🇪 Cambia si deseas
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
+const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text)
     return m.reply(`✨ Uso correcto: ${usedPrefix + command} <nombre de película o serie>`);
 
@@ -68,57 +68,31 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     // 📝 Texto principal
     const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n\n🔗 *Más info:* ${enlace}`;
 
-    // 🎯 Botones interactivos
+    // 🔘 Enviar con botones clásicos
     const buttons = [
-      {
-        name: "cta_url",
-        buttonParamsJson: JSON.stringify({
-          display_text: "🎞️ Ver Tráiler",
-          url: trailerUrl || "https://www.youtube.com",
-        }),
-      },
-      {
-        name: "cta_url",
-        buttonParamsJson: JSON.stringify({
-          display_text: "📥 Buscar Descarga",
-          url: enlaceDescarga,
-        }),
-      },
+      { buttonId: `#trailer ${titulo}`, buttonText: { displayText: "🎞️ Ver Tráiler" }, type: 1 },
+      { buttonId: enlaceDescarga, buttonText: { displayText: "📥 Buscar Descarga" }, type: 1 },
     ];
 
-    if (poster) {
-      await conn.sendMessage(
-        m.chat,
-        {
-          image: { url: poster },
-          caption: texto,
-          footer: "🎬 Buscador de Películas • Santaflow-Bot",
-          buttons,
-        },
-        { quoted: m }
-      );
-    } else {
-      await conn.sendMessage(
-        m.chat,
-        {
-          text: texto,
-          footer: "🎬 Buscador de Películas • Santaflow-Bot",
-          buttons,
-        },
-        { quoted: m }
-      );
-    }
+    const buttonMessage = {
+      image: { url: poster },
+      caption: texto,
+      footer: "🎬 Buscador de Películas • Santaflow-Bot",
+      buttons: buttons,
+      headerType: 4,
+    };
+
+    await conn.sendMessage(m.chat, buttonMessage, { quoted: m });
   } catch (e) {
     console.error(e);
     m.reply("⚠️ Error al buscar la información. Intenta nuevamente.");
   }
 };
 
-// 📌 Configuración
 handler.help = ["pelicula <nombre>", "movie <nombre>", "serie <nombre>", "film <nombre>"];
-handler.tags = ["buscador", "entretenimiento"];
+handler.tags = ["buscador"];
 handler.command = ["pelicula", "movie", "serie", "film"];
 handler.register = true;
 handler.limit = false;
 
-export default handler;
+module.exports = handler;
