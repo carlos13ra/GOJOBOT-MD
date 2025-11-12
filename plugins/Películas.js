@@ -61,19 +61,53 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       if (trailer) trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
     } catch {}
 
-    // 📥 Enlace de descarga o streaming alternativo (búsqueda automática)
+    // 📥 Búsqueda de descarga o streaming
     const tituloQuery = encodeURIComponent(titulo + " ver online latino");
     const enlaceDescarga = `https://www.google.com/search?q=${tituloQuery}+película+completa`;
 
-    // 📝 Mensaje final
-    const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n${trailerUrl ? `🎞️ *Tráiler:* ${trailerUrl}\n` : ""}📥 *Descargar o ver online:*\n${enlaceDescarga}\n\n🔗 *Más info:* ${enlace}`;
+    // 📝 Texto principal
+    const texto = `🎬 *${titulo}*\n${tipo}\n📅 *${fecha}*\n${rating}\n\n📝 *Descripción:*\n${descripcion}\n\n🌍 *Dónde ver legalmente:*\n${proveedores}\n\n🔗 *Más info:* ${enlace}`;
+
+    // 🎯 Botones interactivos
+    const buttons = [
+      {
+        name: "cta_url",
+        buttonParamsJson: JSON.stringify({
+          display_text: "🎞️ Ver Tráiler",
+          url: trailerUrl || "https://www.youtube.com",
+        }),
+      },
+      {
+        name: "cta_url",
+        buttonParamsJson: JSON.stringify({
+          display_text: "📥 Buscar Descarga",
+          url: enlaceDescarga,
+        }),
+      },
+    ];
 
     if (poster) {
-      await conn.sendMessage(m.chat, { image: { url: poster }, caption: texto }, { quoted: m });
+      await conn.sendMessage(
+        m.chat,
+        {
+          image: { url: poster },
+          caption: texto,
+          footer: "🎬 Buscador de Películas • Santaflow-Bot",
+          buttons,
+        },
+        { quoted: m }
+      );
     } else {
-      await m.reply(texto);
+      await conn.sendMessage(
+        m.chat,
+        {
+          text: texto,
+          footer: "🎬 Buscador de Películas • Santaflow-Bot",
+          buttons,
+        },
+        { quoted: m }
+      );
     }
-
   } catch (e) {
     console.error(e);
     m.reply("⚠️ Error al buscar la información. Intenta nuevamente.");
@@ -82,7 +116,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
 // 📌 Configuración
 handler.help = ["pelicula <nombre>", "movie <nombre>", "serie <nombre>", "film <nombre>"];
-handler.tags = ["buscador", "descargas"];
+handler.tags = ["buscador", "entretenimiento"];
 handler.command = ["pelicula", "movie", "serie", "film"];
 handler.register = true;
 handler.limit = false;
