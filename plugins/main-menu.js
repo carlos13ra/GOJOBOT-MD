@@ -106,7 +106,7 @@ ${secciones}
 
 await m.react('❄️')
 await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
-}, }, gifPlayback: false, gifAttribution: 0 }, { quoted: null })
+}, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
 
   } catch (e) {
     console.error(e)
