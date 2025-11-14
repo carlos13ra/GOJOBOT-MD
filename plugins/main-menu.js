@@ -57,44 +57,45 @@ for (let tag in grupos) {
 
 const secciones = Object.entries(grupos).map(([tag, cmds]) => {
   const emoji = emojis[tag] || '⭐'
-  return `╭━━❄️〔 ${emoji} ${tag.toUpperCase()} 〕🎄━━⬣\n`
-   + cmds.map(cmd => `┃ ❄️ ${cmd}`).join('\n') 
-   + `\n╰━━🎅〔 ☃️ 〕🎉━━⬣`
+  return `╭─⛄━━━━━━━━━━━━🎄
+│ ✨ 〔 ${emoji} ${tag.toUpperCase()} 〕 ✨
+│━━━━━━━━━━━━━━━━❄️\n`
+   + cmds.map(cmd => `│ 🎁 ${cmd}`).join('\n') 
+   + `\n╰─🎅━━━━━━━━━━━━☃️`
 }).join('\n\n')
 
+
 let menuText = `
-      ❄️｡･:*˚☃️˚:*･｡❄️ 
-       ☃️ 𝑮𝑶𝑱𝑶 - 𝑩𝑶𝑻 🎅 
-      ❄️｡･:*˚☃️˚:*･｡❄️
-⊱ ────── {.⋅ ❄️ ⋅.} ────── ⊰
+╔════•ೋ•❅❖❅•ೋ•════╗
+        ✨ GOJO – BOT ✨
+      🎄 MENÚ NAVIDEÑO UWU 🎄
+╚════•ೋ•❅❖❅•ೋ•════╝
 
-🎄 ${ucapan()} @${userId.split('@')[0]} 🎁
+🎄 *${ucapan()} @${userId.split('@')[0]}*  
 
-╭── 🎅「 ɪɴꜰᴏ ᴜꜱᴇʀ 」──
-│
-│ ❄️ ᴜsᴇʀ: ${name}
-│ ❄️ ɴɪᴠᴇʟ: ${level}
-│ ❄️ ᴇxᴘ ᴛᴏᴛᴀʟ: ${exp}
-│ ❄️ ʀᴀɴɢᴏ: Cachud@
-╰─────────────────☃️
+┏━━━🎁 *INFO USER* 🎁━━━
+┃ 👤 *Usuario:* ${name}
+┃ 🎚️ *Nivel:* ${level}
+┃ ⭐ *Experiencia:* ${exp}
+┃ 🔱 *Rango:* Cachud@
+┗━━━━━━━━━━━━━━━━━━❄️
 
-╭── 🎄「 ɪɴꜰᴏ ʙᴏᴛ 」──
-│
-│  👑 ᴏᴡɴᴇʀ: wa.me/${suittag}
-│  🤖 ʙᴏᴛ: ${(conn.user.jid == global.conn.user.jid ? '🎅 ʙᴏᴛ ᴏꜰɪᴄɪᴀʟ' : '🎄 ꜱᴜʙ ʙᴏᴛ')}
-│  📜 ᴄᴏᴍᴀɴᴅᴏꜱ: ${totalCommands}
-│  🎉 ᴜꜱᴇʀꜱ ᴛᴏᴛᴀʟᴇꜱ: ${totalreg}
-│  ⏰ ʀᴜɴᴛɪᴍᴇ: ${uptime}
-╰─────────────────❄️
+┏━━━🎅 *INFO DEL BOT* 🎅━━━
+┃ 👑 *Owner:* wa.me/${suittag}
+┃ 🤖 *Estado:* ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
+┃ 📜 *Comandos:* ${totalCommands}
+┃ 🧑‍🤝‍🧑 *Usuarios:* ${totalreg}
+┃ ⏳ *Uptime:* ${uptime}
+┗━━━━━━━━━━━━━━━━━━❄️
 
-╭── ❄️「 ᴛɪᴇᴍᴘᴏ 」──
-│
-│ 🎅 🕒 ʜᴏʀᴀ ᴘᴇʀᴜ: ${hora}
-│ 🎅 📅 ғᴇᴄʜᴀ: ${fecha}
-│ 🎅 🌤️ ᴅɪᴀ: ${dia}
-╰─────────────────🎄
+┏━━━🕒 *TIEMPO* 🕒━━━
+┃ 🕒 *Hora Perú:* ${hora}
+┃ 📅 *Fecha:* ${fecha}
+┃ 🌤️ *Día:* ${dia}
+┗━━━━━━━━━━━━━━━━━━❄️
 
-❊ 𝙵𝙴𝙻𝙸𝙲𝙴𝚂 𝙵𝙸𝙴𝚂𝚃𝙰𝚂 ❄️  
+
+🎄✨ *FELICES FIESTAS* ✨🎄
 🎄 ¡Que la alegría, la paz y los comandos te acompañen!🎆  
 ❄️ ¡fєℓιz иανι∂α∂🎄 & ρяσѕρєяσ αи̃σ иυєνσ! 🌟
 ✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
