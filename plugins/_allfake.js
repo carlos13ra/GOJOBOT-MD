@@ -57,7 +57,7 @@ global.rcanal = {
     },
     externalAdReply: {
       title: botname,
-      body: dev,
+      body: `🪺 ${dev}`,
       mediaUrl: null,
       description: null,
       previewType: "PHOTO",
