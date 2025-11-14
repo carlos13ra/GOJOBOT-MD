@@ -103,10 +103,38 @@ let menuText = `
 
 ${secciones}
 `.trim()
-
+/*
 await m.react('❄️')
 await conn.sendMessage(m.chat, { video: { url: video }, caption: menuText, contextInfo: { mentionedJid: [m.sender], isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1, }, forwardingScore: 999, externalAdReply: { title: botname, body: dev, thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false,
-}, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })
+}, }, gifPlayback: true, gifAttribution: 0 }, { quoted: null })*/
+
+await conn.sendMessage(
+  m.chat,
+  {
+    video: { url: video },
+    caption: menuText,
+    gifPlayback: true,
+    gifAttribution: 0,
+    contextInfo: {
+      mentionedJid: [m.sender],
+      isForwarded: true,
+      forwardingScore: 999,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        serverMessageId: 100,
+        newsletterName: channelRD.name
+      },
+      externalAdReply: {
+        title: botname,
+        body: dev,
+        thumbnailUrl: banner,
+        mediaType: 1,
+        renderLargerThumbnail: true
+      }
+    }
+  },
+  { quoted: m }
+)
 
   } catch (e) {
     console.error(e)
