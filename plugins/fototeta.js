@@ -6,6 +6,5 @@ await conn.reply(m.chat,`Padre nuestro, que estás en los Cielos, santificado se
 handler.help = ["fototeta"];
 handler.tags = ["rpg"];
 handler.command = ['fototeta'];
-handler.group = true;
 
 export default handler;
