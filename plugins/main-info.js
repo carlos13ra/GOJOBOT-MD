@@ -91,7 +91,7 @@ const res = await fetch('https://api.github.com/repos/carlos13ra/GOJOBOT-MD')
 if (!res.ok) throw new Error('No se pudo obtener los datos del repositorio.')
 const json = await res.json()
 const txt = `*乂  S C R I P T  -  M A I N  乂*\n\n✩ *Nombre* : ${json.name}\n✩ *Visitas* : ${json.watchers_count}\n✩ *Peso* : ${(json.size / 1024).toFixed(2)} MB\n✩ *Actualizado* : ${moment(json.updated_at).format('DD/MM/YY - HH:mm:ss')}\n✩ *Url* : ${json.html_url}\n✩ *Forks* : ${json.forks_count}\n✩ *Stars* : ${json.stargazers_count}\n\n> *${dev}*`
-await conn.sendMessage(m.chat, { image: catalogo, caption: txt, ...rcanal }, { quoted: m })
+await conn.sendMessage(m.chat, { image: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763407840189_459215.jpeg', caption: txt, ...rcanal }, { quoted: m })
 await m.react('✔️')
 break
 }}} catch (err) {
