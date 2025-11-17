@@ -67,11 +67,10 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
 
 let menuText = `
 ╔════•ೋ•❅❖❅•ೋ•════╗
-        ✨ GOJO – BOT ✨
-      🎄 MENÚ NAVIDEÑO UWU 🎄
+    ❄️ GOJO – BOT ❄️
 ╚════•ೋ•❅❖❅•ೋ•════╝
 
-🎄 *${ucapan()} @${userId.split('@')[0]}*  
+☃️ *${ucapan()} @${userId.split('@')[0]}*  
 
 ┏━━━🎁 *INFO USER* 🎁━━━
 ┃ 👤 *Usuario:* ${name}
