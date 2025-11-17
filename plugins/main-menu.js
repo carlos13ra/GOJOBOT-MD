@@ -73,24 +73,24 @@ let menuText = `
 ☃️ *${ucapan()} @${userId.split('@')[0]}*  
 
 ┏━━━🎁 *INFO USER* 🎁━━━
-┃ 👤 *Usuario:* ${name}
-┃ 🎚️ *Nivel:* ${level}
-┃ ⭐ *Experiencia:* ${exp}
-┃ 🔱 *Rango:* Cachud@
+┃ 👤 Usuario: ${name}
+┃ 🎚️ Nivel: ${level}
+┃ ⭐ Experiencia: ${exp}
+┃ 🔱 Rango: Cachud@
 ┗━━━━━━━━━━━━━━━━━━❄️
 
 ┏━━━🎅 *INFO DEL BOT* 🎅━━━
-┃ 👑 *Owner:* wa.me/${suittag}
-┃ 🤖 *Estado:* ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
-┃ 📜 *Comandos:* ${totalCommands}
-┃ 🧑‍🤝‍🧑 *Usuarios:* ${totalreg}
-┃ ⏳ *Uptime:* ${uptime}
+┃ 👑 Owner: wa.me/${suittag}
+┃ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
+┃ 📜 Comandos: ${totalCommands}
+┃ 🧑‍🤝‍🧑 Usuarios: ${totalreg}
+┃ ⏳ Uptime: ${uptime}
 ┗━━━━━━━━━━━━━━━━━━❄️
 
 ┏━━━🕒 *TIEMPO* 🕒━━━
-┃ 🕒 *Hora Perú:* ${hora}
-┃ 📅 *Fecha:* ${fecha}
-┃ 🌤️ *Día:* ${dia}
+┃ 🕒 Hora Perú: ${hora}
+┃ 📅 Fecha: ${fecha}
+┃ 🌤️ Día: ${dia}
 ┗━━━━━━━━━━━━━━━━━━❄️
 
 
