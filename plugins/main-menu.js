@@ -36,7 +36,7 @@ const emojis = {
   'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
   'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
   'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
+  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖', 'socket': '👻'
 }
 
 let grupos = {}
