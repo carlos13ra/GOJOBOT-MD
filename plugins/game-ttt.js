@@ -66,7 +66,9 @@ Turno de @${room.game.currentTurn.split('@')[0]}
   }
 };
 
-handler.command = ['ttt', 'tictactoe'];
-handler.group = true;
+handler.help = ['ttt ']
+handler.tags = ['game']
+handler.command = ['ttt']
+handler.group = true
 
-export default handler;
+export default handler
