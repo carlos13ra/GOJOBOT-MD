@@ -19,7 +19,6 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   for (let i = 0; i < sorted.length; i++) {
     let jid = sorted[i]
     let user = global.db.data.groups[groupId].users[jid]
-    if (!user) continue
     let total = (user.coin || 0) + (user.bank || 0)
     let name = user.name || await conn.getName(jid).catch(() => jid.split('@')[0])
     text.push(`│ ✰ ${i + 1}. *${name}*`)
@@ -28,7 +27,7 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   }
 
   text.push(`╰━━━━━━━━━━━━━━━━━━⬣`)
-  await conn.reply(m.chat, text.join('\n'), m, rcanal)
+  conn.reply(m.chat, text.join('\n'), m, rcanal)
 }
 
 handler.help = ['baltop']
