@@ -1,3 +1,4 @@
+import axios from 'axios'
 const timeout = 60000;
 const poin = 500;
 const poin_lose = -100;
@@ -33,8 +34,9 @@ const handler = async (m, {conn, usedPrefix, text}) => {
   };
 };
 
-handler.command = ['suitpvp', 'pvp', 'suit'];
-handler.group = true;
-handler.game = true;
+handler.help = ['pvp']
+handler.tags = ['game']
+handler.command = ['pvp']
+handler.group = true
 
-export default handler;
+export default handler
