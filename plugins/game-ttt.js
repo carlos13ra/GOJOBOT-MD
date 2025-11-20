@@ -1,5 +1,4 @@
-import TicTacToe from '../lib/tictactoe.js';
-
+import axios from 'axios'
 const handler = async (m, {conn, usedPrefix, command, text}) => {
   conn.game = conn.game || {};
 
