@@ -14,7 +14,7 @@ let handler = async (m, { conn, text }) => {
 }
 
 handler.help = ['codigo <cantidad de coins>'];
-handler.tags = ['owner'];
+handler.tags = ['economy'];
 handler.command = ['codigo']
 handler.rowner = true;
 
