@@ -75,7 +75,7 @@ const handler = async (m, { conn, args, command }) => {
     );
 
     // Mensaje al canal
-    if (rcanal !== "120363421367237421@newsletter") {
+    if (rcanal = "120363421367237421@newsletter") {
       await conn.reply(rcanal, text.join('\n'), null);
     }
   }
