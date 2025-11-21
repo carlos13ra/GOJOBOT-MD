@@ -1,12 +1,13 @@
-// un codigo bug creado x Carlos jsjsjs 🌾
+// un codigo bug creado x Carlos Ramírez jsjsjs 🌾
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
-  if (command === 'temporal' || command === 'recompensa') {
+
+  if (command === 'tetas' || command === 'pene') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
-    const oneDayInMillis = 86400000; // 24 horas
+    const oneMinuteInMillis = 60000; // 1 minuto
     const now = Date.now();
-    const timeRemaining = user.lastclaim + oneDayInMillis - now;
+    const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
     if (timeRemaining > 0) {
       return conn.reply(
         m.chat,
@@ -14,7 +15,7 @@ const handler = async (m, { conn, args, command }) => {
         m
       );
     }
-    const recompensa = 500000; // 500,000 Dolares 💶
+    const recompensa = 200000; // 200,000 Dólares 💷
     user.coin += recompensa;
     user.exp += recompensa;
     user.joincount += recompensa;
@@ -23,17 +24,15 @@ const handler = async (m, { conn, args, command }) => {
     const texto = ` 
       ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
       │ 
-      │ 🔥 *Usuario:* ${senderNumber} 
-      │ 🗣️ *Nombre:* ${senderName} 
+      │ 💎 *Usuario:* @${senderNumber} 
+      │ 🧸 *Nombre:* ${senderName} 
       │ 
-      │ 💫 *Has recibido:* 
-      │ 💶 *${recompensa.toLocaleString()} monedas* 
+      │ 🌸 *Has recibido:* 
+      │ 💷 *${recompensa.toLocaleString()} monedas* 
       │ 🧠 *${recompensa.toLocaleString()} XP* 
-      │ 🗿 *${recompensa.toLocaleString()} tokens* 
-      │
-      │  QUE GAY SOS CAUSA GAAAA PHEE 
-      │
-      │ 🕒 Próximo reclamo en 24 horas. 
+      │ 🥭 *${recompensa.toLocaleString()} tokens* 
+      │ 
+      │ 🕒 Próximo reclamo en 1 minuto. 
       │ 
       ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 💎 〕━━⬣ `;
     await conn.sendMessage(
@@ -45,7 +44,7 @@ const handler = async (m, { conn, args, command }) => {
           externalAdReply: {
             title: '🎁 Recompensa de GojoBot',
             body: 'Has sido recompensado generosamente!',
-            thumbnailUrl: 'https://files.catbox.moe/2ea57k.jpg',
+            thumbnailUrl: 'https://files.catbox.moe/d95vfb.jpg',
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
@@ -57,9 +56,9 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['temporal', 'recompensa'];
+handler.help = ['tetas', 'pene'];
 handler.tags = ['rpg'];
-handler.command = ['temporal', 'recompensa'];
+handler.command = ['tetas', 'pene'];
 handler.group = true;
 export default handler;
 
