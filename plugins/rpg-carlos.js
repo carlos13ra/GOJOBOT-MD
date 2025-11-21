@@ -2,7 +2,7 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (command === 'gay' || command === 'pene') {
+  if (command === 'soygay' || command === 'pene') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
     const oneDayInMillis = 86400000; // 24 horas
@@ -46,7 +46,7 @@ const handler = async (m, { conn, args, command }) => {
           externalAdReply: {
             title: '🎁 Recompensa de GojoBot',
             body: 'Has sido recompensado generosamente!',
-            thumbnailUrl: 'https://files.catbox.moe/gj468l.jpg',
+            thumbnailUrl: 'https://files.catbox.moe/ob2s0m.jpg',
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
