@@ -48,6 +48,7 @@ const handler = async (m, { conn, args, command }) => {
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
+            await conn.reply(m.chat, text.join('\n'), m, rcanal) 
           }
         }
       },
@@ -55,7 +56,6 @@ const handler = async (m, { conn, args, command }) => {
     );
   }
 };
-await conn.reply(m.chat, text.join('\n'), m, rcanal) 
 
 handler.help = ['tetas', 'pene'];
 handler.tags = ['rpg'];
