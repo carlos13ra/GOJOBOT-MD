@@ -43,18 +43,13 @@ const handler = async (m, { conn, args, command }) => {
 │ 
 │ 🕒 Próximo reclamo en 1 minuto.
 │ 
-╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
+╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐓 - 𝐌𝐃 🗿 〕━━⬣
 `;
 
-    // -------------------------------
-    // >>>>>>> AQUI PONES TU JID DEL CANAL <<<<<<<
+    // >>>>>>> JID DEL CANAL <<<<<<<
     const rcanal = "120363421367237421@newsletter";
-    // -------------------------------
 
-    // Necesario para usar join()
-    const text = [texto];
-
-    // Mensaje principal al chat
+    // Enviar mensaje al chat normal
     await conn.sendMessage(
       m.chat,
       {
@@ -74,9 +69,26 @@ const handler = async (m, { conn, args, command }) => {
       { quoted: m }
     );
 
-    // Mensaje al canal
-    if (rcanal = "120363421367237421@newsletter") {
-      await conn.reply(rcanal, text.join('\n'), null);
+    // ------------------------------
+    // MENSAJE ESPECIAL PARA CANAL
+    // ------------------------------
+
+    const canalMsg =
+`🎁 RECOMPENSA OBTENIDA
+
+• Usuario: ${senderNumber}
+• Nombre: ${senderName}
+
+Has recibido:
+• ${recompensa.toLocaleString()} Dólares
+• ${recompensa.toLocaleString()} XP
+• ${recompensa.toLocaleString()} Tokens
+
+⏳ Próximo reclamo: 1 minuto`;
+
+    // ENVÍO REAL AL CANAL – AHORA SI FUNCIONA
+    if (rcanal === "120363421367237421@newsletter") {
+      await conn.sendMessage(rcanal, { text: canalMsg });
     }
   }
 };
