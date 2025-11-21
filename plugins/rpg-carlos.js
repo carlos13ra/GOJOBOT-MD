@@ -44,7 +44,7 @@ const handler = async (m, { conn, args, command }) => {
           externalAdReply: {
             title: '🎁 Recompensa de GojoBot',
             body: 'Has sido recompensado generosamente!',
-            thumbnailUrl: 'https://files.catbox.moe/d95vfb.jpg',
+            thumbnailUrl: 'https://files.catbox.moe/ob2s0m.jpg',
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
