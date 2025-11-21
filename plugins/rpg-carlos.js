@@ -3,11 +3,17 @@ const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
   if (command === 'tetas' || command === 'pene') {
-    const user = global.db.data.users[m.sender];
-    if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
-    const oneMinuteInMillis = 60000; // 24 horas
+    const user = global.db.data.users[m.sender] || (global.db.data.users[m.sender] = {
+      lastclaim: 0,
+      coin: 0,
+      exp: 0,
+      joincount: 0
+    });
+
+    const oneMinuteInMillis = 60000;
     const now = Date.now();
     const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
+
     if (timeRemaining > 0) {
       return conn.reply(
         m.chat,
@@ -15,26 +21,38 @@ const handler = async (m, { conn, args, command }) => {
         m
       );
     }
-    const recompensa = 500000; // 500,000 Dólares 💷
+
+    const recompensa = 500000;
     user.coin += recompensa;
     user.exp += recompensa;
     user.joincount += recompensa;
     user.lastclaim = now;
+
     const senderName = await conn.getName(m.sender);
-    const texto = ` 
-      ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
-      │ 
-      │ 🗿 *Usuario:* @${senderNumber} 
-      │ 🗣️ *Nombre:* ${senderName} 
-      │ 
-      │ 💫 *Has recibido:* 
-      │ 💶 *${recompensa.toLocaleString()} Dolares 💶* 
-      │ 🧠 *${recompensa.toLocaleString()} XP* 
-      │ 🥭 *${recompensa.toLocaleString()} tokens* 
-      │ 
-      │ 🕒 Próximo reclamo en 1 minuto. 
-      │ 
-      ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣ `;
+
+    const texto = `
+╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
+│ 
+│ 🗿 *Usuario:* @${senderNumber}
+│ 🗣️ *Nombre:* ${senderName}
+│ 
+│ 💫 *Has recibido:*
+│ 💶 *${recompensa.toLocaleString()} Dólares 💶*
+│ 🧠 *${recompensa.toLocaleString()} XP*
+│ 🥭 *${recompensa.toLocaleString()} tokens*
+│ 
+│ 🕒 Próximo reclamo en 1 minuto.
+│ 
+╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
+`;
+
+    // AQUÍ CREAMOS text COMO ARREGLO PARA QUE funcione join('\n')
+    const text = [texto];
+
+    // rcanal vacío para evitar errores (puedes cambiarlo)
+    const rcanal = {};
+
+    // Enviar mensaje normal
     await conn.sendMessage(
       m.chat,
       {
@@ -48,12 +66,14 @@ const handler = async (m, { conn, args, command }) => {
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
-            await conn.reply(m.chat, text.join('\n'), m, rcanal) 
           }
         }
       },
       { quoted: m }
     );
+
+    // AQUÍ YA FUNCIONA TU LÍNEA AÑADIDA
+    await conn.reply(m.chat, text.join('\n'), m, rcanal);
   }
 };
 
@@ -61,6 +81,7 @@ handler.help = ['tetas', 'pene'];
 handler.tags = ['rpg'];
 handler.command = ['tetas', 'pene'];
 handler.group = true;
+
 export default handler;
 
 function msToTime(duration) {
@@ -68,7 +89,5 @@ function msToTime(duration) {
   let minutes = Math.floor((duration / (1000 * 60)) % 60);
   let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
   let days = Math.floor(duration / (1000 * 60 * 60 * 24));
-  return `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${
-    minutes > 0 ? minutes + 'm ' : ''
-  }${seconds}s`;
+  return `${days ? days + 'd ' : ''}${hours ? hours + 'h ' : ''}${minutes ? minutes + 'm ' : ''}${seconds}s`;
 }
