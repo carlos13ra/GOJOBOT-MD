@@ -35,9 +35,9 @@ const handler = async (m, { conn, args, command }) => {
       │ 🕒 Próximo reclamo en 1 minuto. 
       │ 
       ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣ `;
-   await conn.reply(m.chat, text.join('\n'), m, rcanal) 
     await conn.sendMessage(
       m.chat,
+      await conn.reply(m.chat, text.join('\n'), m, rcanal) 
       {
         text: texto,
         mentions: [m.sender],
