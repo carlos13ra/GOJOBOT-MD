@@ -2,12 +2,9 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (command === 'soygay', 'megustaelpene') {
+  if (command === 'reclamar') {
     const user = global.db.data.users[m.sender];
-    if (!user.lastclaim) user.lastclaim = 0;
-    if (!user.coin) user.coin = 0;
-    if (!user.exp) user.exp = 0;
-    if (!user.joincount) user.joincount = 0;
+    if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
     const oneMinuteInMillis = 60000; // 1 minuto
     const now = Date.now();
     const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
@@ -60,10 +57,11 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['soygay']
-handler.tags = ['rpg']
-handler.command = ['soygay', 'megustaelpene']
-handler.group = true
+handler.help = ['reclamar'];
+handler.tags = ['rpg'];
+handler.command = ['reclamar'];
+handler.fail = null;
+handler.premium = false;
 
 export default handler;
 
