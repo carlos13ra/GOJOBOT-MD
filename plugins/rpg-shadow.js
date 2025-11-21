@@ -60,11 +60,10 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['soygay'];
-handler.tags = ['rpg'];
-handler.command = ['soygay'];
-handler.fail = null;
-handler.premium = false;
+handler.help = ['soygay']
+handler.tags = ['rpg']
+handler.command = ['soygay', 'megustaelpene']
+handler.group = true
 
 export default handler;
 
