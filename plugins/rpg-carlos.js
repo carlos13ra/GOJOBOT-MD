@@ -1,7 +1,7 @@
-// un codigo bug creado x shadow.xyz jsjsjs 🌾
+// un codigo bug creado x Carlos jsjsjs 🌾
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
-  if (command === 'soygay' || command === 'pene') {
+  if (command === 'temporal' || command === 'recompensa') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
     const oneDayInMillis = 86400000; // 24 horas
@@ -57,9 +57,9 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['soygay', 'pene'];
+handler.help = ['temporal', 'recompensa'];
 handler.tags = ['rpg'];
-handler.command = ['soygay', 'pene'];
+handler.command = ['temporal', 'recompensa'];
 handler.group = true;
 export default handler;
 
