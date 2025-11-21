@@ -2,7 +2,7 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (command === 'reclamar') {
+  if (command === 'soygay', 'megustaelpene') {
     const user = global.db.data.users[m.sender];
     if (!user.lastclaim) user.lastclaim = 0;
     if (!user.coin) user.coin = 0;
