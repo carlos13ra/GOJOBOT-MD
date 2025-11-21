@@ -2,7 +2,7 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (command === 'gay', 'pene') {
+  if (command === 'gay' || command === 'pene') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
     const oneMinuteInMillis = 60000; // 1 minuto
@@ -44,8 +44,7 @@ const handler = async (m, { conn, args, command }) => {
           externalAdReply: {
             title: '🎁 Recompensa de GojoBot',
             body: 'Has sido recompensado generosamente!',
-            thumbnailUrl: 'https:                   
-            sourceUrl: 'https://files.catbox.moe/gj468l.jpg',
+            thumbnailUrl: 'https://files.catbox.moe/gj468l.jpg',
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
@@ -57,12 +56,11 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['gay', 'pene']
-handler.tags = ['rpg']
-handler.command = ['gay', 'pene']
-handler.group = true
-
-export default handler
+handler.help = ['gay', 'pene'];
+handler.tags = ['rpg'];
+handler.command = ['gay', 'pene'];
+handler.group = true;
+export default handler;
 
 function msToTime(duration) {
   let seconds = Math.floor((duration / 1000) % 60);
