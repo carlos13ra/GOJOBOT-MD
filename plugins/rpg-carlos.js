@@ -6,7 +6,7 @@ const handler = async (m, { conn, args, command }) => {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
 
-    const oneMinuteInMillis = 60000;
+    const oneMinuteInMillis = 86400000;
     const now = Date.now();
     const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
 
@@ -37,7 +37,7 @@ const handler = async (m, { conn, args, command }) => {
 │ 🧠 *${recompensa.toLocaleString()} XP*
 │ 🥭 *${recompensa.toLocaleString()} tokens*
 │ 
-│ 🕒 Próximo reclamo en 1 minuto.
+│ 🕒 Próximo reclamo en 24 horas.
 │ 
 ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
 `;
