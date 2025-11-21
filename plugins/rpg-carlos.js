@@ -24,11 +24,11 @@ const handler = async (m, { conn, args, command }) => {
     const texto = ` 
       ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
       │ 
-      │ 💎 *Usuario:* @${senderNumber} 
-      │ 🧸 *Nombre:* ${senderName} 
+      │ 🗿 *Usuario:* @${senderNumber} 
+      │ 🗣️ *Nombre:* ${senderName} 
       │ 
-      │ 🌸 *Has recibido:* 
-      │ 💷 *${recompensa.toLocaleString()} monedas* 
+      │ 💫 *Has recibido:* 
+      │ 💶 *${recompensa.toLocaleString()} Dolares 💶* 
       │ 🧠 *${recompensa.toLocaleString()} XP* 
       │ 🥭 *${recompensa.toLocaleString()} tokens* 
       │ 
