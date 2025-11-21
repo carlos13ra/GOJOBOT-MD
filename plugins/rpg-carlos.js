@@ -37,7 +37,6 @@ const handler = async (m, { conn, args, command }) => {
       ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣ `;
     await conn.sendMessage(
       m.chat,
-      await conn.reply(m.chat, text.join('\n'), m, rcanal) 
       {
         text: texto,
         mentions: [m.sender],
@@ -56,6 +55,7 @@ const handler = async (m, { conn, args, command }) => {
     );
   }
 };
+await conn.reply(m.chat, text.join('\n'), m, rcanal) 
 
 handler.help = ['tetas', 'pene'];
 handler.tags = ['rpg'];
