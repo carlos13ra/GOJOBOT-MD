@@ -5,7 +5,7 @@ const handler = async (m, { conn, args, command }) => {
   if (command === 'tetas' || command === 'pene') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
-    const oneMinuteInMillis = 60000; // 1 minuto
+    const oneMinuteInMillis = 86400000; // 24 horas
     const now = Date.now();
     const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
     if (timeRemaining > 0) {
@@ -15,7 +15,7 @@ const handler = async (m, { conn, args, command }) => {
         m
       );
     }
-    const recompensa = 200000; // 200,000 Dólares 💷
+    const recompensa = 500000; // 500,000 Dólares 💷
     user.coin += recompensa;
     user.exp += recompensa;
     user.joincount += recompensa;
@@ -34,7 +34,7 @@ const handler = async (m, { conn, args, command }) => {
       │ 
       │ 🕒 Próximo reclamo en 1 minuto. 
       │ 
-      ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 💎 〕━━⬣ `;
+      ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣ `;
     await conn.sendMessage(
       m.chat,
       {
