@@ -1,7 +1,6 @@
 // un codigo bug creado x shadow.xyz jsjsjs 🌾
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
-
   if (command === 'soygay' || command === 'pene') {
     const user = global.db.data.users[m.sender];
     if (!user) global.db.data.users[m.sender] = { lastclaim: 0, coin: 0, exp: 0, joincount: 0 };
@@ -24,16 +23,16 @@ const handler = async (m, { conn, args, command }) => {
     const texto = ` 
       ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
       │ 
-      │ 🔥 *Usuario:* ${name}
+      │ 🔥 *Usuario:* ${senderNumber} 
       │ 🗣️ *Nombre:* ${senderName} 
       │ 
       │ 💫 *Has recibido:* 
       │ 💶 *${recompensa.toLocaleString()} monedas* 
       │ 🧠 *${recompensa.toLocaleString()} XP* 
       │ 🗿 *${recompensa.toLocaleString()} tokens* 
-      │ 
-      | QUE GAY SOS CAUSA GAAAA PHEE 
-      |
+      │
+      │  QUE GAY SOS CAUSA GAAAA PHEE 
+      │
       │ 🕒 Próximo reclamo en 24 horas. 
       │ 
       ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 💎 〕━━⬣ `;
@@ -72,4 +71,4 @@ function msToTime(duration) {
   return `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${
     minutes > 0 ? minutes + 'm ' : ''
   }${seconds}s`;
-            }
+}
