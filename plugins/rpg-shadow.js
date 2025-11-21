@@ -1,66 +1,16 @@
 // un codigo bug creado x shadow.xyz jsjsjs 🌾
-
 const handler = async (m, { conn, args, command }) => {
-  const ownerNumber = global.owner;
   const senderNumber = m.sender.split('@')[0];
-  global.tempAccess = global.tempAccess || {};
 
-  if (command === 'temporal' || command === 'adds' || command === 'tempaccess') {
-    if (senderNumber !== ownerNumber)
-      return conn.reply(m.chat, '🚫 *Solo el dueño puede usar este comando.*', m);
-
-    let target;
-    if (m.quoted) {
-      target = m.quoted.sender;
-    } else if (m.mentionedJid && m.mentionedJid.length > 0) {
-      target = m.mentionedJid[0];
-    } else if (args[0]) {
-      target = args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
-    }
-
-    if (!target) {
-      return conn.reply(
-        m.chat,
-        '⚠️ *Menciona, responde o escribe el número del usuario que tendrá acceso temporal.*\n\nEjemplo:\n.adds al mensaje del usuario o\n.temporal @usuario',
-        m
-      );
-    }
-
-    const userName = await conn.getName(target);
-    global.tempAccess[target.split('@')[0]] = true;
-
-    await conn.reply(
-      m.chat,
-      `✅ *Acceso temporal concedido a:* ${userName}\n⏳ *Duración:* 5 segundos.`, //😏
-      m
-    );
-
-    setTimeout(() => {
-      delete global.tempAccess[target.split('@')[0]];
-    }, 5000);
-
-    return;
-  }
-
-  if (command === 'shadow') {
-    if (senderNumber !== ownerNumber && !global.tempAccess[senderNumber]) {
-      return conn.reply(
-        m.chat,
-        `🚫 *Acceso denegado*\n\nSolo *${ownerNumber}* puede usar este comando.`,
-        m
-      );
-    }
-
+  if (command === 'reclamar') {
     const user = global.db.data.users[m.sender];
     if (!user.lastclaim) user.lastclaim = 0;
     if (!user.coin) user.coin = 0;
     if (!user.exp) user.exp = 0;
     if (!user.joincount) user.joincount = 0;
-
-    const oneMinuteInMillis = 60_000; // 1 minuto 😏
+    const oneMinuteInMillis = 60000; // 1 minuto
     const now = Date.now();
     const timeRemaining = user.lastclaim + oneMinuteInMillis - now;
-
     if (timeRemaining > 0) {
       return conn.reply(
         m.chat,
@@ -68,31 +18,26 @@ const handler = async (m, { conn, args, command }) => {
         m
       );
     }
-
-    const recompensa = 1_000_000_000; // cambie x la cantidad q kiera xD
+    const recompensa = 200000; // 200,000 monedas
     user.coin += recompensa;
     user.exp += recompensa;
     user.joincount += recompensa;
     user.lastclaim = now;
-
     const senderName = await conn.getName(m.sender);
-
-    const texto = `
-╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣
-│
-│ 💎 *Usuario:* @${senderNumber}
-│ 🧸 *Nombre:* ${senderName}
-│
-│ 🌸 *Has recibido:*
-│ 💵 *${recompensa.toLocaleString()} monedas*
-│ 🧠 *${recompensa.toLocaleString()} XP*
-│ 🪙 *${recompensa.toLocaleString()} tokens*
-│
-│ 🕒 Próximo reclamo en 1 minuto.
-│
-╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 💎 〕━━⬣
-`;
-
+    const texto = ` 
+      ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
+      │ 
+      │ 💎 *Usuario:* @${senderNumber} 
+      │ 🧸 *Nombre:* ${senderName} 
+      │ 
+      │ 🌸 *Has recibido:* 
+      │ 💵 *${recompensa.toLocaleString()} monedas* 
+      │ 🧠 *${recompensa.toLocaleString()} XP* 
+      │ 🪙 *${recompensa.toLocaleString()} tokens* 
+      │ 
+      │ 🕒 Próximo reclamo en 1 minuto. 
+      │ 
+      ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 💎 〕━━⬣ `;
     await conn.sendMessage(
       m.chat,
       {
@@ -102,7 +47,8 @@ const handler = async (m, { conn, args, command }) => {
           externalAdReply: {
             title: '🎁 Recompensa de GojoBot',
             body: 'Has sido recompensado generosamente!',
-            thumbnailUrl: 'https://qu.ax/ALOZa.jpg',
+            thumbnailUrl: 'https:                   
+            sourceUrl: '//qu.ax/ALOZa.jpg',
             sourceUrl: 'https://github.com/Carlos13ra',
             mediaType: 1,
             renderLargerThumbnail: true
@@ -114,11 +60,12 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['shadow (Owner/user)', 'temporal (owner)'];
-handler.tags = ['rpg', 'owner'];
-handler.command = ['shadow', 'temporal', 'adds', 'tempaccess'];
+handler.help = ['soygay'];
+handler.tags = ['rpg'];
+handler.command = ['soygay'];
 handler.fail = null;
 handler.premium = false;
+
 export default handler;
 
 function msToTime(duration) {
