@@ -46,13 +46,15 @@ const handler = async (m, { conn, args, command }) => {
 ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
 `;
 
-    // AQUÍ CREAMOS text COMO ARREGLO PARA QUE funcione join('\n')
+    // -------------------------------
+    // >>>>>>> AQUI PONES TU JID DEL CANAL <<<<<<<
+    const rcanal = "120363421367237421@newsletter";
+    // -------------------------------
+
+    // Necesario para usar join()
     const text = [texto];
 
-    // rcanal vacío para evitar errores (puedes cambiarlo)
-    const rcanal = {};
-
-    // Enviar mensaje normal
+    // Mensaje principal al chat
     await conn.sendMessage(
       m.chat,
       {
@@ -72,8 +74,10 @@ const handler = async (m, { conn, args, command }) => {
       { quoted: m }
     );
 
-    // AQUÍ YA FUNCIONA TU LÍNEA AÑADIDA
-    await conn.reply(m.chat, text.join('\n'), m, rcanal);
+    // Mensaje al canal
+    if (rcanal !== "120363421367237421@newsletter") {
+      await conn.reply(rcanal, text.join('\n'), null);
+    }
   }
 };
 
