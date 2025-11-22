@@ -179,6 +179,5 @@ handler.tags = ["download"];
 handler.help = ["animedl"];
 handler.premium = true;
 handler.group = true;
-handler.register = true;
 
 export default handler;
