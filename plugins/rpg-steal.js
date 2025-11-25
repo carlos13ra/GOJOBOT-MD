@@ -25,7 +25,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     })())()
     const target = global.db.data.users[who]
     const tiempoInactivo = Date.now() - (target.lastwork || 0)
-    if (tiempoInactivo < 900000) { // 15 minutos
+    if (tiempoInactivo < 6000) { // 15 minutos
       return conn.reply(m.chat, `ꕥ Solo puedes robarle *${currency}* a un usuario si estuvo más de 15 minutos inactivo.`, m)
     }
     const minRob = 40000
