@@ -36,7 +36,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     }
     user.coin += rob
     target.coin -= rob
-    user.lastrob = Date.now() + 900000 // 15 minutos
+    user.lastrob = Date.now() + 6000 // 15 minutos
     conn.reply(m.chat, `❀ Le robaste *¥${rob.toLocaleString()} ${currency}* a *${name}*`, m, { mentions: [who] })
   } catch (error) {
     console.error(error)
