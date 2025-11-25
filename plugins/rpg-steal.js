@@ -26,7 +26,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     const target = global.db.data.users[who]
     const tiempoInactivo = Date.now() - (target.lastwork || 0)
     if (tiempoInactivo < 900000) { // 15 minutos
-      return conn.reply(m.chat, `ꕥ Solo puedes robarle *${currency}* a un usuario si estuvo más de 15 minutos inactivo.`, m, rcanal)
+      return conn.reply(m.chat, `ꕥ Solo puedes robarle *${currency}* a un usuario si estuvo más de 15 minutos inactivo.`, m)
     }
     const minRob = 40000
     const maxRob = 100000
@@ -42,4 +42,23 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     console.error(error)
     conn.reply(m.chat, 'Ocurrió un error al procesar el comando', m)
   }
+}
+
+handler.help = ['rob']
+handler.tags = ['rpg']
+handler.command = ['robar', 'steal', 'rob']
+handler.group = true
+
+export default handler
+
+function formatTime(ms) {
+  const totalSec = Math.ceil(ms / 1000)
+  const hours = Math.floor(totalSec / 3600)
+  const minutes = Math.floor((totalSec % 3600) / 60)
+  const seconds = totalSec % 60
+  const parts = []
+  if (hours) parts.push(`${hours} hora${hours !== 1 ? 's' : ''}`)
+  if (minutes) parts.push(`${minutes} minuto${minutes !== 1 ? 's' : ''}`)
+  parts.push(`${seconds} segundo${seconds !== 1 ? 's' : ''}`)
+  return parts.join(' ')
 }
