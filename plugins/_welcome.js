@@ -2,9 +2,6 @@ import fs from 'fs'
 import { WAMessageStubType, generateWAMessageContent, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 const welcomeImg = null
-const dev = "Akirax Bot"
-const channel = "https://whatsapp.com/channel/XXXXXXXXXXX" 
-const fkontak = { key: { fromMe: false }, message: { contactMessage: { displayName: "Akirax" } } }
 
 async function generarBienvenida({ conn, userId, groupMetadata, chat }) {
     const username = `@${userId.split('@')[0]}`
