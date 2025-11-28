@@ -83,7 +83,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
         productImage: { url: pp },
         productId: '24529689176623820',
         title: `꒰͡•*゜・🏩 ˗ˏˋ ♡ ˎˊ˗🅆🄴🄻🄲🄾🄼🄴!˗ˏˋ ♡💫 ꒰͡•*゜・。 ͡꒱ֽ ׄ`,
-        description: caption,
+        description: '',
         currencyCode: 'USD',
         priceAmount1000: '100000',
         retailerId: 1677,
@@ -91,8 +91,8 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
         productImageCount: 1
       },
       businessOwnerJid: who,
-      caption: caption,
-      footer: `👥 Miembros: ${totalMembers} 📆 ${date}`,
+      caption: dev,
+      footer: caption,/*
       interactiveButtons: [
         {
           name: 'quick_reply',
@@ -101,7 +101,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
             id: '.menu'
           })
         }
-      ],
+      ],*/
       mentions: [userId]
     }
 
@@ -116,7 +116,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
         productImage: { url: pp },
         productId: '24529689176623820',
         title: `꒰͡•*゜・🥭 ˗ˏˋ ♡ ˎˊ˗🅆🄴🄻🄲🄾🄼🄴!˗ˏˋ ♡ 💫 ꒰͡•*゜・。 ͡꒱ֽ ׄ`,
-        description: caption,
+        description: '',
         currencyCode: 'USD',
         priceAmount1000: '100000',
         retailerId: 1677,
@@ -124,8 +124,8 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
         productImageCount: 1
       },
       businessOwnerJid: who,
-      caption: caption,
-      footer: `👥 Miembros: ${totalMembers} 📆 ${date}`,
+      caption: dev,
+      footer: caption',/*
       interactiveButtons: [
         {
           name: 'quick_reply',
@@ -134,7 +134,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
             id: '.menu'
           })
         }
-      ],
+      ],*/
       mentions: [userId]
     }
 
