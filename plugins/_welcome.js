@@ -78,67 +78,13 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
   if (chat.welcome && m.messageStubType == WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     const { pp, caption, username } = await generarBienvenida({ conn, userId, groupMetadata, chat })
 
-    const productMessage = {
-      product: {
-        productImage: { url: pp },
-        productId: '24529689176623820',
-        title: `꒰͡•*゜・🏩 ˗ˏˋ ♡ ˎˊ˗🅆🄴🄻🄲🄾🄼🄴!˗ˏˋ ♡💫 ꒰͡•*゜・。 ͡꒱ֽ ׄ`,
-        description: '',
-        currencyCode: 'USD',
-        priceAmount1000: '100000',
-        retailerId: 1677,
-        url: `https://wa.me/${userId.split('@')[0]}`,
-        productImageCount: 1
-      },
-      businessOwnerJid: who,
-      caption: dev,
-      footer: caption,/*
-      interactiveButtons: [
-        {
-          name: 'quick_reply',
-          buttonParamsJson: JSON.stringify({
-            display_text: '.menu - ɢᴏᴊᴏ ʙᴏᴛ 💫',
-            id: '.menu'
-          })
-        }
-      ],*/
-      mentions: [userId]
-    }
-
-    await conn.sendMessage(m.chat, productMessage, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { image: { url: pp }, caption, ...rcanal }, { quoted: fkontak })
   }
 
   if (chat.welcome && (m.messageStubType == WAMessageStubType.GROUP_PARTICIPANT_REMOVE || m.messageStubType == WAMessageStubType.GROUP_PARTICIPANT_LEAVE)) {
     const { pp, caption, username } = await generarDespedida({ conn, userId, groupMetadata, chat })
 
-    const productMessage = {
-      product: {
-        productImage: { url: pp },
-        productId: '24529689176623820',
-        title: `꒰͡•*゜・🥭 ˗ˏˋ ♡ ˎˊ˗🅆🄴🄻🄲🄾🄼🄴!˗ˏˋ ♡ 💫 ꒰͡•*゜・。 ͡꒱ֽ ׄ`,
-        description: '',
-        currencyCode: 'USD',
-        priceAmount1000: '100000',
-        retailerId: 1677,
-        url: `https://wa.me/${userId.split('@')[0]}`,
-        productImageCount: 1
-      },
-      businessOwnerJid: who,
-      caption: dev,
-      footer: caption',/*
-      interactiveButtons: [
-        {
-          name: 'quick_reply',
-          buttonParamsJson: JSON.stringify({
-            display_text: '🥭 ᴍᴇɴᴜ - ɢᴏᴊᴏ ʙᴏᴛ 💫',
-            id: '.menu'
-          })
-        }
-      ],*/
-      mentions: [userId]
-    }
-
-    await conn.sendMessage(m.chat, productMessage, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { image: { url: pp }, caption, ...rcanal }, { quoted: fkontak })
   }
 }
 
