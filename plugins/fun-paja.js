@@ -15,6 +15,5 @@ handler.help = ['pajeatebot'];
 handler.tags = ['fun'];
 handler.command = ['pajatebot', 'pajeate']
 handler.group = true
-handler.register = true
 
 export default handler;
