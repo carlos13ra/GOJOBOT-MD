@@ -66,9 +66,9 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
 
 
 let menuText = `
-╔════•ೋ•❅❖❅•ೋ•════╗
-      ❄️ GOJO – BOT ❄️
-╚════•ೋ•❅❖❅•ೋ•════╝
+╔═══•ೋ•❅❖❅•ೋ•═══╗
+    ❄️ GOJO – BOT ❄️
+╚═══•ೋ•❅❖❅•ೋ•═══╝
 
 ☃️ *${ucapan()} @${userId.split('@')[0]}*  
 
@@ -77,21 +77,21 @@ let menuText = `
 ┃ 🎚️ Nivel: ${level}
 ┃ ⭐ Experiencia: ${exp}
 ┃ 🔱 Rango: Cachud@
-┗━━━━━━━━━━━━━━━━━━❄️
+┗━━━━━━━━━━━━━━━━━❄️
 
-┏━━━🎅 INFO DEL BOT 🎅━━━
+┏━🎅 INFO DEL BOT 🎅━
 ┃ 👑 Owner: wa.me/${suittag}
 ┃ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
 ┃ 📜 Comandos: ${totalCommands}
 ┃ 🧑‍🤝‍🧑 Usuarios: ${totalreg}
 ┃ ⏳ Uptime: ${uptime}
-┗━━━━━━━━━━━━━━━━━━❄️
+┗━━━━━━━━━━━━━━━━━❄️
 
 ┏━━━⏳ TIEMPO ⏳━━━
 ┃ 🕒 Hora Perú: ${hora}
 ┃ 📅 Fecha: ${fecha}
 ┃ 🌤️ Día: ${dia}
-┗━━━━━━━━━━━━━━━━━━❄️
+┗━━━━━━━━━━━━━━━━━❄️
 
 
 🎄✨ FELICES FIESTAS ✨🎄
