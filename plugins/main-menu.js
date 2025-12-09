@@ -60,7 +60,7 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
   return `╭─⛄━━━━━━━━━━━━🎄
 │ 🎄 〔 ${emoji} ${tag.toUpperCase()} 〕 ❄️
 │━━━━━━━━━━━━━━━━❄️\n`
-   + cmds.map(cmd => `│ 🎁 ${cmd}`).join('\n') 
+   + cmds.map(cmd => `│✎‿ ${cmd}`).join('\n') 
    + `\n╰─🎅━━━━━━━━━━━━☃️`
 }).join('\n\n')
 
