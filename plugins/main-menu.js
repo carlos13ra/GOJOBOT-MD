@@ -67,7 +67,7 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
 
 let menuText = `
 ╔═══•ೋ•❅❖❅•ೋ•═══╗
-    ❄️ GOJO – BOT ❄️
+     ❄️ GOJO – BOT ❄️
 ╚═══•ೋ•❅❖❅•ೋ•═══╝
 
 ☃️ *${ucapan()} @${userId.split('@')[0]}*  
@@ -79,7 +79,7 @@ let menuText = `
 ┃ 🔱 Rango: Cachud@
 ┗━━━━━━━━━━━━━━━━━❄️
 
-┏━🎅 INFO DEL BOT 🎅━
+┏━━━🎅 INFO DEL BOT 🎅━━
 ┃ 👑 Owner: wa.me/${suittag}
 ┃ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
 ┃ 📜 Comandos: ${totalCommands}
@@ -87,7 +87,7 @@ let menuText = `
 ┃ ⏳ Uptime: ${uptime}
 ┗━━━━━━━━━━━━━━━━━❄️
 
-┏━━━⏳ TIEMPO ⏳━━━
+┏━━━⏳ TIEMPO ⏳━━━━
 ┃ 🕒 Hora Perú: ${hora}
 ┃ 📅 Fecha: ${fecha}
 ┃ 🌤️ Día: ${dia}
