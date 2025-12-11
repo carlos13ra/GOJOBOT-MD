@@ -122,15 +122,15 @@ export default handler;
 
 async function getVid(url) {
   try {
-    const endpoint = `https://api-adonix.ultraplus.click/download/ytvideo?apikey=the.shadow&url=${encodeURIComponent(url)}`;
+    const endpoint = `https://api.soymaycol.icu/ytdl?url=${encodeURIComponent(url)}&type=mp4&quality=720&apikey=may-1a3ecc37`;
     const r = await fetch(endpoint);
     const json = await r.json();
 
-    if (!json?.status || !json?.data?.url) return null;
+    if (!json?.status || !json?.result?.url) return null;
 
     return {
-      url: json.data.url,
-      title: json.data.title || 'video'
+      url: json.result.url,
+      title: json.result.title || 'video'
     };
 
   } catch (e) {
@@ -138,6 +138,7 @@ async function getVid(url) {
     return null;
   }
 }
+
 
 async function getAudio(url) {
   try {
