@@ -56,12 +56,12 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 > ✨ *Publicado:* ${ago}
 > 🌐 *Link:* ${url}
 𖹭.╭╭ִ╼࣪━ִﮩ٨ـﮩ♡̫𝔾𝕆𝕁𝕆 𝔹𝕆𝕋♡ִ̫ﮩ٨ـﮩ━ִ╾࣪╮╮.𖹭*
-> .𖹭 © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ𖹭. `;
+> .𖹭 © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ𖹭.`
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
-
+    
     if (['playaudio', 'mp3'].includes(command)) {
       await m.react('🎧');
 
@@ -115,14 +115,13 @@ handler.command = handler.help = ['playaudio', 'playvideo', 'mp3', 'mp4'];
 handler.tags = ['download'];
 export default handler;
 
-//=================
 
 async function getVid(url) {
   const apis = [
     {
-      api: 'Yupra',
-      endpoint: `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`,
-      extractor: res => res?.result?.formats?.[0]?.url || res?.result?.url
+      api: 'Maycol',
+      endpoint: `https://api.soymaycol.icu/ytdl?url=${encodeURIComponent(url)}&type=mp4&quality=720&apikey=may-1a3ecc37`,
+      extractor: res => res?.result?.url
     }
   ];
   return await fetchFromApis(apis);
@@ -146,7 +145,6 @@ async function fetchFromApis(apis) {
   return null;
 }
 
-//=================
 
 const savetube = {
   api: {
