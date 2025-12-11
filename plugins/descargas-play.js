@@ -59,18 +59,17 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 > ✨ *Publicado:* ${ago}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
 > 🌐 *Link:* ${url}
-*⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ׄۛ۫۫۫۫۫۫ۜ*
+*⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ׄۛ۫۫۫۫۫۫ۜ*
 𖹭.╭╭ִ╼࣪━ִﮩ٨ـﮩ♡̫𝔾𝕆𝕁𝕆 𝔹𝕆𝕋♡ִ̫ﮩ٨ـﮩ━ִ╾࣪╮╮.𖹭*
 > .𖹭 © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ𖹭.`;
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
-
     if (['play', 'audio'].includes(command)) {
       await m.react('🎧');
 
-      const audio = await savetube.download(url, "audio");
+      const audio = await getAudio(url);
       if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`;
 
       await conn.sendMessage(
@@ -120,126 +119,48 @@ handler.command = handler.help = ['play', 'play2', 'audio', 'video'];
 handler.tags = ['download'];
 export default handler;
 
-//=================
 
 async function getVid(url) {
-  const apis = [
-    {
-      api: 'Yupra',
-      endpoint: `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`,
-      extractor: res => res?.result?.formats?.[0]?.url || res?.result?.url
-    }
-  ];
-  return await fetchFromApis(apis);
-}
+  try {
+    const endpoint = `https://api-adonix.ultraplus.click/download/ytvideo?apikey=the.shadow&url=${encodeURIComponent(url)}`;
+    const r = await fetch(endpoint);
+    const json = await r.json();
 
-async function fetchFromApis(apis) {
-  for (const { api, endpoint, extractor } of apis) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
-      const r = await fetch(endpoint, { signal: controller.signal });
-      clearTimeout(timeout);
-      const res = await r.json().catch(() => null);
-      const link = extractor(res);
-      if (link) return { url: link, api };
-    } catch (err) {
-      console.log(`Error en API ${api}:`, err?.message || err);
-    }
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-  return null;
-}
+    if (!json?.status || !json?.data?.url) return null;
 
-//=================
+    return {
+      url: json.data.url,
+      title: json.data.title || 'video'
+    };
 
-const savetube = {
-  api: {
-    base: "https://media.savetube.me/api",
-    info: "/v2/info",
-    download: "/download",
-    cdn: "/random-cdn"
-  },
-  headers: {
-    accept: "*/*",
-    "content-type": "application/json",
-    origin: "https://yt.savetube.me",
-    referer: "https://yt.savetube.me/",
-    "user-agent": "Mozilla/5.0"
-  },
-  crypto: {
-    hexToBuffer: (hexString) => Buffer.from(hexString.match(/.{1,2}/g).join(""), "hex"),
-    decrypt: async (enc) => {
-      const secretKey = "C5D58EF67A7584E4A29F6C35BBC4EB12";
-      const data = Buffer.from(enc, "base64");
-      const iv = data.slice(0, 16);
-      const content = data.slice(16);
-      const key = savetube.crypto.hexToBuffer(secretKey);
-      const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
-      let decrypted = decipher.update(content);
-      decrypted = Buffer.concat([decrypted, decipher.final()]);
-      return JSON.parse(decrypted.toString());
-    }
-  },
-  youtube: (url) => {
-    const patterns = [
-      /youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /youtube.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      /youtu.be\/([a-zA-Z0-9_-]{11})/
-    ];
-    for (const pattern of patterns) {
-      if (pattern.test(url)) return url.match(pattern)[1];
-    }
+  } catch (e) {
+    console.log("Error getVid:", e);
     return null;
-  },
-  request: async (endpoint, data = {}, method = "post") => {
-    try {
-      const url = endpoint.startsWith("http") ? endpoint : `${savetube.api.base}${endpoint}`;
-      const { data: response } = await axios({
-        method,
-        url,
-        data: method === "post" ? data : undefined,
-        params: method === "get" ? data : undefined,
-        headers: savetube.headers
-      });
-      return { status: true, data: response };
-    } catch (error) {
-      return { status: false, error: error.message };
-    }
-  },
-  getCDN: async () => {
-    const res = await savetube.request(savetube.api.cdn, {}, "get");
-    if (!res.status) return res;
-    return { status: true, data: res.data.cdn };
-  },
-  download: async (link) => {
-    const id = savetube.youtube(link);
-    if (!id) return { status: false, error: "No se pudo obtener ID del video" };
-    try {
-      const cdnRes = await savetube.getCDN();
-      if (!cdnRes.status) return cdnRes;
-      const cdn = cdnRes.data;
-
-      const info = await savetube.request(`https://${cdn}${savetube.api.info}`, { url: `https://www.youtube.com/watch?v=${id}` });
-      if (!info.status) return info;
-
-      const decrypted = await savetube.crypto.decrypt(info.data.data);
-      const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
-        id,
-        downloadType: "audio",
-        quality: "mp3",
-        key: decrypted.key
-      });
-
-      if (!dl.data?.data?.downloadUrl)
-        return { status: false, error: "No se pudo obtener link de descarga" };
-
-      return { status: true, result: { download: dl.data.data.downloadUrl, title: decrypted.title } };
-    } catch (err) {
-      return { status: false, error: err.message };
-    }
   }
-};
+}
+
+async function getAudio(url) {
+  try {
+    const endpoint = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=the.shadow&url=${encodeURIComponent(url)}`;
+    const r = await fetch(endpoint);
+    const json = await r.json();
+
+    if (!json?.status || !json?.data?.url)
+      return { status: false, error: "No se pudo obtener audio" };
+
+    return {
+      status: true,
+      result: {
+        download: json.data.url,
+        title: json.data.title || "audio"
+      }
+    };
+
+  } catch (e) {
+    return { status: false, error: e.message };
+  }
+}
+
 
 function formatViews(views) {
   if (views === undefined || views === null) return "No disponible";
