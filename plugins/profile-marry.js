@@ -2,36 +2,30 @@
 let proposals = {}
 
 async function resolveTarget(m, conn, args) {
+  // 1) m.mentionedJid (cuando la mención fue hecha tocando el contacto)
   if (m.mentionedJid && m.mentionedJid.length) return m.mentionedJid[0]
+
+  // 2) quoted message (responder al mensaje)
   if (m.quoted && m.quoted.sender) return m.quoted.sender
 
+  // 3) args[0] puede ser:
+  //    - número: 519XXXXXXXX
+  //    - jid: 519...@s.whatsapp.net
   if (args && args.length) {
     let raw = args[0].trim()
 
+    // aceptar si el usuario pasó jid completo
     if (/@s\.whatsapp\.net$/.test(raw)) return raw
 
+    // si viene con @ y números -> construir jid
     let digits = raw.replace(/\D/g, '')
     if (digits.length >= 7) return `${digits}@s.whatsapp.net`
 
-    try {
-      if (m.chat && m.isGroup) {
-        const metadata = await conn.groupMetadata(m.chat)
-        const participants = metadata.participants || []
-
-        const q = raw.replace(/^@/, '').toLowerCase()
-        for (let p of participants) {
-          const jid = p.id || p.jid || p
-          const name = (await conn.getName(jid)).toLowerCase()
-          if (name.includes(q) || jid.split('@')[0].includes(q)) {
-            return jid
-          }
-        }
-      }
-    } catch (e) {
-      console.log('resolveTarget - error buscando en participantes:', e)
-    }
+    // Si no es número ni jid, NO intentar buscar por nombre (evita menciones equivocadas)
+    return null
   }
 
+  // nada encontrado
   return null
 }
 
@@ -49,7 +43,7 @@ let handler = async (m, { conn, command, args }) => {
     if (!target) {
       return conn.reply(
         m.chat,
-        `❀ No pude identificar al usuario objetivo.\nAsegúrate de *mencionar tocando el contacto*, o usar el número: *.marry 519XXXXXXXX* o responder al mensaje del usuario.`,
+        `❀ No pude identificar al usuario objetivo.\nAsegúrate de *mencionar tocando el contacto*, usar el número: *.marry 519XXXXXXXX* o responder al mensaje del usuario.`,
         m
       )
     }
@@ -93,7 +87,7 @@ let handler = async (m, { conn, command, args }) => {
     proposals[me] = target
     setTimeout(() => { if (proposals[me]) delete proposals[me] }, 120000)
 
-    // ✔ MENCIONA A LOS DOS COMO PEDISTE
+    // ✔ MENCIONA A LOS DOS (solo a los dos)
     return conn.reply(
       m.chat,
       `ꕥ @${me.split('@')[0]} le ha propuesto matrimonio a @${target.split('@')[0]} 💍
@@ -110,7 +104,7 @@ La propuesta expira en *2 minutos*.`,
   }
 }
 
-// --- ✔ COMANDO DIVORCE CON MENCIÓN A LOS DOS ---
+// --- COMANDO DIVORCE CON MENCIÓN A LOS DOS ---
 handler.before = async function (m, { conn }) {
   if (!m.text) return
 
