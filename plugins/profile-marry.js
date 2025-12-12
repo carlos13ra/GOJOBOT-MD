@@ -1,94 +1,139 @@
-let handler = async (m, { conn, command, text }) => {
-    if (!m.quoted) return m.reply('💍 *Debes responder el mensaje de la persona con la que quieres casarte*\n\nEjemplo:\nResponde un mensaje y usa:\n*marry*')
+import { promises as fs } from 'fs'
 
-    let usuario1 = m.sender
-    let usuario2 = m.quoted.sender
+let proposals = {}
 
-    if (usuario1 === usuario2) return m.reply('❌ No puedes casarte contigo mismo.')
-
-    global.db.data.users[usuario1] = global.db.data.users[usuario1] || {}
-    global.db.data.users[usuario2] = global.db.data.users[usuario2] || {}
-
-    let user1 = global.db.data.users[usuario1]
-    let user2 = global.db.data.users[usuario2]
-
-    switch (command) {
-
-        //------------- 💍 MARRY -----------------
-        case 'marry':
-
-            if (user1.partner)
-                return m.reply(`❌ Ya estás casado con @${user1.partner.split('@')[0]}`, { mentions: [user1.partner] })
-
-            if (user2.partner)
-                return m.reply(`❌ @${m.quoted.sender.split('@')[0]} ya está casado con otra persona.`, { mentions: [usuario2] })
-
-            let name1 = '@' + usuario1.split('@')[0]
-            let name2 = '@' + usuario2.split('@')[0]
-
-            let txt = `💍 *Solicitud de Matrimonio*\n\n` +
-                `${name1} quiere casarse contigo.\n\n` +
-                `Responde este mensaje escribiendo:\n` +
-                `✔️ *aceptar*\n` +
-                `❌ *rechazar*`
-
-            let ask = await conn.reply(m.chat, txt, m, { mentions: [usuario1, usuario2] })
-
-            conn.marriageRequests = conn.marriageRequests || {}
-            conn.marriageRequests[ask.key.id] = {
-                from: usuario1,
-                to: usuario2
-            }
-
-            break
-
-        //------------- 💔 DIVORCE -----------------
-        case 'divorce':
-
-            if (!user1.partner)
-                return m.reply('❌ No estás casado con nadie.')
-
-            let pareja = user1.partner
-
-            delete user1.partner
-            delete global.db.data.users[pareja].partner
-
-            conn.reply(m.chat, `💔 *Divorcio completado*\n\nHas terminado tu relación con @${pareja.split('@')[0]}`, m, {
-                mentions: [pareja]
-            })
-            break
+const verifi = async () => {
+    try {
+        const data = await fs.readFile('./package.json', 'utf-8')
+        const json = JSON.parse(data)
+        return json?.repository?.url === 'git+https://github.com/carlos13ra/GOJOBOT-MD.git'
+    } catch {
+        return false
     }
 }
 
-// RESPUESTA ACEPTAR / RECHAZAR
+let handler = async (m, { conn, command }) => {
+
+    if (!await verifi()) 
+        return conn.reply(m.chat, '❀ El comando <marry> solo está disponible para Gojo Bot.', m)
+
+    let user = m.sender
+    let target = m.quoted ? m.quoted.sender : null
+
+    if (!target)
+        return conn.reply(m.chat, '❀ Debes responder un mensaje de la persona para proponer matrimonio.', m)
+
+    if (user === target)
+        return conn.reply(m.chat, 'ꕥ No puedes casarte contigo mismo.', m)
+
+    let users = global.db.data.users
+
+    users[user] = users[user] || {}
+    users[target] = users[target] || {}
+
+    switch (command) {
+
+        // ============================================
+        // 💍 MARRY
+        // ============================================
+        case "marry":
+
+            if (users[user].marry)
+                return conn.reply(m.chat, `ꕥ Ya estás casado/a con *${users[user].marry.split('@')[0]}*`, m)
+
+            if (users[target].marry)
+                return conn.reply(m.chat, `ꕥ ${'@' + target.split('@')[0]} ya está casado/a con otra persona.`, m, { mentions: [target] })
+
+            // Registrar propuesta en la tabla
+            proposals[target] = user
+
+            // Mensaje de propuesta
+            await conn.reply(
+                m.chat,
+                `ꕥ @${target.split('@')[0]} te ha propuesto matrimonio @${user.split('@')[0]}\n\n` +
+                `🌸 *Responde con:*\n` +
+                `✔️ *si* para aceptar\n` +
+                `❌ *no* para rechazar\n\n` +
+                `⏳ La propuesta expira en 2 minutos.`,
+                m,
+                { mentions: [user, target] }
+            )
+
+            // Borrar si expira
+            setTimeout(() => {
+                if (proposals[target]) delete proposals[target]
+            }, 120000)
+
+            break
+
+        // ============================================
+        // 💔 DIVORCE
+        // ============================================
+        case "divorce":
+
+            if (!users[user].marry)
+                return conn.reply(m.chat, '✎ Tú no estás casado con nadie.', m)
+
+            let pareja = users[user].marry
+
+            users[user].marry = ''
+            users[pareja].marry = ''
+
+            return conn.reply(m.chat, `💔 *Se han divorciado*\n${'@' + user.split('@')[0]} y @${pareja.split('@')[0]} ya no están casados.`, m, {
+                mentions: [user, pareja]
+            })
+    }
+}
+
+// ============================================
+// RESPUESTAS: ACEPTAR o RECHAZAR
+// ============================================
+
 handler.before = async (m, { conn }) => {
-    if (!conn.marriageRequests) return
+
+    // Solo funciona si responde un mensaje
     if (!m.quoted) return
 
-    let req = conn.marriageRequests[m.quoted.key?.id]
-    if (!req) return
+    let target = m.sender
+    let proposing = proposals[target]
 
-    let { from, to } = req
-    if (m.sender !== to) return // Solo responde el destinatario
+    if (!proposing) return
 
-    if (/aceptar/i.test(m.text)) {
-        global.db.data.users[from].partner = to
-        global.db.data.users[to].partner = from
+    let respuesta = m.text.trim().toLowerCase()
 
-        await conn.reply(m.chat, `💍✨ *¡Felicidades!*\n\n@${from.split('@')[0]} y @${to.split('@')[0]} ahora están oficialmente casados ❤️`, m, {
-            mentions: [from, to]
-        })
-    } else if (/rechazar/i.test(m.text)) {
-        await conn.reply(m.chat, `❌ @${to.split('@')[0]} ha rechazado la propuesta.`, m, {
-            mentions: [to]
-        })
+    // ACEPTA -> "si"
+    if (respuesta === "si") {
+        global.db.data.users[target].marry = proposing
+        global.db.data.users[proposing].marry = target
+
+        await conn.reply(
+            m.chat,
+            `💍✨ *¡Felicidades!*\n@${proposing.split('@')[0]} y @${target.split('@')[0]} ahora están oficialmente casados. ❤️`,
+            m,
+            { mentions: [proposing, target] }
+        )
+
+        delete proposals[target]
+        return
     }
 
-    delete conn.marriageRequests[m.quoted.key.id]
+    // RECHAZA -> "no"
+    if (respuesta === "no") {
+        await conn.reply(
+            m.chat,
+            `❌ @${target.split('@')[0]} ha rechazado la propuesta.`,
+            m,
+            { mentions: [target] }
+        )
+
+        delete proposals[target]
+        return
+    }
 }
 
 handler.help = ['marry @usuario', 'divorce']
 handler.tags = ['profile']
 handler.command = ['marry', 'divorce']
+handler.group = true
 
 export default handler
