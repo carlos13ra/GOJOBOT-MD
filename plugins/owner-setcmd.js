@@ -31,28 +31,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 // Configura el comando
-handler.command = ['setcmd'];
-handler.help = ['setcmd <comando>'];
-handler.tags = ['sticker'];
-handler.owner = true;
+handler.help = ['setcmd']
+handler.tags = ['owner']
+handler.command = ['setcmd'] 
 
+export default handler
 export default handler;
-
-// Nuevo handler para ejecutar el comando
-let handler2 = async (m, { conn }) => {
-  // Verifica si se ha enviado un sticker
-  if (m.mtype === 'stickerMessage') {
-    // Obtiene el hash del sticker
-    let hash = m.fileSha256.toString('base64');
-
-    // Verifica si el sticker tiene un comando asociado
-    let cmd = global.db.data.sticker[hash];
-    if (cmd) {
-      // Ejecuta el comando
-      conn.emit('message', { ...m, text: cmd });
-    }
-  }
-};
-
-handler2.command = /^.*$/;
-export default handler2;
