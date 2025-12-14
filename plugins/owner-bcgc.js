@@ -31,7 +31,7 @@ const handler = async (m, { conn, isROwner, text }) => {
 
 handler.help = ['bcgc <mensaje>']
 handler.tags = ['owner']
-handler.command = /^bcgc$/i
+handler.command = ['bcgc']
 handler.owner = true
 
 export default handler
