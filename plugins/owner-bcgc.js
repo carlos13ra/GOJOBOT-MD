@@ -1,27 +1,36 @@
 const handler = async (m, { conn, isROwner, text }) => {
-  if (!isROwner) return
+  if (!isROwner) return m.reply('❌ Comando exclusivo del OWNER')
+  if (!text) return m.reply('✏️ Escribe el mensaje para enviar a los grupos')
 
-  const delay = ms => new Promise(res => setTimeout(res, ms))
-
+  // Obtener todos los grupos donde está el bot
   const groups = await conn.groupFetchAllParticipating()
-  const groupIds = Object.keys(groups)
+  const groupIds = Object.entries(groups).map(v => v[1].id)
 
-  const pesan = m.quoted?.text || text
-  if (!pesan) return m.reply('❌ Escribe el mensaje')
+  let success = 0
+  let failed = 0
+
+  await m.reply(`📢 Broadcast iniciado\n👥 Grupos: ${groupIds.length}`)
 
   for (const id of groupIds) {
-    await delay(1000)
-
-    await conn.sendMessage(
-      id,
-      { text: `📢 *MENSAJE*\n\n${pesan}` },
-      {}
-    )
+    try {
+      await conn.sendMessage(id, { text })
+      success++
+      await new Promise(res => setTimeout(res, 1500)) // delay anti-ban
+    } catch (e) {
+      failed++
+      console.log('[BCGC ERROR]', id, e)
+    }
   }
 
-  m.reply(`✅ Enviado a ${groupIds.length} grupos`)
+  m.reply(
+    `✅ Broadcast finalizado\n\n` +
+    `✔️ Enviados: ${success}\n` +
+    `❌ Fallidos: ${failed}`
+  )
 }
 
+handler.help = ['bcgc <mensaje>']
+handler.tags = ['owner']
 handler.command = ['bcgc']
 handler.owner = true
 
