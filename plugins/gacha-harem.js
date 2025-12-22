@@ -2,20 +2,25 @@ import { promises as fs } from 'fs'
 
 const charactersFilePath = './lib/characters.json'
 
+// Cargar characters.json
 async function loadCharacters () {
-  return JSON.parse(await fs.readFile(charactersFilePath, 'utf-8'))
+  const data = await fs.readFile(charactersFilePath, 'utf-8')
+  return JSON.parse(data)
 }
 
-// 🔧 FIX REAL: incluir el anime desde el grupo
+// Aplanar personajes + heredar anime
 function flattenCharacters (data) {
   let result = []
-  for (const anime in data) {
-    const group = data[anime]
+
+  for (const key in data) {
+    const group = data[key]
+    const animeName = group.name || 'Desconocido'
+
     if (Array.isArray(group.characters)) {
       for (const c of group.characters) {
         result.push({
           ...c,
-          anime
+          anime: animeName
         })
       }
     }
@@ -23,52 +28,57 @@ function flattenCharacters (data) {
   return result
 }
 
-let handler = async (m, { conn, args, usedPrefix }) => {
+let handler = async (m, { conn, args, usedPrefix, command }) => {
   try {
-    const page = parseInt(args[0]) || 1
+    if (!global.db.data.characters) global.db.data.characters = {}
 
-    const user =
-      m.mentionedJid?.[0] ||
-      (m.quoted && m.quoted.sender) ||
-      m.sender
+    // Usuario mencionado o autor
+    let who = m.mentionedJid && m.mentionedJid.length
+      ? m.mentionedJid[0]
+      : m.sender
 
-    const name =
-      global.db.data.users[user]?.name?.trim() ||
-      (await conn.getName(user)).split('@')[0]
+    let username =
+      global.db.data.users?.[who]?.name?.trim() ||
+      (await conn.getName(who).catch(() => who.split('@')[0]))
 
-    const allCharacters = await loadCharacters()
-    const flat = flattenCharacters(allCharacters)
-
-    const claimed = Object.entries(global.db.data.characters || {})
-      .filter(([, c]) =>
-        (c.user || '').replace(/\D/g, '') === user.replace(/\D/g, '')
-      )
+    // Personajes reclamados por el usuario
+    let claimed = Object.entries(global.db.data.characters)
+      .filter(([_, v]) => (v.user || '').replace(/\D/g, '') === who.replace(/\D/g, ''))
       .map(([id]) => id)
 
     if (!claimed.length) {
       return conn.reply(
         m.chat,
-        user === m.sender
+        who === m.sender
           ? 'ꕥ No tienes personajes reclamados.'
-          : `ꕥ *${name}* no tiene personajes reclamados.`,
+          : `ꕥ El usuario *${username}* no tiene personajes reclamados.`,
         m,
-        { mentions: [user] }
+        { mentions: [who] }
       )
     }
 
+    const allCharacters = flattenCharacters(await loadCharacters())
+
+    // Ordenar por valor
     claimed.sort((a, b) => {
-      const ca = global.db.data.characters[a] || {}
-      const cb = global.db.data.characters[b] || {}
-      return (cb.value || 0) - (ca.value || 0)
+      const A = global.db.data.characters[a]?.value
+        ?? allCharacters.find(c => c.id === a)?.value
+        ?? 0
+      const B = global.db.data.characters[b]?.value
+        ?? allCharacters.find(c => c.id === b)?.value
+        ?? 0
+      return B - A
     })
 
-    const perPage = 50
-    const totalPages = Math.ceil(claimed.length / perPage)
+    // PAGINACIÓN
+    const page = parseInt(args[0]) || 1
+    const perPage = 32
+    const maxPage = Math.ceil(claimed.length / perPage)
 
-    if (page < 1 || page > totalPages) {
+    if (page < 1 || page > maxPage) {
       return conn.reply(
         m.chat,
-        `❀ Página no válida. Hay un total de *${totalPages}* páginas.`,
+        `❀ Página no válida. Hay un total de *${maxPage}* páginas.`,
         m
       )
     }
@@ -76,40 +86,42 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     const start = (page - 1) * perPage
     const end = Math.min(start + perPage, claimed.length)
 
-    // 🔒 TEXTO ORIGINAL DE WHATSAPP
+    // TEXTO WHATSAPP (ESTILO ORIGINAL)
     let text = '✿ Personajes reclamados ✿\n'
-    text += `⌦ Usuario: *${name}*\n\n`
+    text += `⌦ Usuario: *${username}*\n\n`
     text += `♡ Personajes: *(${claimed.length})*\n\n`
 
     for (let i = start; i < end; i++) {
       const id = claimed[i]
-      const data = global.db.data.characters[id] || {}
-      const info = flat.find(x => x.id === id)
+      const dbChar = global.db.data.characters[id] || {}
+      const info = allCharacters.find(c => c.id === id)
 
-      text += `ꕥ ${info?.name || data.name || id}
-» Anime: ${info?.anime || 'Desconocido'}
-» ID: ${id}
-» Valor: ${(data.value || info?.value || 0).toLocaleString()}
+      const name = info?.name || dbChar.name || `ID ${id}`
+      const value = dbChar.value ?? info?.value ?? 0
+      const anime = info?.anime || 'Desconocido'
 
-`
+      text += `ꕥ ${name}\n`
+      text += `» Anime: ${anime}\n`
+      text += `» ID: ${id}\n`
+      text += `» Valor: ${value.toLocaleString()}\n\n`
     }
 
-    text += `\n⌦ _Página *${page} de ${totalPages}*_`
+    text += `⌦ _Página *${page} de ${maxPage}*_`
 
-    await conn.reply(m.chat, text.trim(), m, { mentions: [user] })
+    await conn.reply(m.chat, text.trim(), m, { mentions: [who] })
 
   } catch (e) {
     await conn.reply(
       m.chat,
-      `⚠︎ Se ha producido un problema.\nUsa *${usedPrefix}report*\n\n${e.message}`,
+      `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix + command}report* para informarlo.\n\n${e.message}`,
       m
     )
   }
 }
 
-handler.help = ['harem', 'claims', 'waifus']
+handler.help = ['harem']
 handler.tags = ['anime']
-handler.command = ['harem', 'claims', 'waifus']
-handler.group = true
+handler.command = ['harem', 'waifus', 'claims']
+handler.register = true
 
 export default handler
