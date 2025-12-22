@@ -6,15 +6,25 @@ async function loadCharacters () {
   return JSON.parse(await fs.readFile(charactersFilePath, 'utf-8'))
 }
 
+// 🔧 FIX REAL: incluir el anime desde el grupo
 function flattenCharacters (data) {
-  return Object.values(data).flatMap(g =>
-    Array.isArray(g.characters) ? g.characters : []
-  )
+  let result = []
+  for (const anime in data) {
+    const group = data[anime]
+    if (Array.isArray(group.characters)) {
+      for (const c of group.characters) {
+        result.push({
+          ...c,
+          anime
+        })
+      }
+    }
+  }
+  return result
 }
 
 let handler = async (m, { conn, args, usedPrefix }) => {
   try {
-    // ✅ página correcta
     const page = parseInt(args[0]) || 1
 
     const user =
@@ -46,7 +56,6 @@ let handler = async (m, { conn, args, usedPrefix }) => {
       )
     }
 
-    // ordenar por valor
     claimed.sort((a, b) => {
       const ca = global.db.data.characters[a] || {}
       const cb = global.db.data.characters[b] || {}
@@ -67,7 +76,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     const start = (page - 1) * perPage
     const end = Math.min(start + perPage, claimed.length)
 
-    // 🔒 TEXTO ORIGINAL
+    // 🔒 TEXTO ORIGINAL DE WHATSAPP
     let text = '✿ Personajes reclamados ✿\n'
     text += `⌦ Usuario: *${name}*\n\n`
     text += `♡ Personajes: *(${claimed.length})*\n\n`
@@ -77,22 +86,14 @@ let handler = async (m, { conn, args, usedPrefix }) => {
       const data = global.db.data.characters[id] || {}
       const info = flat.find(x => x.id === id)
 
-      const anime =
-        info?.anime ||
-        info?.series ||
-        data.anime ||
-        data.series ||
-        'Desconocido'
-
       text += `ꕥ ${info?.name || data.name || id}
-» Anime: ${anime}
+» Anime: ${info?.anime || 'Desconocido'}
 » ID: ${id}
 » Valor: ${(data.value || info?.value || 0).toLocaleString()}
 
 `
     }
 
-    // 📄 página (MISMO FORMATO)
     text += `\n⌦ _Página *${page} de ${totalPages}*_`
 
     await conn.reply(m.chat, text.trim(), m, { mentions: [user] })
@@ -107,7 +108,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
 }
 
 handler.help = ['harem', 'claims', 'waifus']
-handler.tags = ['gacha']
+handler.tags = ['anime']
 handler.command = ['harem', 'claims', 'waifus']
 handler.group = true
 
