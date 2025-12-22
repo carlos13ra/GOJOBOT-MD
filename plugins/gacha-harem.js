@@ -12,9 +12,9 @@ function flattenCharacters (data) {
   )
 }
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
+let handler = async (m, { conn, args, usedPrefix }) => {
   try {
-    // ✅ FIX REAL: leer bien la página
+    // ✅ página correcta
     const page = parseInt(args[0]) || 1
 
     const user =
@@ -67,7 +67,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const start = (page - 1) * perPage
     const end = Math.min(start + perPage, claimed.length)
 
-    // 🧠 TEXTO ORIGINAL (NO TOCADO)
+    // 🔒 TEXTO ORIGINAL
     let text = '✿ Personajes reclamados ✿\n'
     text += `⌦ Usuario: *${name}*\n\n`
     text += `♡ Personajes: *(${claimed.length})*\n\n`
@@ -77,14 +77,22 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       const data = global.db.data.characters[id] || {}
       const info = flat.find(x => x.id === id)
 
+      const anime =
+        info?.anime ||
+        info?.series ||
+        data.anime ||
+        data.series ||
+        'Desconocido'
+
       text += `ꕥ ${info?.name || data.name || id}
+» Anime: ${anime}
 » ID: ${id}
 » Valor: ${(data.value || info?.value || 0).toLocaleString()}
 
 `
     }
 
-    // 🔒 FORMATO ORIGINAL DE PÁGINA
+    // 📄 página (MISMO FORMATO)
     text += `\n⌦ _Página *${page} de ${totalPages}*_`
 
     await conn.reply(m.chat, text.trim(), m, { mentions: [user] })
@@ -99,7 +107,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 }
 
 handler.help = ['harem', 'claims', 'waifus']
-handler.tags = ['anime']
+handler.tags = ['gacha']
 handler.command = ['harem', 'claims', 'waifus']
 handler.group = true
 
