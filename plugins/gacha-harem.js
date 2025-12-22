@@ -45,8 +45,8 @@ let handler = async (m, { conn, args, usedPrefix }) => {
       return conn.reply(
         m.chat,
         isSelf
-          ? 'ꕥ No tienes personajes reclamados.'
-          : `ꕥ *${name}* no tiene personajes reclamados.`,
+          ? '✦ 𝐍𝐨 𝐭𝐢𝐞𝐧𝐞𝐬 𝐩𝐞𝐫𝐬𝐨𝐧𝐚𝐣𝐞𝐬 𝐫𝐞𝐜𝐥𝐚𝐦𝐚𝐝𝐨𝐬.'
+          : `✦ *${name}* 𝐧𝐨 𝐭𝐢𝐞𝐧𝐞 𝐩𝐞𝐫𝐬𝐨𝐧𝐚𝐣𝐞𝐬 𝐫𝐞𝐜𝐥𝐚𝐦𝐚𝐝𝐨𝐬.`,
         m,
         { mentions: [user] }
       )
@@ -64,7 +64,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     if (page < 1 || page > totalPages) {
       return conn.reply(
         m.chat,
-        `❀ Página no válida. Hay un total de *${totalPages}* páginas.`,
+        `✦ 𝐏𝐚́𝐠𝐢𝐧𝐚 𝐧𝐨 𝐯𝐚́𝐥𝐢𝐝𝐚.\n𝐓𝐨𝐭𝐚𝐥: *${totalPages}* 𝐩𝐚́𝐠𝐢𝐧𝐚𝐬.`,
         m
       )
     }
@@ -72,14 +72,14 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     const start = (page - 1) * perPage
     const end = Math.min(start + perPage, claimed.length)
 
-    // 🎨 DISEÑO (SOLO CAMBIA SI ES TU HAREM)
+    // 🎨 SOLO TEXTO – FUENTE LEGIBLE
     let text = isSelf
-      ? '╭───〔 💖 𝗧𝗨 𝗛𝗔𝗥𝗘𝗠 💖 〕───╮\n'
-      : '✿ Personajes reclamados ✿\n'
+      ? '╭───〔 💖 𝐓𝐔 𝐇𝐀𝐑𝐄𝐌 💖 〕───╮\n'
+      : '✿ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐣𝐞𝐬 𝐑𝐞𝐜𝐥𝐚𝐦𝐚𝐝𝐨𝐬 ✿\n'
 
     text += isSelf
-      ? `│ 👤 Usuario: *${name}*\n│ 🧾 Total: *${claimed.length}*\n╰────────────────────╯\n\n`
-      : `⌦ Usuario: *${name}*\n\n♡ Personajes: *(${claimed.length})*\n\n`
+      ? `│ 👤 𝐔𝐬𝐮𝐚𝐫𝐢𝐨: *${name}*\n│ 🧾 𝐓𝐨𝐭𝐚𝐥: *${claimed.length}*\n╰────────────────────╯\n\n`
+      : `⌦ 𝐔𝐬𝐮𝐚𝐫𝐢𝐨: *${name}*\n\n♡ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐣𝐞𝐬: *(${claimed.length})*\n\n`
 
     for (let i = start; i < end; i++) {
       const id = claimed[i]
@@ -91,12 +91,12 @@ let handler = async (m, { conn, args, usedPrefix }) => {
         info?.anime ||
         data.anime ||
         data.series ||
-        'Desconocido'
+        '𝐃𝐞𝐬𝐜𝐨𝐧𝐨𝐜𝐢𝐝𝐨'
 
       const charName =
         info?.name ||
         data.name ||
-        `Personaje ${id}`
+        `𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐣𝐞 ${id}`
 
       const value =
         typeof data.value === 'number'
@@ -104,30 +104,30 @@ let handler = async (m, { conn, args, usedPrefix }) => {
           : info?.value || 0
 
       text += isSelf
-        ? `✨ *${charName}*
-╭─ 📺 Anime: ${anime}
-├─ 🆔 ID: ${id}
-╰─ 💎 Valor: ${value.toLocaleString()}
+        ? `✧ *${charName}*
+╭─ 📺 𝐀𝐧𝐢𝐦𝐞: ${anime}
+├─ 🆔 𝐈𝐃: ${id}
+╰─ 💎 𝐕𝐚𝐥𝐨𝐫: ${value.toLocaleString()}
 
 `
         : `ꕥ ${charName}
-» Anime: ${anime}
-» ID: ${id}
-» Valor: ${value.toLocaleString()}
+» 𝐀𝐧𝐢𝐦𝐞: ${anime}
+» 𝐈𝐃: ${id}
+» 𝐕𝐚𝐥𝐨𝐫: ${value.toLocaleString()}
 
 `
     }
 
     text += isSelf
-      ? `╰───〔 📄 Página ${page}/${totalPages} 〕───╯`
-      : `⌦ _Página *${page} de ${totalPages}*_`
+      ? `╰───〔 📄 𝐏𝐚́𝐠𝐢𝐧𝐚 ${page}/${totalPages} 〕───╯`
+      : `⌦ _𝐏𝐚́𝐠𝐢𝐧𝐚 *${page} 𝐝𝐞 ${totalPages}*_`
 
     await conn.reply(m.chat, text.trim(), m, { mentions: [user] })
 
   } catch (e) {
     await conn.reply(
       m.chat,
-      `⚠︎ Se ha producido un problema.\nUsa *${usedPrefix}report*\n\n${e.message}`,
+      `⚠️ 𝐄𝐫𝐫𝐨𝐫.\n𝐔𝐬𝐚 *${usedPrefix}report*\n\n${e.message}`,
       m
     )
   }
