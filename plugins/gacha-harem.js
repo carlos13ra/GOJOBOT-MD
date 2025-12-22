@@ -1,105 +1,141 @@
-import fs from 'fs'
+import { promises as fs } from 'fs'
 
-let handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  let db = global.db
-  let users = db.data.users
+const charactersFilePath = './lib/characters.json'
 
-  // ======== DETECCIÓN DE USUARIO ========
-  let who = null
-
-  // 1️⃣ Si menciona
-  if (m.mentionedJid && m.mentionedJid.length) {
-    who = m.mentionedJid[0]
-  }
-
-  // 2️⃣ Si responde a un mensaje
-  else if (m.quoted) {
-    // 2.1 Si responde Y escribe un nombre (ej: "Jaren")
-    if (text && !text.match(/^\d+$/)) {
-      let nameSearch = text.toLowerCase()
-      let found = Object.entries(users).find(([jid, u]) =>
-        u.name && u.name.toLowerCase().includes(nameSearch)
-      )
-      if (found) who = found[0]
-      else who = m.quoted.sender
-    } else {
-      who = m.quoted.sender
-    }
-  }
-
-  // 3️⃣ Por defecto
-  else {
-    who = m.sender
-  }
-
-  if (!users[who]) users[who] = {}
-
-  // ======== PAGINACIÓN ========
-  let page = 1
-  if (args[0] && !isNaN(args[0])) page = parseInt(args[0])
-  let perPage = 10
-
-  let harem = users[who].harem || []
-  if (!harem.length) {
-    return m.reply('❌ Este usuario no tiene personajes en su harem.')
-  }
-
-  let start = (page - 1) * perPage
-  let end = start + perPage
-  let totalPages = Math.ceil(harem.length / perPage)
-
-  if (page > totalPages || page < 1) {
-    return m.reply(`⚠️ Página inválida. Usa entre 1 y ${totalPages}`)
-  }
-
-  // ======== CARGA DE PERSONAJES ========
-  let characters = JSON.parse(fs.readFileSync('./lib/characters.json'))
-  let flatCharacters = flattenCharacters(characters)
-
-  // ======== TEXTO ========
-  let userName = users[who].name || conn.getName(who)
-  let txt = `╭─❍ *HAREM DE ${userName}* ❍─╮\n`
-  txt += `│ Página ${page}/${totalPages}\n`
-  txt += `╰───────────────\n\n`
-
-  for (let i = start; i < end && i < harem.length; i++) {
-    let id = harem[i]
-    let info = flatCharacters.find(c => c.id == id)
-
-    txt += `ꕥ ${info?.name || 'Personaje desconocido'}\n`
-    txt += `» Anime: ${info?.anime || 'Desconocido'}\n`
-    txt += `» ID: ${id}\n`
-    txt += `» Valor: ${info?.value || 0}\n\n`
-  }
-
-  txt += `📌 Usa *${usedPrefix + command} ${page + 1}* para la siguiente página`
-
-  m.reply(txt)
+async function loadCharacters () {
+  return JSON.parse(await fs.readFile(charactersFilePath, 'utf-8'))
 }
 
-handler.help = ['harem [página]']
-handler.tags = ['rpg']
-handler.command = /^harem$/i
+function flattenCharacters (data) {
+  return Object.values(data).flatMap(group =>
+    Array.isArray(group.characters)
+      ? group.characters.map(c => ({
+          ...c,
+          __anime: group.name || group.anime || group.series || 'Desconocido'
+        }))
+      : []
+  )
+}
+
+let handler = async (m, { conn, args, usedPrefix }) => {
+  try {
+    const page = parseInt(args[0]) || 1
+
+    const user =
+      m.mentionedJid?.[0] ||
+      (m.quoted && m.quoted.sender) ||
+      m.sender
+
+    const isSelf = user === m.sender
+
+    const name =
+      global.db.data.users[user]?.name?.trim() ||
+      (await conn.getName(user)).split('@')[0]
+
+    const allCharacters = await loadCharacters()
+    const flat = flattenCharacters(allCharacters)
+
+    const claimed = Object.entries(global.db.data.characters || {})
+      .filter(([, c]) =>
+        (c.user || '').replace(/\D/g, '') === user.replace(/\D/g, '')
+      )
+      .map(([id]) => id)
+
+    if (!claimed.length) {
+      return conn.reply(
+        m.chat,
+        isSelf
+          ? 'ꕥ No tienes personajes reclamados.'
+          : `ꕥ *${name}* no tiene personajes reclamados.`,
+        m,
+        { mentions: [user] }
+      )
+    }
+
+    claimed.sort((a, b) => {
+      const ca = global.db.data.characters[a] || {}
+      const cb = global.db.data.characters[b] || {}
+      return (cb.value || 0) - (ca.value || 0)
+    })
+
+    const perPage = 50
+    const totalPages = Math.ceil(claimed.length / perPage)
+
+    if (page < 1 || page > totalPages) {
+      return conn.reply(
+        m.chat,
+        `❀ Página no válida. Hay un total de *${totalPages}* páginas.`,
+        m
+      )
+    }
+
+    const start = (page - 1) * perPage
+    const end = Math.min(start + perPage, claimed.length)
+
+    // 🎨 DISEÑO (SOLO CAMBIA SI ES TU HAREM)
+    let text = isSelf
+      ? '╭───〔 💖 𝗧𝗨 𝗛𝗔𝗥𝗘𝗠 💖 〕───╮\n'
+      : '✿ Personajes reclamados ✿\n'
+
+    text += isSelf
+      ? `│ 👤 Usuario: *${name}*\n│ 🧾 Total: *${claimed.length}*\n╰────────────────────╯\n\n`
+      : `⌦ Usuario: *${name}*\n\n♡ Personajes: *(${claimed.length})*\n\n`
+
+    for (let i = start; i < end; i++) {
+      const id = claimed[i]
+      const data = global.db.data.characters[id] || {}
+      const info = flat.find(x => x.id === id)
+
+      const anime =
+        info?.__anime ||
+        info?.anime ||
+        data.anime ||
+        data.series ||
+        'Desconocido'
+
+      const charName =
+        info?.name ||
+        data.name ||
+        `Personaje ${id}`
+
+      const value =
+        typeof data.value === 'number'
+          ? data.value
+          : info?.value || 0
+
+      text += isSelf
+        ? `✨ *${charName}*
+╭─ 📺 Anime: ${anime}
+├─ 🆔 ID: ${id}
+╰─ 💎 Valor: ${value.toLocaleString()}
+
+`
+        : `ꕥ ${charName}
+» Anime: ${anime}
+» ID: ${id}
+» Valor: ${value.toLocaleString()}
+
+`
+    }
+
+    text += isSelf
+      ? `╰───〔 📄 Página ${page}/${totalPages} 〕───╯`
+      : `⌦ _Página *${page} de ${totalPages}*_`
+
+    await conn.reply(m.chat, text.trim(), m, { mentions: [user] })
+
+  } catch (e) {
+    await conn.reply(
+      m.chat,
+      `⚠︎ Se ha producido un problema.\nUsa *${usedPrefix}report*\n\n${e.message}`,
+      m
+    )
+  }
+}
+
+handler.help = ['harem', 'claims', 'waifus']
+handler.tags = ['gacha']
+handler.command = ['harem', 'claims', 'waifus']
+handler.group = true
 
 export default handler
-
-// ======== FUNCIÓN CLAVE (ANIME CORRECTO) ========
-function flattenCharacters (data) {
-  let result = []
-
-  for (const key in data) {
-    const group = data[key]
-    const animeName = group.name || 'Desconocido'
-
-    if (Array.isArray(group.characters)) {
-      for (const c of group.characters) {
-        result.push({
-          ...c,
-          anime: animeName
-        })
-      }
-    }
-  }
-
-  return result
-    }
