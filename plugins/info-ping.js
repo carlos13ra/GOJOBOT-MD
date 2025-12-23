@@ -1,23 +1,53 @@
 import speed from 'performance-now'
-import { spawn, exec, execSync } from 'child_process'
+import os from 'os'
+import { exec } from 'child_process'
 
 let handler = async (m, { conn }) => {
-         let timestamp = speed();
-         let latensi = speed() - timestamp;
-         exec(`neofetch --stdout`, (error, stdout, stderr) => {
-          let child = stdout.toString("utf-8");
-          let ssd = child.replace(/Memory:/, "Ram:");
+  const timestamp = speed()
+  const latensi = speed() - timestamp
 
-          conn.reply(m.chat, `┏━❖『 ⚡ 𝐄𝐒𝐓𝐀𝐃𝐎 𝐎𝐍𝐋𝐈𝐍𝐄 』❖━┓
-┃ 🖤 *Sistema activo y estable.*
-┃ ⚡ 𝐓𝐢𝐞𝐦𝐩𝐨: ${latensi.toFixed(4)}ms
-┃ ❝  *! Pong ¡*❞
-┗━━━━━━━━━━━━━━━━━━━┛`, m, rcanal);
-            });
+  exec('neofetch --stdout', async (error, stdout) => {
+    let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
+    let ramLibre = (os.freemem() / 1024 / 1024).toFixed(0)
+    let ramUso = ramTotal - ramLibre
+    let uptime = process.uptime()
+
+    let teks = `
+╭──〔 ⚡ 𝗣𝗜𝗡𝗚 & 𝗦𝗧𝗔𝗧𝗨𝗦 〕──╮
+│
+│ 🌱 *Bot:* Online y estable
+│ ⚡ *Latencia:* ${latensi.toFixed(3)} ms
+│ ⏱️ *Uptime:* ${formatTime(uptime)}
+│
+│ 🖥️ *Sistema:* ${os.platform()} (${os.arch()})
+│ 🧠 *Node:* ${process.version}
+│
+│ 💾 *RAM usada:* ${ramUso} MB / ${ramTotal} MB
+│
+╰────────────────────────╯`
+
+    conn.reply(m.chat, teks, m, rcanal)
+  })
 }
+
 handler.help = ['ping']
 handler.tags = ['info']
 handler.command = ['ping', 'p']
 handler.register = true
 
 export default handler
+
+function formatTime(seconds) {
+  seconds = Number(seconds)
+  let d = Math.floor(seconds / (3600 * 24))
+  let h = Math.floor(seconds % (3600 * 24) / 3600)
+  let m = Math.floor(seconds % 3600 / 60)
+  let s = Math.floor(seconds % 60)
+
+  return [
+    d ? `${d}d` : '',
+    h ? `${h}h` : '',
+    m ? `${m}m` : '',
+    s ? `${s}s` : ''
+  ].filter(Boolean).join(' ')
+}
