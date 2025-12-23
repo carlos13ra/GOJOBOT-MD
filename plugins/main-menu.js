@@ -122,6 +122,13 @@ ${secciones}
       gifPlayback: true,
       contextInfo: {
         mentionedJid: [m.sender],
+        isForwarded: true,
+        forwardingScore: 999,
+        forwardedNewsletterMessageInfo: {
+           newsletterJid: channelRD.id,
+           serverMessageId: 100,
+           newsletterName: channelRD.name
+        },
         externalAdReply: {
           title: botname,
           body: dev,
