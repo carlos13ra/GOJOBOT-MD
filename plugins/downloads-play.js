@@ -49,14 +49,18 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     };
 
-    const info = `☃️ *Título:* ❄️ ${title}
-> ▶️ *Canal:* ${author.name || 'Desconocido'}
-> 💫 *Vistas:* ${vistas}
-> ⏳ *Duración:* ${timestamp}
-> ✨ *Publicado:* ${ago}
-> 🌐 *Link:* ${url}
-𖹭.╭╭ִ╼࣪━ִﮩ٨ـﮩ♡̫𝔾𝕆𝕁𝕆 𝔹𝕆𝕋♡ִ̫ﮩ٨ـﮩ━ִ╾࣪╮╮.𖹭*
-> .𖹭 © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ𖹭.`
+    const info = `╔════════ ❄️ ════════╗
+   🎥 *YOUTUBE - DOWNLOADS*
+╚════════ ❄️ ════════╝
+
+✦ *Título:* ${title}
+✦ *Canal:* ${author.name || 'Desconocido'}
+✦ *Vistas:* ${vistas}
+✦ *Duración:* ${timestamp}
+✦ *Publicado:* ${ago}
+🌱 *link:* ${url}
+
+> ${dev}`
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
