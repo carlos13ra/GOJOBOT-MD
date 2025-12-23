@@ -93,13 +93,13 @@ let menuText = `
 ┗━━━━━━━━━━━━❄️
 
 
-🎄✨ FELICES FIESTAS ✨🎄
-🎄 ¡Que la alegría, la paz y los comandos te acompañen!🎆  
+✨ FELICES FIESTAS ✨
+¡Que la alegría, la paz y los comandos te acompañen!🎆  
 ❄️ ¡fєℓιz иανι∂α∂🎄 & ρяσѕρєяσ αи̃σ иυєνσ! 🌟
 ✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
 © 2024 - 2025 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐂𝐚𝐫𝐥𝐨𝐬 𝐑𝐚𝐦í𝐫𝐞𝐳
 ━━━━━━━━━━━━━━━━━━━━
-`/COMANDOS\`
+COMANDOS:
 ${secciones}
 `.trim()
 
