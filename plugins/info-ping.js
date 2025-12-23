@@ -15,7 +15,7 @@ let handler = async (m, { conn }) => {
     let teks = `
 ╭──〔 ⚡ 𝗣𝗜𝗡𝗚 & 𝗦𝗧𝗔𝗧𝗨𝗦 〕──╮
 │
-│ 🌱 *Bot:* Online y estable
+│ 🌱 *Bot:* ${botname}
 │ ⚡ *Latencia:* ${latensi.toFixed(3)} ms
 │ ⏱️ *Uptime:* ${formatTime(uptime)}
 │
