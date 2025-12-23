@@ -87,9 +87,9 @@ let menuText = `
 ┗━━━━━━━━━━━❄️
 
 ┏━━━⏳ TIEMPO ⏳
-┃ 🕒 Hora Perú: ${hora}
-┃ 📅 Fecha: ${fecha}
-┃ 🌤️ Día: ${dia}
+┃ 🕒Hora Perú: ${hora}
+┃ 📅Fecha: ${fecha}
+┃ 🌤️Día: ${dia}
 ┗━━━━━━━━━━━━❄️
 
 
@@ -98,7 +98,7 @@ let menuText = `
 ❄️ ¡fєℓιz иανι∂α∂🎄 & ρяσѕρєяσ αи̃σ иυєνσ! 🌟
 ✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
 © 2024 - 2025 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐂𝐚𝐫𝐥𝐨𝐬 𝐑𝐚𝐦í𝐫𝐞𝐳
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 COMANDOS:
 ${secciones}
 `.trim()
