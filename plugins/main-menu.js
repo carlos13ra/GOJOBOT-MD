@@ -25,8 +25,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let videos = [
       'https://files.catbox.moe/vvrxck.mp4',
       'https://files.catbox.moe/eisgt7.mp4',
-      'https://files.catbox.moe/fazi1o.mp4',
-      'https://files.catbox.moe/bxhw5h.mp4'
+      'https://files.catbox.moe/fazi1o.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
 
@@ -55,11 +54,13 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     for (let tag in grupos) grupos[tag].sort()
 
+    // ───── ESTILO DE COMANDOS ─────
     let secciones = Object.entries(grupos).map(([tag, cmds]) => {
       let emoji = emojis[tag] || '❄️'
       return `
-${emoji} ${tag.toUpperCase()}
-${cmds.map(cmd => `➤ ${cmd}`).join('\n')}
+╭── ${emoji} ${tag.toUpperCase()}
+${cmds.map((cmd, i) => `│ ${i + 1}. ❄️ ${cmd}`).join('\n')}
+╰──────────────
 `
     }).join('\n')
 
@@ -83,8 +84,7 @@ ${cmds.map(cmd => `➤ ${cmd}`).join('\n')}
 ⏳ Uptime: ${uptime}
 ───────────────
 
-🕒 Hora Perú: ${hora}
-📅 ${fecha}
+🕒 ${hora} | 📅 ${fecha}
 🌤️ ${dia}
 
 ───────────────
@@ -93,25 +93,18 @@ ${cmds.map(cmd => `➤ ${cmd}`).join('\n')}
 
 ✨ GOJO – BOT ✨
 🎄 Feliz Navidad & Próspero Año Nuevo 🎆
-🥭 COMANDOS
+───────────────
+🎄 COMANDOS
 ${secciones}
 `.trim()
 
-    await m.react('❄️')
-
+    // ✅ UN SOLO MENSAJE (SIN DUPLICADOS)
     await conn.sendMessage(m.chat, {
       video: { url: video },
       caption: menuText,
       gifPlayback: true,
       contextInfo: {
         mentionedJid: [userId],
-        isForwarded: true,
-        forwardingScore: 999,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: channelRD?.id,
-          serverMessageId: 100,
-          newsletterName: channelRD?.name
-        },
         externalAdReply: {
           title: botname,
           body: dev,
@@ -125,7 +118,7 @@ ${secciones}
   } catch (e) {
     console.error(e)
     await conn.sendMessage(m.chat, {
-      text: `❌ Error al enviar el menú\n\n${e.message}`
+      text: `❌ Error al mostrar el menú\n\n${e.message}`
     }, { quoted: m })
   }
 }
@@ -150,4 +143,4 @@ function ucapan() {
   if (hour >= 5 && hour < 12) return 'Buenos días ☀️'
   if (hour >= 12 && hour < 18) return 'Buenas tardes 🌤️'
   return 'Buenas noches 🌙'
-      }
+}
