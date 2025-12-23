@@ -71,14 +71,14 @@ let menuText = `
 
 ☃️ *${ucapan()} @${userId.split('@')[0]}*  
 
-┏━🎁 INFO USER 🎁━━
+┏━━━🎁 INFO USER 🎁
 ┃ 👤 Usuario: ${name}
 ┃ 🎚️ Nivel: ${level}
 ┃ ⭐ Experiencia: ${exp}
 ┃ 🔱 Rango: Cachud@
 ┗━━━━━━━━━━━━❄️
 
-┏━🎅 INFO DEL BOT 🎅━━
+┏━━━🎅 INFO DEL BOT 🎅
 ┃ 👑 Owner: wa.me/${suittag}
 ┃ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
 ┃ 📜 Comandos: ${totalCommands}
@@ -86,7 +86,7 @@ let menuText = `
 ┃ ⏳ Uptime: ${uptime}
 ┗━━━━━━━━━━━❄️
 
-┏━⏳ TIEMPO ⏳━
+┏━━━⏳ TIEMPO ⏳
 ┃ 🕒 Hora Perú: ${hora}
 ┃ 📅 Fecha: ${fecha}
 ┃ 🌤️ Día: ${dia}
@@ -98,7 +98,8 @@ let menuText = `
 ❄️ ¡fєℓιz иανι∂α∂🎄 & ρяσѕρєяσ αи̃σ иυєνσ! 🌟
 ✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
 © 2024 - 2025 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐂𝐚𝐫𝐥𝐨𝐬 𝐑𝐚𝐦í𝐫𝐞𝐳
-
+━━━━━━━━━━━━━━━━━━━━
+`/COMANDOS\`
 ${secciones}
 `.trim()
 
