@@ -44,7 +44,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       m.chat,
       {
         image: {
-          url: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763839800526_997569.jpeg'
+          url: banner
         },
         caption: txt
       },
