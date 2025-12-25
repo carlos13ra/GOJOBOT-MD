@@ -58,7 +58,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 ✦ *Vistas:* ${vistas}
 ✦ *Duración:* ${timestamp}
 ✦ *Publicado:* ${ago}
-🌱 *link:* ${url}
+✦ *link:* ${url}
 
 > ${dev}`
 
