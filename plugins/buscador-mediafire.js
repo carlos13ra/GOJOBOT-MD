@@ -2,40 +2,59 @@ import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 
-  if (!text) return conn.reply(m.chat, `*💫 Usa el comando así:*\n\n> ${usedPrefix + command} Dragon Ball`, m, rcanal);
+  if (!text) 
+    return conn.reply(
+      m.chat,
+      `*🌾 Usa el comando así:*\n\n> ${usedPrefix + command} Dragon Ball`,
+      m
+    )
 
   await m.react('🕐')
 
   try {
+    let res = await fetch(
+      `https://api.stellarwa.xyz/search/mediafire?query=${encodeURIComponent(text)}&key=this-xyz`
+    )
+    let data = await res.json()
 
-    let res = await fetch(`https://api.stellarwa.xyz/search/mediafire?query=${encodeURIComponent(text)}&apikey=Shadow-nex`)
-    let json = await res.json()
-
-    if (!json.status || !json.results || json.results.length === 0) {
-      throw `No se encontraron resultados para: *${text}*`
+    if (!data?.results?.length) {
+      return conn.reply(
+        m.chat,
+        `✿ No se encontraron resultados para: *${text}*`,
+        m
+      )
     }
 
-    let txt = `╭━━━━━━━╮
-┋ ʀᴇsᴜʟᴛᴀᴅᴏs
-┋    ᴅᴇ 
-┋ ᴍᴇᴅɪᴀғɪʀᴇ
-┋ ʙᴜsǫᴜᴇᴅᴀ: ${text}
-╰━━━━━━━╯`
+    let txt = `❐ *RESULTADOS MEDiAFiRE* ❐
+✿ *Búsqueda:* ${text}\n\n`
 
-    json.results.forEach((file, i) => {
-      txt += `☘️ *${i + 1}.* ${file.filename || 'Archivo desconocido'}\n`
-      txt += `🥭 *Tamaño:* ${file.filesize || 'Desconocido'}\n`
-      txt += `🔗 *Link:* ${file.url || 'No disponible'}\n`
-      txt += `🖥️ *Fuente:* ${file.source_title || 'Sin título'}\n`
-      txt += `🌐 *URL Fuente:* ${file.source_url || 'No disponible'}\n\n`
+    data.results.forEach((f, i) => {
+      txt += `*${i + 1}. ${f.filename || 'Archivo desconocido'}*
+• *Tamaño* › ${f.filesize || 'Desconocido'}
+• *Link* › ${f.url || 'No disponible'}
+• *Fuente* › ${f.source_url || 'No disponible'}
+• *Título* › ${f.source_title || 'Sin Título'}
+
+──────────────────────
+`
     })
 
     await m.react('✔️')
-    await conn.reply(m.chat, txt.trim(), m, rcanal);
+    await conn.sendMessage(
+      m.chat,
+      {
+        image: {
+          url: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763839800526_997569.jpeg'
+        },
+        caption: txt
+      },
+      { quoted: m }
+    )
 
-  } catch (err) {
-    console.error(err)
-    await conn.reply(m.chat, '*Error al consultar la API de MediaFire.*', m)
+  } catch (e) {
+    console.error(e)
+    await m.react('❌')
+    conn.reply(m.chat, '✖️ Error al buscar en MediaFire', m)
   }
 }
 
