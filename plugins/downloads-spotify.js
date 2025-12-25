@@ -123,6 +123,5 @@ handler.help = ['spotify']
 handler.tags = ['download']
 handler.command = ['spotify', 'splay']
 handler.group = true
-handler.register = true
 
 export default handler
