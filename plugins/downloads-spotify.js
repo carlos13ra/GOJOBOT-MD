@@ -33,11 +33,11 @@ let handler = async (m, { conn, text }) => {
 
     const caption =
       `「🌳」Descargando *<${title}>*\n\n` +
-      `> 🍄 Autor » *${artist}*\n` +
-      (album ? `> 🌾 Álbum » *${album}*\n` : '') +
-      (duration ? `> 🎍 Duración » *${duration}*\n` : '') +
-      (popularity ? `> 🎅 Popularidad » *${popularity}*\n` : '') +
-      (publish ? `> 🌿 Publicado » *${publish}*\n` : '') +
+      `> • Autor » *${artist}*\n` +
+      (album ? `> • Álbum » *${album}*\n` : '') +
+      (duration ? `> • Duración » *${duration}*\n` : '') +
+      (popularity ? `> • Popularidad » *${popularity}*\n` : '') +
+      (publish ? `> • Publicado » *${publish}*\n` : '') +
       `> ☕ Enlace » ${spotifyUrl}`
 
     await conn.sendMessage(
@@ -46,7 +46,7 @@ let handler = async (m, { conn, text }) => {
         text: caption,
         contextInfo: {
           externalAdReply: {
-            title: '🎇 ✧ Spotify • Music ✧ 🎇',
+            title: '✧ Spotify • Music ✧',
             body: artist,
             thumbnailUrl: image,
             sourceUrl: spotifyUrl,
