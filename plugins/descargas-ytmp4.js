@@ -1,4 +1,5 @@
 import fetch from "node-fetch"
+import yts from "yt-search"
 
 function formatSize(bytes) {
   if (bytes === 0 || isNaN(bytes)) return '0 B'
@@ -13,21 +14,31 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!text?.trim()) {
       return conn.reply(
         m.chat,
-        `🎋 *Ingresa el enlace del video de YouTube que deseas descargar.*\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/HWjCStB6k4o`,
+        `🎋 *Ingresa el enlace o nombre del video de YouTube.*\n\nEjemplo:\n${usedPrefix + command} Naruto opening 1`,
         m
       )
     }
 
     await m.react('🕒')
-    await conn.reply(m.chat, '*_👻 Descargando tu video onichan_*', m)
+    await conn.reply(m.chat, '*_👻 Buscando tu video onichan..._*', m)
 
-    const apiUrl = `https://api-shadowxyz.vercel.app/download/ytmp4V2?url=${encodeURIComponent(text)}`
+    let videoUrl = text
+
+    if (!/^https?:\/\//.test(text)) {
+      const search = await yts(text)
+      if (!search.videos || !search.videos.length) {
+        throw 'No se encontraron resultados 😿'
+      }
+      videoUrl = search.videos[0].url
+    }
+
+    const apiUrl = `https://api-shadowxyz.vercel.app/download/ytmp4V2?url=${encodeURIComponent(videoUrl)}`
     const response = await fetch(apiUrl)
-    if (!response.ok) throw `No se pudo obtener información del video.`
+    if (!response.ok) throw 'No se pudo obtener información del video.'
 
     const data = await response.json()
     const res = data.result
-    if (!res?.download_url) throw `No se pudo obtener el enlace de descarga.`
+    if (!res?.download_url) throw 'No se pudo obtener el enlace de descarga.'
 
     const head = await fetch(res.download_url, { method: "HEAD" })
     const size = Number(head.headers.get("content-length") || 0)
@@ -35,10 +46,10 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     let caption = `🍃 *Título:* ${res.title}
 🕒 *Duración:* ${res.duration}
-📺 *Enlace:* ${res.youtube_url}
+📺 *YouTube:* ${res.youtube_url}
 💾 *Tamaño:* ${formatSize(size)}
 ────────────────────
-✨ *Descarga Completa...*`
+✨ *Descarga completa*`
 
     let sendType = sizeMB > 100 ? "document" : "video"
 
@@ -47,18 +58,20 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       mimetype: "video/mp4",
       fileName: `${res.title}.mp4`,
       caption,
-      thumbnail: res.thumbnail ? await (await fetch(res.thumbnail)).buffer() : null
+      thumbnail: res.thumbnail
+        ? await (await fetch(res.thumbnail)).buffer()
+        : null
     }, { quoted: m })
 
     await m.react('✔️')
 
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, `*Ocurrió un error:*\n${e}`, m)
+    conn.reply(m.chat, `⚠️ *Ocurrió un error:*\n${e}`, m)
   }
 }
 
-handler.help = ["ytmp4 <url>"]
+handler.help = ["ytmp4 <url | texto>"]
 handler.tags = ["download"]
 handler.command = ["ytmp4", "playmp4"]
 handler.group = true
