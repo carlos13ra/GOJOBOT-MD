@@ -33,7 +33,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
       cards.push({
         body: proto.Message.InteractiveMessage.Body.fromObject({
-          text: `👻 *Nombre:* ${pack.name}\n👤 *Autor:* ${pack.author}\n💫 *Stickers:* ${pack.sticker_count}\n👀 *Vistas:* ${pack.view_count}\n📤 *Exportados:* ${pack.export_count}`
+          text: `👻 *Nombre:* ${pack.name}\n👤 *Autor:* ${pack.author}\n💫 *Stickers:* ${pack.sticker_count}\n👀 *Vistas:* ${pack.view_count}\n📤 *Exportados:* ${pack.export_count}\n🌱 *Link:* ${pack.url}`
         }),
         footer: proto.Message.InteractiveMessage.Footer.fromObject({
           text: dev
