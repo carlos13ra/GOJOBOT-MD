@@ -142,7 +142,7 @@ async function getVid(url) {
 
 async function getAudio(url) {
   try {
-    const endpoint = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=the.shadow&url=${encodeURIComponent(url)}`;
+    const endpoint = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=shadow.xyz&url=${encodeURIComponent(url)}`;
     const r = await fetch(endpoint);
     const json = await r.json();
 
