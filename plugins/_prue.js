@@ -1,117 +1,50 @@
-/*import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
-import yts from 'yt-search';
+import fs from 'fs'
 
-const handler = async (m, { conn }) => {
-  const youtubeRegex = /https?:\/\/(?:www\.|youtu\.be\/|youtube\.com\/watch\?v=)[^\s]+/i;
-  const match = m.text?.match(youtubeRegex);
-  if (!match) return;
+const botFile = './socket.json'
 
-  const url = match[0];
-
-  await m.react('⏳');
-
-  const result = await yts(url);
-  if (!result?.videos?.length) return conn.reply(m.chat, '⚠️ No se encontró el video.', m);
-
-  const video = result.videos[0];
-
-  const media = await prepareWAMessageMedia(
-    { image: { url: video.thumbnail } },
-    { upload: conn.waUploadToServer }
-  );
-
-  const interactiveMessage = {
-    body: {
-      text: `===========================
-      ✿ *\`${video.title}\`*
-
-= ° 📌 *𝙰𝚄𝚃𝙾𝚁:* ${video.author.name}
-= ° 📈 *𝚅𝙸𝚂𝚃𝙰𝚂:* ${video.views.toLocaleString()}
-= ° ⌛ *𝙳𝚄𝚁𝙰𝙲𝙸𝙾𝙽:* ${video.timestamp}
-= ° 🔗 *𝚄𝚁𝙻:* ${video.url}
-===========================`
-    },
-    footer: { text: '┊▬ ɢᴏᴊᴏʙᴏᴛ - ᴍᴅ | ву ᴄᴀʀʟᴏs.ʀᴠ▬ ❜┊' },
-    header: {
-      title: '        乂 𝘠𝘖𝘜𝘛𝘜𝘉𝘌 - 𝘚𝘌𝘈𝘙𝘊𝘏 乂',
-      hasMediaAttachment: true,
-      imageMessage: media.imageMessage
-    },
-    nativeFlowMessage: {
-      buttons: [
-        {
-          name: 'single_select',
-          buttonParamsJson: JSON.stringify({
-            title: '      ᴏᴘᴄɪᴏɴᴇs ᴅᴇ ᴅᴇsᴄᴀʀɢᴀ 💫',
-            sections: [
-              {
-                title: video.title,
-                rows: [
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐌 𝐏 𝟑',
-                    title: '✿ 🎧 Descargar audio',
-                    description: `✎ Duración: ${video.timestamp}`,
-                    id: `/ytmp3 ${video.url}`
-                  },
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐌 𝐏 𝟒',
-                    title: '✿ 📹 Descargar video',
-                    description: `✎ Duración: ${video.timestamp}`,
-                    id: `/ytmp4 ${video.url}`
-                  },
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐌 𝐏 𝟑 𝐃 𝐎 𝐂',
-                    title: '✿ 🎧 ᴅᴇsᴄᴀʀɢᴀ ᴀᴜᴅɪᴏ ᴇɴ ᴅᴏᴄᴜᴍᴇɴᴛᴏ',
-                    description: `✎ Duración: ${video.timestamp}`,
-                    id: `/ytmp3doc ${video.url}`
-                  },
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐌 𝐏 𝟒 𝐃.𝐎 𝐂',
-                    title: '✿ 📽️ ᴅᴇsᴄᴀʀɢᴀ ᴠɪᴅᴇᴏ ᴇɴ ᴅᴏᴄᴜᴍᴇɴᴛᴏ',
-                    description: `✎ Duración: ${video.timestamp}`,
-                    id: `/ytmp4doc ${video.url}`
-                  },
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐀',
-                    title: '✿ 🔗 ᴅᴇsᴄᴀʀɢᴀ ʀᴀᴘɪᴅᴀ ᴅᴇ ᴀᴜᴅɪᴏ ',
-                    description: `✎ Duración: ${video.timestamp}`,
-                    id: `/yta ${video.url}`
-                  },
-                  {
-                    header: '𝐘 𝐎 𝐔 𝐓 𝐔 𝐁 𝐄 • 𝐘 𝐓 𝐕',
-                    title: '✿ 📀 ᴅᴇsᴄᴀʀɢᴀ ʀᴀᴘɪᴅᴀ ᴅᴇ ᴠɪᴅᴇᴏ',
-                    description: `✎ Duración: ${video.timestamp} `,
-                    id: `/ytv ${video.url}`
-                  }
-                ]
-              }
-            ]
-          })
-        },
-        {
-          name: 'cta_url',
-          buttonParamsJson: JSON.stringify({
-            display_text: '🌐 Abrir en YouTube',
-            url: video.url
-          })
-        }
-      ],
-      messageParamsJson: ''
+if (!global.botname) {
+  if (fs.existsSync(botFile)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(botFile))
+      global.botname = data.botname || 'Bot'
+    } catch {
+      global.botname = 'Bot'
     }
-  };
+  } else {
+    // Crear carpeta y archivo si no existen
+    if (!fs.existsSync('./database')) fs.mkdirSync('./database')
+    fs.writeFileSync(botFile, JSON.stringify({ botname: 'Bot' }, null, 2))
+    global.botname = 'Bot'
+  }
+}
 
-  const userJid = conn?.user?.jid || m.key.participant || m.chat;
-  const msg = generateWAMessageFromContent(
-    m.chat,
-    { interactiveMessage },
-    { userJid, quoted: fkontak }
-  );
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+let handler = async (m, { text, isROwner }) => {
+  if (!isROwner) {
+    return m.reply('❌ Este comando es solo para el *Owner*')
+  }
 
-  await m.react('✔️');
-};
+  if (!text) {
+    return m.reply(
+      '✏️ Uso correcto:\n\n.setname <nuevo nombre>'
+    )
+  }
 
-handler.customPrefix = /https?:\/\/(?:www\.|youtu\.be\/|youtube\.com\/watch\?v=)[^\s]+/i;
-handler.command = new RegExp();
+  const newName = text.trim()
+  global.botname = newName
 
-export default handler;*/
+  fs.writeFileSync(
+    botFile,
+    JSON.stringify({ botname: newName }, null, 2)
+  )
+
+  await m.reply(
+    `✅ *Nombre del bot actualizado*\n\n🤖 Nuevo nombre:\n*${global.botname}*`
+  )
+}
+
+handler.help = ['setname <nombre>']
+handler.tags = ['owner']
+handler.command = ['setname']
+handler.rowner = true
+
+export default handler
