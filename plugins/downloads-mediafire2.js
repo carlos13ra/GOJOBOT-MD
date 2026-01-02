@@ -58,7 +58,7 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { text: resumen, ...rcanal }, { quoted: m })
 
     let dl = await fetch(
-      `https://akirax-api.vercel.app/download/mediafire?url=${encodeURIComponent(text)}`
+      `https://api-test-u8ea.onrender.com/download/mediafire?url=${encodeURIComponent(text)}`
     )
     let json2 = await dl.json()
 
