@@ -361,29 +361,6 @@ console.warn(err)
 console.log(m.message)
 }}}
 
-const rcanalx = { 
-  contextInfo: { 
-    isForwarded: true, 
-    forwardedNewsletterMessageInfo: { 
-      newsletterJid: "120363421367237421@newsletter", 
-      serverMessageId: 101, 
-      newsletterName: global.botname 
-    }, 
-    externalAdReply: { 
-      title: global.botname, 
-      body: global.dev, 
-      mediaUrl: null, 
-      description: null, 
-      previewType: "PHOTO", 
-      //thumbnail: await (await fetch(global.icono)).buffer(),
-      thumbnailUrl: global.icono,
-      sourceUrl: global.redes, 
-      mediaType: 1, 
-      renderLargerThumbnail: false 
-    } 
-  } 
-}
-
 global.dfail = (type, m, conn) => {
  const msg = {
    rowner: ` ׄ 🍃 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
