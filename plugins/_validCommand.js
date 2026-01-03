@@ -49,5 +49,5 @@ export async function before(m, { conn }) {
         renderLargerThumbnail: true
       }
     }
-  }, { quoted: fkontak });
+  }, { quoted: m });
 }
