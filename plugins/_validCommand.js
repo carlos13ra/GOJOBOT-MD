@@ -6,26 +6,6 @@ export async function before(m, { conn }) {
   const usedPrefix = global.prefix.exec(m.text)[0];
   const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
 
-  const thumbRes = await fetch('https://files.catbox.moe/9csrem.jpg');
-  const thumbBuffer = await thumbRes.buffer();
-
-  const fkontak = {
-    key: {
-      participants: '0@s.whatsapp.net',
-      remoteJid: 'status@broadcast',
-      fromMe: false,
-      id: 'GojoBot'
-    },
-    message: {
-      locationMessage: {
-        name: botname,
-        jpegThumbnail: thumbBuffer
-      }
-    },
-    participant: '0@s.whatsapp.net'
-  };
-
- 
   if (!command || command === 'bot') return;
 
   const isValidCommand = (command, plugins) => {
@@ -62,9 +42,9 @@ export async function before(m, { conn }) {
         newsletterName: channelRD.name
       },
       externalAdReply: {
-        title: '🌾 𝗚𝗢𝗝𝗢 𝗕𝗢𝗧 🍃',
+        title: botname,
         body: 'Sistema de comandos',
-        thumbnailUrl: 'https://files.catbox.moe/2tqywz.jpg',
+        thumbnailUrl: banner,
         mediaType: 1,
         renderLargerThumbnail: true
       }
