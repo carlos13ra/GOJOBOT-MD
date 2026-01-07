@@ -73,26 +73,26 @@ ${ucapan()} @${userId.split('@')[0]}
 ────────────────
 👤 INFORMACIÓN DEL USUARIO
 ────────────────
-👤 Usuario: ${name}
-💎 Nivel: ${level}
-🗿 Experiencia: ${exp}
-🥵 Rango: Cachud@
+> 👤 Usuario: ${name}
+> 💎 Nivel: ${level}
+> 🗿 Experiencia: ${exp}
+> 🥵 Rango: Cachud@
 
 ────────────────
 🤖 INFORMACIÓN DEL BOT
 ────────────────
-🥭 Owner: wa.me/${suittag}
-🎧 Estado: ${(conn.user.jid == global.conn.user.jid ? 'BOT OFICIAL' : 'SUB BOT')}
-🎉 Comandos: ${totalCommands}
-👥 Usuarios: ${totalreg}
-⏳ Uptime: ${uptime}
+> 🥭 Owner: wa.me/${suittag}
+> 🎧 Estado: ${(conn.user.jid == global.conn.user.jid ? 'BOT OFICIAL' : 'SUB BOT')}
+> 🎉 Comandos: ${totalCommands}
+> 👥 Usuarios: ${totalreg}
+> ⏳ Uptime: ${uptime}
 
 ────────────────
 ⏰ FECHA Y HORA
 ────────────────
-🕝 Hora: ${hora}
-📅 Fecha: ${fecha}
-🏙️ Día: ${dia}
+> 🕝 Hora: ${hora}
+> 📅 Fecha: ${fecha}
+> 🏙️ Día: ${dia}
 ────────────────
 GOJO BOT • SISTEMA ACTIVO
 © 2025 - 2026 Powered By Carlos Ramírez
