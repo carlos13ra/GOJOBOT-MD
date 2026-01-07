@@ -57,7 +57,7 @@ for (let tag in grupos) {
 
 const secciones = Object.entries(grupos).map(([tag, cmds]) => {
   const emoji = emojis[tag] || '⭐'
-      return `╭━━🍃〔 ${emoji} ${tag.toUpperCase()} 〕🍂━⬣\n`
+      return `╭━━🍃${emoji} \`${tag.toUpperCase()}\` 🍂━⬣\n`
      + cmds.map(cmd => `┃ ➩ ${cmd}`).join('\n') 
      + `\n╰━🍂〔 🥭 〕🍃━⬣`
     }).join('\n\n')
