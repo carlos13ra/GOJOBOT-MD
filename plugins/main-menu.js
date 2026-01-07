@@ -56,57 +56,54 @@ for (let tag in grupos) {
 }
 
 const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-  const emoji = emojis[tag] || '⭐'
+  const emoji = emojis[tag] || '✦'
   return `
-╭── ${emoji} ${tag.toUpperCase()}
+╭─ ${emoji} ${tag.toUpperCase()}
 ${cmds.map(cmd => `│ ✎ ${cmd}`).join('\n')}
-╰──────────────`
+╰────────`
 }).join('\n')
 
 let menuText = `
-╔══════════════════════╗
-        GOJO BOT
-╚══════════════════════╝
+╔════════════╗
+   GOJO BOT
+╚════════════╝
 
-👤 Usuario: @${userId.split('@')[0]}
-🎚 Nivel: ${level}   ⭐ Exp: ${exp}
-🏷 Rango: Cachud@
+${ucapan()} @${userId.split('@')[0]}
 
-┌──────────────────────┐
-│   🤖 INFORMACIÓN BOT  │
-├──────────────────────┤
-│ 👑 Owner   : wa.me/${suittag}
-│ ⚙ Estado  : ${(conn.user.jid == global.conn.user.jid ? 'BOT OFICIAL' : 'SUB BOT')}
-│ 📜 Cmds    : ${totalCommands}
-│ 👥 Users   : ${totalreg}
-│ ⏳ Uptime  : ${uptime}
-└──────────────────────┘
+────────────────
+👤 INFORMACIÓN DEL USUARIO
+────────────────
+Usuario: ${name}
+Nivel: ${level}
+Experiencia: ${exp}
+Rango: Cachud@
 
-┌──────────────────────┐
-│      ⏰ TIEMPO        │
-├──────────────────────┤
-│ 🕒 Hora   : ${hora}
-│ 📅 Fecha  : ${fecha}
-│ 🌤 Día    : ${dia}
-└──────────────────────┘
+────────────────
+🤖 INFORMACIÓN DEL BOT
+────────────────
+Owner: wa.me/${suittag}
+Estado: ${(conn.user.jid == global.conn.user.jid ? 'BOT OFICIAL' : 'SUB BOT')}
+Comandos: ${totalCommands}
+Usuarios: ${totalreg}
+Uptime: ${uptime}
 
-══════════════════════
-GOJO BOT • ACTIVO
-© 2024 - 2025 Carlos Ramírez
-
-┌──────────────────────┐
-│    📂 COMANDOS        │
-└──────────────────────┘
+────────────────
+⏰ FECHA Y HORA
+────────────────
+Hora: ${hora}
+Fecha: ${fecha}
+Día: ${dia}
+────────────────
+GOJO BOT • SISTEMA ACTIVO
+© 2025 - 2026 Powered By Carlos Ramírez
+────────────────
+📂 COMANDOS
+────────────────
 ${secciones}
 `.trim()
 
 await m.react('🍂')
 
-await conn.sendMessage(
-  m.chat,
-  { text: menuText, mentions: [userId] },
-  { quoted: m }
-)
 await conn.sendMessage(
   m.chat,
   {
