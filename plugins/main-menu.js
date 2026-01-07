@@ -64,9 +64,9 @@ ${cmds.map(cmd => `│ ✎ ${cmd}`).join('\n')}
 }).join('\n')
 
 let menuText = `
-╔════════════╗
-     GOJOBOT - MD
-╚════════════╝
+╔═════════════════════╗
+         GOJOBOT - MD
+╚═════════════════════╝
 
 ${ucapan()} @${userId.split('@')[0]}
 
