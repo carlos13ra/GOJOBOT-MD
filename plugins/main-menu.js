@@ -59,52 +59,54 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
   const emoji = emojis[tag] || '⭐'
   return `
 ╭── ${emoji} ${tag.toUpperCase()}
-${cmds.map((cmd, i) => `│ ${i + 1}. ❄️ ${cmd}`).join('\n')}
+${cmds.map(cmd => `│ ✎ ${cmd}`).join('\n')}
 ╰──────────────`
-    }).join('\n')
-
+}).join('\n')
 
 let menuText = `
-╔══•ೋ•❅❖❅•ೋ•══╗
-   ❄️ GOJO – BOT ❄️
-╚══•ೋ•❅❖❅•ೋ•══╝
+╔══════════════════════╗
+        GOJO BOT
+╚══════════════════════╝
 
-☃️ *${ucapan()} @${userId.split('@')[0]}*  
+👤 Usuario: @${userId.split('@')[0]}
+🎚 Nivel: ${level}   ⭐ Exp: ${exp}
+🏷 Rango: Cachud@
 
-┏━━━🎁 INFO USER 🎁
-┃ 👤 Usuario: ${name}
-┃ 🎚️ Nivel: ${level}
-┃ ⭐ Experiencia: ${exp}
-┃ 🔱 Rango: Cachud@
-┗━━━━━━━━━━━━❄️
+┌──────────────────────┐
+│   🤖 INFORMACIÓN BOT  │
+├──────────────────────┤
+│ 👑 Owner   : wa.me/${suittag}
+│ ⚙ Estado  : ${(conn.user.jid == global.conn.user.jid ? 'BOT OFICIAL' : 'SUB BOT')}
+│ 📜 Cmds    : ${totalCommands}
+│ 👥 Users   : ${totalreg}
+│ ⏳ Uptime  : ${uptime}
+└──────────────────────┘
 
-┏━━━🎅 INFO DEL BOT 🎅
-┃ 👑 Owner: wa.me/${suittag}
-┃ 🤖 Estado: ${(conn.user.jid == global.conn.user.jid ? '🎅 BOT OFICIAL' : '🎄 SUB BOT')}
-┃ 📜 Comandos: ${totalCommands}
-┃ 🧑‍🤝‍🧑 Usuarios: ${totalreg}
-┃ ⏳ Uptime: ${uptime}
-┗━━━━━━━━━━━❄️
+┌──────────────────────┐
+│      ⏰ TIEMPO        │
+├──────────────────────┤
+│ 🕒 Hora   : ${hora}
+│ 📅 Fecha  : ${fecha}
+│ 🌤 Día    : ${dia}
+└──────────────────────┘
 
-┏━━━⏳ TIEMPO ⏳
-┃ 🕒Hora Perú: ${hora}
-┃ 📅Fecha: ${fecha}
-┃ 🌤️Día: ${dia}
-┗━━━━━━━━━━━━❄️
+══════════════════════
+GOJO BOT • ACTIVO
+© 2024 - 2025 Carlos Ramírez
 
-
-✨ FELICES FIESTAS ✨
-¡Que la alegría, la paz y los comandos te acompañen!🎆  
-❄️ ¡fєℓιz иανι∂α∂🎄 & ρяσѕρєяσ αи̃σ иυєνσ! 🌟
-✨ 𝙶𝙾𝙹𝙾 - 𝙱𝙾𝚃 ✨  
-© 2024 - 2025 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐂𝐚𝐫𝐥𝐨𝐬 𝐑𝐚𝐦í𝐫𝐞𝐳
-━━━━━━━━━━━━━━━━━━
-COMANDOS:
+┌──────────────────────┐
+│    📂 COMANDOS        │
+└──────────────────────┘
 ${secciones}
 `.trim()
 
-await m.react('❄️')
+await m.react('🍂')
 
+await conn.sendMessage(
+  m.chat,
+  { text: menuText, mentions: [userId] },
+  { quoted: m }
+)
 await conn.sendMessage(
   m.chat,
   {
