@@ -73,10 +73,10 @@ ${ucapan()} @${userId.split('@')[0]}
 ────────────────
 👤 INFORMACIÓN DEL USUARIO
 ────────────────
->👤 Usuario: ${name}
->💎 Nivel: ${level}
->🗿 Experiencia: ${exp}
->🥵 Rango: Cachud@
+`👤 Usuario`: ${name}
+`💎 Nivel`: ${level}
+`🗿 Experiencia`: ${exp}
+`🥵 Rango`: Cachud@
 
 ────────────────
 🤖 INFORMACIÓN DEL BOT
