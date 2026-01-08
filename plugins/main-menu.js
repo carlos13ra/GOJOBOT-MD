@@ -63,9 +63,9 @@ const secciones = Object.entries(grupos).map(([tag, cmds]) => {
     }).join('\n\n')
 
 let menuText = `
-╔═══════════════╗
- 🍃 GOJOBOT - MD 🍂
-╚═══════════════╝
+╔══════════════╗
+🍃 GOJOBOT - MD 🍂
+╚══════════════╝
 
 ${ucapan()} @${userId.split('@')[0]}
 
