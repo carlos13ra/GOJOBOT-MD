@@ -49,7 +49,7 @@ async function getCFTurnstileToken(url) {
   })
 
   if (!data?.success || !data.token)
-    throw 'No se pudo obtener token CF'
+    throw 'No token CF'
 
   return data.token
 }
@@ -74,7 +74,7 @@ async function postSearch(cfg, url, token) {
     }
   })
 
-  if (data?.status !== 'ok') throw 'FDownloader error'
+  if (data?.status !== 'ok') throw 'FD error'
   return data.data
 }
 
@@ -109,10 +109,10 @@ async function getDirectVideoUrl(fbUrl) {
   return pickBest(formats)
 }
 
-/* ───────── BUSCADOR REAL (DDG LITE) ───────── */
+/* ───────── BUSCAR EN BING ───────── */
 async function searchFacebookLinks(query) {
   const q = `site:facebook.com OR site:fb.watch ${query}`
-  const url = `https://duckduckgo.com/lite/?q=${encodeURIComponent(q)}`
+  const url = `https://www.bing.com/search?q=${encodeURIComponent(q)}`
 
   const { data } = await axios.get(url, {
     headers: { 'User-Agent': USER_AGENT }
@@ -121,19 +121,17 @@ async function searchFacebookLinks(query) {
   const $ = cheerio.load(data)
   const links = new Set()
 
-  $('a[href^="/l/?"]').each((_, a) => {
-    const href = $(a).attr('href')
-    const match = href.match(/uddg=([^&]+)/)
-    if (match) {
-      const realUrl = decodeURIComponent(match[1])
-      if (
-        realUrl.includes('facebook.com') ||
-        realUrl.includes('fb.watch')
-      ) {
-        links.add(realUrl)
+  $('a[href^="https://www.facebook.com"], a[href^="https://fb.watch"]').each(
+    (_, a) => {
+      const href = $(a).attr('href')
+      if (href && href.includes('facebook.com/videos')) {
+        links.add(href)
+      }
+      if (href && href.includes('fb.watch')) {
+        links.add(href)
       }
     }
-  })
+  )
 
   return [...links].slice(0, MAX_RESULTS)
 }
@@ -149,7 +147,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const links = await searchFacebookLinks(text)
 
     if (!links.length)
-      return m.reply('❌ No se encontraron videos.')
+      return m.reply('❌ No se encontraron videos públicos.')
 
     let sent = 0
 
@@ -174,7 +172,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     if (!sent)
-      m.reply('❌ No se pudieron descargar los resultados.')
+      m.reply('❌ Se encontraron links pero no eran descargables.')
 
   } catch (e) {
     console.error(e)
@@ -182,7 +180,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-/* ───────── EXPORT ───────── */
 handler.help = ['fbsearch <palabras>']
 handler.command = ['fbsearch', 'fbplay']
 handler.tags = ['download']
