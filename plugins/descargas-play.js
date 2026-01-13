@@ -24,8 +24,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const { title = 'Desconocido', thumbnail, timestamp = 'N/A', views, ago = 'N/A', url = query, author = {} } = result
     const vistas = formatViews(views)
 
-    const res3 = await fetch("https://files.catbox.moe/wfd0ze.jpg");
-    const thumb3 = Buffer.from(await res3.arrayBuffer());
+    const res3 = await fetch("https://files.catbox.moe/wfd0ze.jpg")
+    const thumb3 = Buffer.from(await res3.arrayBuffer())
 
     const fkontak2 = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -36,7 +36,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           jpegThumbnail: thumb3
         }
       }
-    };
+    }
 
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -47,7 +47,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           jpegThumbnail: thumb3
         }
       }
-    };
+    }
 
     const info = `❄️ *Título:* ☃️ ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
@@ -58,19 +58,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
 > ✨ *Publicado:* ${ago}
 *°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°*
-> 🌐 *Link:* ${url}
-*⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ׄۛ۫۫۫۫۫۫ۜ*
-𖹭.╭╭ִ╼࣪━ִﮩ٨ـﮩ♡̫𝔾𝕆𝕁𝕆 𝔹𝕆𝕋♡ִ̫ﮩ٨ـﮩ━ִ╾࣪╮╮.𖹭*
-> .𖹭 © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ𖹭.`;
+> 🌐 *Link:* ${url}`
 
     const thumb = (await conn.getFile(thumbnail)).data
     await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
     if (['play', 'audio'].includes(command)) {
-      await m.react('🎧');
+      await m.react('🎧')
 
-      const audio = await getAudio(url);
-      if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`;
+      const audio = await getAudio(url)
+      if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`
 
       await conn.sendMessage(
         m.chat,
@@ -80,16 +77,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           fileName: `${title}.mp3`
         },
         { quoted: fkontak }
-      );
+      )
 
-      await m.react('✔️');
+      await m.react('✔️')
     }
 
     else if (['play2', 'video'].includes(command)) {
-      await m.react('🎬');
+      await m.react('🎬')
 
-      const video = await getVid(url);
-      if (!video?.url) throw 'No se pudo obtener el video.';
+      const video = await getVid(url)
+      if (!video?.url) throw 'No se pudo obtener el video.'
 
       await conn.sendMessage(
         m.chat,
@@ -100,73 +97,79 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           caption: `> 🎵 *${title}*`
         },
         { quoted: fkontak }
-      );
+      )
 
-      await m.react('✔️');
+      await m.react('✔️')
     }
 
   } catch (e) {
-    await m.react('✖️');
-    console.error(e);
+    await m.react('✖️')
+    console.error(e)
     const msg = typeof e === 'string'
       ? e
-      : `⚠️ Ocurrió un error inesperado.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e?.message || JSON.stringify(e)}`;
-    return conn.reply(m.chat, msg, m);
-  }
-};
-
-handler.command = handler.help = ['play', 'play2', 'audio', 'video'];
-handler.tags = ['download'];
-export default handler;
-
-
-async function getVid(url) {
-  try {
-    const endpoint = `https://api.soymaycol.icu/ytdl?url=${encodeURIComponent(url)}&type=mp4&quality=720&apikey=may-1a3ecc37`;
-    const r = await fetch(endpoint);
-    const json = await r.json();
-
-    if (!json?.status || !json?.result?.url) return null;
-
-    return {
-      url: json.result.url,
-      title: json.result.title || 'video'
-    };
-
-  } catch (e) {
-    console.log("Error getVid:", e);
-    return null;
+      : `⚠️ Ocurrió un error inesperado.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e?.message || JSON.stringify(e)}`
+    return conn.reply(m.chat, msg, m)
   }
 }
 
+handler.command = handler.help = ['play', 'play2', 'audio', 'video']
+handler.tags = ['download']
+export default handler
+
+
+// ====================
+// SOLO ENDPOINT CAMBIADO
+// ====================
+
+async function getVid(url) {
+  try {
+    const id = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1]
+    const endpoint = `https://nekos.club/api/yt/stream?id=${id}&type=video`
+
+    const r = await fetch(endpoint)
+    const json = await r.json()
+
+    if (!json?.url) return null
+
+    return {
+      url: json.url,
+      title: json.title || 'video'
+    }
+
+  } catch (e) {
+    console.log("Error getVid:", e)
+    return null
+  }
+}
 
 async function getAudio(url) {
   try {
-    const endpoint = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=shadow.xyz&url=${encodeURIComponent(url)}`;
-    const r = await fetch(endpoint);
-    const json = await r.json();
+    const id = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1]
+    const endpoint = `https://nekos.club/api/yt/stream?id=${id}&type=audio`
 
-    if (!json?.status || !json?.data?.url)
-      return { status: false, error: "No se pudo obtener audio" };
+    const r = await fetch(endpoint)
+    const json = await r.json()
+
+    if (!json?.url)
+      return { status: false, error: "No se pudo obtener audio" }
 
     return {
       status: true,
       result: {
-        download: json.data.url,
-        title: json.data.title || "audio"
+        download: json.url,
+        title: json.title || "audio"
       }
-    };
+    }
 
   } catch (e) {
-    return { status: false, error: e.message };
+    return { status: false, error: e.message }
   }
 }
 
-
 function formatViews(views) {
-  if (views === undefined || views === null) return "No disponible";
-  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`;
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`;
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`;
-  return views.toString();
+  if (views === undefined || views === null) return "No disponible"
+  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`
+  return views.toString()
 }
