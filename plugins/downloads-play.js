@@ -1,98 +1,91 @@
 import fetch from "node-fetch"
 import yts from "yt-search"
-import crypto from "crypto"
 import axios from "axios"
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
+const handler = async (m, { conn, text, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.* ☃️`, m, rcanal)
+      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.* ☃️`, m)
 
     await m.react('🎶')
 
-    const videoMatch = text.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/|v\/)?([a-zA-Z0-9_-]{11})/)
+    const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))([a-zA-Z0-9_-]{11})/)
     const query = videoMatch ? `https://youtu.be/${videoMatch[1]}` : text
 
     const search = await yts(query)
-    const allItems = (search?.videos?.length ? search.videos : search.all) || []
-    const result = videoMatch
-      ? allItems.find(v => v.videoId === videoMatch[1]) || allItems[0]
-      : allItems[0]
-
+    const result = search.videos?.[0]
     if (!result) throw 'No se encontraron resultados.'
 
-    const { title = 'Desconocido', thumbnail, timestamp = 'N/A', views, ago = 'N/A', url = query, author = {} } = result
-    const vistas = formatViews(views)
+    const { title, thumbnail, timestamp, views, ago, url, author } = result
 
-    const res3 = await fetch("https://files.catbox.moe/wfd0ze.jpg")
-    const thumb3 = Buffer.from(await res3.arrayBuffer())
+    const thumb = (await conn.getFile(thumbnail)).data
 
-    const fkontak2 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        documentMessage: {
-          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢....",
-          fileName: global.botname || "Bot",
-          jpegThumbnail: thumb3
-        }
-      }
-    }
-
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        documentMessage: {
-          title: `「 ${title} 」`,
-          fileName: global.botname || "Bot",
-          jpegThumbnail: thumb3
-        }
-      }
-    }
-
-    const info = `❄️ *Título:* ☃️ ${title}
+    await conn.sendMessage(
+      m.chat,
+      {
+        image: thumb,
+        caption: `❄️ *Título:* ☃️ ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
 > 💫 *Vistas:* ${vistas}
 > ⏳ *Duración:* ${timestamp}
 > ✨ *Publicado:* ${ago}
 > 🌐 *Link:* ${url}`
-
-    const thumb = (await conn.getFile(thumbnail)).data
-    await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
+      },
+      { quoted: m }
+    )
 
     if (['play', 'audio'].includes(command)) {
       await m.react('🎧')
 
-      const audio = await getAudio(url)
-      if (!audio?.status) throw `Error al obtener el audio`
+      const api = `https://sylphy.xyz/download/ytmp3?url=${encodeURIComponent(url)}&api_key=sylphy-aJPapTL76Z_1768347962499_h55ioq6hw`
+      const res = await fetch(api)
+      const json = await res.json()
+
+      if (!json.status || !json.result?.dl_url)
+        throw 'No se pudo obtener el audio.'
 
       await conn.sendMessage(
         m.chat,
         {
-          audio: { url: audio.result.download },
+          audio: { url: json.result.dl_url },
           mimetype: 'audio/mpeg',
-          fileName: `${title}.m4a`
+          fileName: `${title}.mp3`
         },
-        { quoted: fkontak }
+        { quoted: m }
       )
 
       await m.react('✔️')
     }
 
-    else if (['play2', 'video'].includes(command)) {
+    if (['play2', 'video'].includes(command)) {
       await m.react('🎬')
 
-      const video = await getVid(url)
-      if (!video?.url) throw 'No se pudo obtener el video.'
+      const { data } = await axios.post(
+        "https://api-sky.ultraplus.click/youtube/resolve",
+        {
+          url,
+          type: "video",
+          quality: "720"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            apikey: "Shadow"
+          }
+        }
+      )
+
+      if (!data?.status || !data?.result?.url)
+        throw 'No se pudo obtener el video.'
 
       await conn.sendMessage(
         m.chat,
         {
-          video: { url: video.url },
-          fileName: `${title}.mp4`,
+          video: { url: data.result.url },
           mimetype: 'video/mp4',
-          caption: `> 🎵 *${title}*`
+          fileName: `${title}.mp4`
         },
-        { quoted: fkontak }
+        { quoted: m }
       )
 
       await m.react('✔️')
@@ -101,7 +94,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   } catch (e) {
     await m.react('✖️')
     console.error(e)
-    return conn.reply(m.chat, `⚠️ Error:\n${e?.message || e}`, m)
+    conn.reply(m.chat, `⚠️ Error:\n${e}`, m)
   }
 }
 
@@ -109,68 +102,10 @@ handler.command = handler.help = ['play', 'play2', 'audio', 'video']
 handler.tags = ['download']
 export default handler
 
-async function getAudio(url) {
-  try {
-    const { data } = await axios.get(
-      `https://api-adonix.ultraplus.click/download/ytaudio`,
-      {
-        params: {
-          apikey: "shadow.xyz",
-          url
-        }
-      }
-    )
-
-    if (!data?.status || !data?.data?.url) return { status: false }
-
-    return {
-      status: true,
-      result: {
-        download: data.data.url,
-        title: data.data.title
-      }
-    }
-
-  } catch (e) {
-    console.log("Error getAudio:", e?.response?.data || e.message)
-    return { status: false }
-  }
-}
-
-async function getVid(url) {
-  try {
-    const { data } = await axios.post(
-      "https://api-sky.ultraplus.click/youtube/resolve",
-      {
-        url,
-        type: "video",
-        quality: "720"
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          apikey: "Shadow"
-        }
-      }
-    )
-
-    if (!data?.status) return null
-
-    return {
-      url: data.result.url,
-      title: data.result.title
-    }
-
-  } catch (e) {
-    console.log("Error getVid:", e?.response?.data || e.message)
-    return null
-  }
-}
-
-function formatViews(views) {
-  if (views === undefined || views === null) return "No disponible"
-  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`
-  return views.toString()
+function formatViews(v) {
+  if (!v) return 'N/A'
+  if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B'
+  if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M'
+  if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K'
+  return v.toString()
 }
