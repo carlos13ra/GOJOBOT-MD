@@ -240,8 +240,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 };
 
-handler.help = ['fbsearch'];
-handler.tags = ['search'];
-handler.command = [ 'fbsearch', 'fbplay', 'facesearch'];
-
-export default handler;
+handler.help = ['fbsearch']
+handler.command = ['fbplay', 'fbsearch']
+handler.tags = ["download"]
+handler.group = true
