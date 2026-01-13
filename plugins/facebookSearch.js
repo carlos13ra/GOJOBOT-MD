@@ -1,20 +1,20 @@
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 
-/* ───────── CONSTANTES ───────── */
+/* ───────── CONFIG ───────── */
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
 const BASE_PAGE = 'https://fdownloader.net/es'
 const VERIFY_ENDPOINT = 'https://fdownloader.net/api/userverify'
+const MAX_RESULTS = 3
 
 const delay = ms => new Promise(r => setTimeout(r, ms))
 
-/* ───────── CONFIG FDOWNLOADER ───────── */
+/* ───────── FDOWNLOADER CONFIG ───────── */
 async function fetchConfigFromPage() {
   const { data } = await axios.get(BASE_PAGE, {
-    headers: { 'User-Agent': USER_AGENT },
-    timeout: 15000
+    headers: { 'User-Agent': USER_AGENT }
   })
 
   const $ = cheerio.load(data)
@@ -46,17 +46,16 @@ async function getCFTurnstileToken(url) {
       'Content-Type': 'application/x-www-form-urlencoded',
       Origin: 'https://fdownloader.net',
       Referer: BASE_PAGE
-    },
-    timeout: 15000
+    }
   })
 
   if (!data?.success || !data.token)
-    throw 'No se pudo obtener el token de verificación'
+    throw 'No se pudo obtener token CF'
 
   return data.token
 }
 
-/* ───────── PETICIÓN A FDOWNLOADER ───────── */
+/* ───────── BUSCAR VIDEO EN FDOWNLOADER ───────── */
 async function postSearch(cfg, url, token) {
   const payload = new URLSearchParams({
     k_exp: cfg.k_exp,
@@ -74,13 +73,10 @@ async function postSearch(cfg, url, token) {
       'Content-Type': 'application/x-www-form-urlencoded',
       Origin: 'https://fdownloader.net',
       Referer: BASE_PAGE
-    },
-    timeout: 15000
+    }
   })
 
-  if (data?.status !== 'ok')
-    throw 'FDownloader rechazó la solicitud'
-
+  if (data?.status !== 'ok') throw 'FD error'
   return data.data
 }
 
@@ -92,19 +88,12 @@ function parseRows(html) {
   $('.table tbody tr').each((_, tr) => {
     const quality = $(tr).find('.video-quality').text().trim()
     const link = $(tr).find('a[href]')
-
-    if (link.length) {
-      rows.push({
-        quality,
-        url: link.attr('href')
-      })
-    }
+    if (link.length) rows.push({ quality, url: link.attr('href') })
   })
 
   return rows
 }
 
-/* ───────── ELEGIR MEJOR CALIDAD ───────── */
 function pickBest(formats = []) {
   return (
     formats.find(v => /HD/i.test(v.quality))?.url ||
@@ -114,7 +103,6 @@ function pickBest(formats = []) {
   )
 }
 
-/* ───────── OBTENER VIDEO DIRECTO ───────── */
 async function getDirectVideoUrl(fbUrl) {
   const cfg = await fetchConfigFromPage()
   const token = await getCFTurnstileToken(fbUrl)
@@ -124,44 +112,74 @@ async function getDirectVideoUrl(fbUrl) {
   return pickBest(formats)
 }
 
+/* ───────── BUSCAR FACEBOOK POR TEXTO (DDG) ───────── */
+async function searchFacebookLinks(query) {
+  const q = `site:facebook.com OR site:fb.watch ${query}`
+  const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(q)}`
+
+  const { data } = await axios.get(url, {
+    headers: { 'User-Agent': USER_AGENT }
+  })
+
+  const $ = cheerio.load(data)
+  const links = new Set()
+
+  $('a.result__a').each((_, a) => {
+    const href = $(a).attr('href')
+    if (href && (href.includes('facebook.com') || href.includes('fb.watch'))) {
+      links.add(href.split('&')[0])
+    }
+  })
+
+  return [...links].slice(0, MAX_RESULTS)
+}
+
 /* ───────── HANDLER ───────── */
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text)
-    throw `Ejemplo:\n${usedPrefix + command} https://fb.watch/xxxxx`
+    throw `Ejemplo:\n${usedPrefix + command} gatos graciosos`
 
-  const fbRegex =
-    /^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.watch)\//i
-
-  if (!fbRegex.test(text)) {
-    return m.reply(
-      '❌ Este comando NO busca por palabras.\n\n' +
-      '✅ Usa un enlace directo de Facebook:\n' +
-      `${usedPrefix + command} https://fb.watch/xxxxx`
-    )
-  }
-
-  await conn.reply(m.chat, '⏳ Descargando video...', m)
+  m.reply('🔎 Buscando videos en Facebook...')
 
   try {
-    const videoUrl = await getDirectVideoUrl(text)
-    if (!videoUrl) throw 'No se pudo obtener el video'
+    const links = await searchFacebookLinks(text)
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        video: { url: videoUrl },
-        caption: '🎬 Facebook Video'
-      },
-      { quoted: m }
-    )
+    if (!links.length)
+      return m.reply('❌ No se encontraron videos.')
+
+    let sent = 0
+
+    for (const link of links) {
+      try {
+        const videoUrl = await getDirectVideoUrl(link)
+        if (!videoUrl) continue
+
+        await conn.sendMessage(
+          m.chat,
+          {
+            video: { url: videoUrl },
+            caption: '🎬 Facebook Video'
+          },
+          { quoted: m }
+        )
+
+        sent++
+        if (sent >= MAX_RESULTS) break
+        await delay(1000)
+      } catch {}
+    }
+
+    if (!sent)
+      m.reply('❌ No se pudieron descargar los resultados.')
+
   } catch (e) {
     console.error(e)
-    m.reply('❌ Error al descargar el video')
+    m.reply('❌ Error al buscar videos')
   }
 }
 
 /* ───────── EXPORT ───────── */
-handler.help = ['fbsearch <link>']
+handler.help = ['fbsearch <palabras>']
 handler.command = ['fbsearch', 'fbplay']
 handler.tags = ['download']
 handler.group = true
