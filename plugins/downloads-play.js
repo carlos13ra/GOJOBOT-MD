@@ -31,7 +31,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
         documentMessage: {
-          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢.... ..",
+          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢....",
           fileName: global.botname || "Bot",
           jpegThumbnail: thumb3
         }
@@ -63,14 +63,14 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       await m.react('🎧')
 
       const audio = await getAudio(url)
-      if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`
+      if (!audio?.status) throw `Error al obtener el audio`
 
       await conn.sendMessage(
         m.chat,
         {
           audio: { url: audio.result.download },
           mimetype: 'audio/mpeg',
-          fileName: `${title}.mp3`
+          fileName: `${title}.m4a`
         },
         { quoted: fkontak }
       )
@@ -101,10 +101,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   } catch (e) {
     await m.react('✖️')
     console.error(e)
-    const msg = typeof e === 'string'
-      ? e
-      : `⚠️ Ocurrió un error inesperado.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e?.message || JSON.stringify(e)}`
-    return conn.reply(m.chat, msg, m)
+    return conn.reply(m.chat, `⚠️ Error:\n${e?.message || e}`, m)
   }
 }
 
@@ -112,10 +109,33 @@ handler.command = handler.help = ['play', 'play2', 'audio', 'video']
 handler.tags = ['download']
 export default handler
 
+async function getAudio(url) {
+  try {
+    const { data } = await axios.get(
+      `https://api-adonix.ultraplus.click/download/ytaudio`,
+      {
+        params: {
+          apikey: "shadow.xyz",
+          url
+        }
+      }
+    )
 
-// ====================
-// API ULTRAPLUS (OFICIAL)
-// ====================
+    if (!data?.status || !data?.data?.url) return { status: false }
+
+    return {
+      status: true,
+      result: {
+        download: data.data.url,
+        title: data.data.title
+      }
+    }
+
+  } catch (e) {
+    console.log("Error getAudio:", e?.response?.data || e.message)
+    return { status: false }
+  }
+}
 
 async function getVid(url) {
   try {
@@ -129,57 +149,21 @@ async function getVid(url) {
       {
         headers: {
           "Content-Type": "application/json",
-          apikey: "sk_4b83fc27-8f8b-44f8-a17e-a2b078318f68"
+          apikey: "Shadow"
         }
       }
     )
 
-    if (!data?.status || !data?.result?.url) return null
+    if (!data?.status) return null
 
     return {
       url: data.result.url,
-      title: data.result.title || "video"
+      title: data.result.title
     }
 
   } catch (e) {
     console.log("Error getVid:", e?.response?.data || e.message)
     return null
-  }
-}
-
-async function getAudio(url) {
-  try {
-    const { data } = await axios.post(
-      "https://api-sky.ultraplus.click/youtube/resolve",
-      {
-        url,
-        type: "audio",
-        quality: "128"
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          apikey: "sk_4b83fc27-8f8b-44f8-a17e-a2b078318f68"
-        }
-      }
-    )
-
-    if (!data?.status || !data?.result?.url)
-      return { status: false, error: "No se pudo obtener audio" }
-
-    return {
-      status: true,
-      result: {
-        download: data.result.url,
-        title: data.result.title || "audio"
-      }
-    }
-
-  } catch (e) {
-    return {
-      status: false,
-      error: e?.response?.data?.message || e.message
-    }
   }
 }
 
@@ -189,181 +173,4 @@ function formatViews(views) {
   if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
   if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`
   return views.toString()
-        }
-
-
-api
-https://api-adonix.ultraplus.click/download/ytaudio?apikey=shadow.xyz&url=https%3A%2F%2Fyoutube.com%2Fwatch%3Fv%3DcerCJyAR5jw
-
-Json
-{
-  "status": true,
-  "creator": "Ado",
-  "data": {
-    "title": "30 Minutes of the Best Fonk of 2024 | Drift fonk | Brazilian fonk",
-    "url": "https://s11.ytcontent.com/v3/d/audio/cerCJyAR5jw/1734462670201252/YTDown.com_YouTube_30-Minutes-of-the-Best-Fonk-of-2024-Drif_Media_cerCJyAR5jw_007_48k.m4a?token=1768345489cc75179fcea4cb3702b429c922243f12",
-    "ext": "m4a"
-  }
 }
-
-
-api vídeo
-
-
-Dashboard
-YOUTUBE DOWNLOADER
-Usuario:
-ׅ𝃤𝃤𓂂 ɪ'ᴍ sʜᴀᴅᴏᴡ's xʏᴢ 彡★
-API Key:
-Shad••••••••••
-👁️
-📋
-🚀 Probador en Vivo
-https://www.youtube.com/watch?v=WFbgcAxrQ50
-OBTENER
-VER JSON
-Procesando…
-thumbnail
-Alex Otaola en vivo, noticias de Cuba - Hola! Ota-Ola (martes 13 de enero del 2026)
-Cubanos por el Mundo - Live
-Video
-
-144p
-
-240p
-
-360p
-
-720p
-
-1080p
-
-1440p
-
-4kp
-Audio
-
-MP3
-
-M4A
-
-WEBM
-
-AACC
-
-FLAC
-
-APUS
-
-OGG
-
-WAV
-{
-  "status": true,
-  "result": {
-    "title": "Alex Otaola en vivo, noticias de Cuba - Hola! Ota-Ola (martes 13 de enero del 2026)",
-    "author": {
-      "name": "Cubanos por el Mundo - Live",
-      "username": ""
-    },
-    "thumbnail": "https://i.ytimg.com/vi/WFbgcAxrQ50/hqdefault.jpg",
-    "defaults": {
-      "video_quality": "360",
-      "audio_format": "mp3"
-    },
-    "options": {
-      "video": [
-        {
-          "quality": "144",
-          "label": "144p"
-        },
-        {
-          "quality": "240",
-          "label": "240p"
-        },
-        {
-          "quality": "360",
-          "label": "360p"
-        },
-        {
-          "quality": "720",
-          "label": "720p"
-        },
-        {
-          "quality": "1080",
-          "label": "1080p"
-        },
-        {
-          "quality": "1440",
-          "label": "1440p"
-        },
-        {
-          "quality": "4k",
-          "label": "4K"
-        }
-      ],
-      "audio": [
-        {
-          "format": "mp3",
-          "label": "MP3"
-        },
-        {
-          "format": "m4a",
-          "label": "M4A"
-        },
-        {
-          "format": "webm",
-          "label": "WEBM"
-        },
-        {
-          "format": "aacc",
-          "label": "AACC"
-        },
-        {
-          "format": "flac",
-          "label": "FLAC"
-        },
-        {
-          "format": "apus",
-          "label": "APUS"
-        },
-        {
-          "format": "ogg",
-          "label": "OGG"
-        },
-        {
-          "format": "wav",
-          "label": "WAV"
-        }
-      ]
-    },
-    "source": {
-      "url": "https://www.youtube.com/watch?v=WFbgcAxrQ50"
-    }
-  }
-}
-💻 Documentación API
-cURL
-
-curl -X POST "https://api-sky.ultraplus.click/youtube/resolve" \
-  -H "Content-Type: application/json" \
-  -H "apikey: Shadow" \
-  -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","type":"video","quality":"720"}'
-Node.js
-
-const axios = require("axios");
-
-async function youtube(url) {
-  const { data } = await axios.post("https://api-sky.ultraplus.click/youtube/resolve", { 
-    url, 
-    type: "video", 
-    quality: "720" 
-  }, {
-    headers: { apikey: "Shadow" }
-  });
-  
-  if (data.status) return data.result;
-  throw new Error(data.message || "Error");
-}
-
-para el vídeo calidad 720
