@@ -139,3 +139,20 @@ function formatViews(views) {
   if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
   return views.toString()
         }
+
+
+
+api
+https://api-adonix.ultraplus.click/download/ytaudio?apikey=shadow.xyz&url=https%3A%2F%2Fyoutube.com%2Fwatch%3Fv%3DcerCJyAR5jw
+
+Json
+{
+  "status": true,
+  "creator": "Ado",
+  "data": {
+    "title": "30 Minutes of the Best Fonk of 2024 | Drift fonk | Brazilian fonk",
+    "url": "https://s11.ytcontent.com/v3/d/audio/cerCJyAR5jw/1734462670201252/YTDown.com_YouTube_30-Minutes-of-the-Best-Fonk-of-2024-Drif_Media_cerCJyAR5jw_007_48k.m4a?token=1768345489cc75179fcea4cb3702b429c922243f12",
+    "ext": "m4a"
+  }
+}
+
