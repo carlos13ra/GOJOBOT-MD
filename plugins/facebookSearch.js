@@ -7,7 +7,6 @@ const USER_AGENT =
 
 const BASE_PAGE = 'https://fdownloader.net/es'
 const VERIFY_ENDPOINT = 'https://fdownloader.net/api/userverify'
-const MAX_RESULTS = 5
 
 const delay = ms => new Promise(r => setTimeout(r, ms))
 
@@ -37,7 +36,7 @@ async function fetchConfigFromPage() {
   }
 }
 
-/* ───────── TOKEN CLOUDFLARE ───────── */
+/* ───────── TOKEN CF ───────── */
 async function getCFTurnstileToken(url) {
   const body = new URLSearchParams({ url }).toString()
 
@@ -52,12 +51,12 @@ async function getCFTurnstileToken(url) {
   })
 
   if (!data?.success || !data.token)
-    throw 'No se pudo obtener token de verificación'
+    throw 'No se pudo obtener el token de verificación'
 
   return data.token
 }
 
-/* ───────── BUSCAR EN FDOWNLOADER ───────── */
+/* ───────── PETICIÓN A FDOWNLOADER ───────── */
 async function postSearch(cfg, url, token) {
   const payload = new URLSearchParams({
     k_exp: cfg.k_exp,
@@ -79,7 +78,9 @@ async function postSearch(cfg, url, token) {
     timeout: 15000
   })
 
-  if (data?.status !== 'ok') throw 'FDownloader rechazó la solicitud'
+  if (data?.status !== 'ok')
+    throw 'FDownloader rechazó la solicitud'
+
   return data.data
 }
 
@@ -103,7 +104,7 @@ function parseRows(html) {
   return rows
 }
 
-/* ───────── ELEGIR MEJOR URL ───────── */
+/* ───────── ELEGIR MEJOR CALIDAD ───────── */
 function pickBest(formats = []) {
   return (
     formats.find(v => /HD/i.test(v.quality))?.url ||
@@ -123,86 +124,44 @@ async function getDirectVideoUrl(fbUrl) {
   return pickBest(formats)
 }
 
-/* ───────── BUSCAR VIDEOS POR TEXTO ───────── */
-async function fbSearchByText(query) {
-  const api = `https://fbsearch.ryzecodes.xyz/search?q=${encodeURIComponent(query)}`
-  const { data } = await axios.get(api, { timeout: 15000 })
-
-  if (!data?.status || !Array.isArray(data.videos)) return []
-  return data.videos.slice(0, MAX_RESULTS)
-}
-
 /* ───────── HANDLER ───────── */
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text)
-    throw `Ejemplo:\n${usedPrefix + command} gatos\n${usedPrefix + command} https://fb.watch/xxxx`
+    throw `Ejemplo:\n${usedPrefix + command} https://fb.watch/xxxxx`
 
   const fbRegex =
     /^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.watch)\//i
 
-  /* ───── CASO 1: ENLACE ───── */
-  if (fbRegex.test(text)) {
-    await conn.reply(m.chat, '⏳ Descargando video...', m)
-
-    try {
-      const videoUrl = await getDirectVideoUrl(text)
-      if (!videoUrl) throw 'Sin enlace directo'
-
-      return await conn.sendMessage(
-        m.chat,
-        {
-          video: { url: videoUrl },
-          caption: '🎬 Facebook Video'
-        },
-        { quoted: m }
-      )
-    } catch (e) {
-      console.error(e)
-      return m.reply('❌ Error al descargar el video')
-    }
+  if (!fbRegex.test(text)) {
+    return m.reply(
+      '❌ Este comando NO busca por palabras.\n\n' +
+      '✅ Usa un enlace directo de Facebook:\n' +
+      `${usedPrefix + command} https://fb.watch/xxxxx`
+    )
   }
 
-  /* ───── CASO 2: BÚSQUEDA ───── */
-  m.reply('🔎 Buscando videos en Facebook...')
+  await conn.reply(m.chat, '⏳ Descargando video...', m)
 
   try {
-    const results = await fbSearchByText(text)
-    if (!results.length)
-      return m.reply('No se encontraron resultados.')
+    const videoUrl = await getDirectVideoUrl(text)
+    if (!videoUrl) throw 'No se pudo obtener el video'
 
-    let sent = 0
-
-    for (const v of results) {
-      try {
-        const direct = await getDirectVideoUrl(v.link)
-        if (!direct) continue
-
-        await conn.sendMessage(
-          m.chat,
-          {
-            video: { url: direct },
-            caption: `🎬 ${v.title || 'Facebook Video'}`
-          },
-          { quoted: m }
-        )
-
-        sent++
-        if (sent >= 3) break
-        await delay(900)
-      } catch {}
-    }
-
-    if (!sent)
-      return m.reply('No pude descargar ningún resultado.')
-
+    await conn.sendMessage(
+      m.chat,
+      {
+        video: { url: videoUrl },
+        caption: '🎬 Facebook Video'
+      },
+      { quoted: m }
+    )
   } catch (e) {
     console.error(e)
-    m.reply('❌ Error en la búsqueda')
+    m.reply('❌ Error al descargar el video')
   }
 }
 
 /* ───────── EXPORT ───────── */
-handler.help = ['fbsearch <texto|link>']
+handler.help = ['fbsearch <link>']
 handler.command = ['fbsearch', 'fbplay']
 handler.tags = ['download']
 handler.group = true
