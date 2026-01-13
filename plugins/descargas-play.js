@@ -6,7 +6,7 @@ const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-z
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(m.chat, `▶️ *Por favor, ingresa el nombre o enlace del video.*`, m)
+      return conn.reply(m.chat, `☃️ *Por favor, ingresa el nombre o enlace del video.*`, m)
 
     let videoIdMatch = text.match(youtubeRegexID)
     let search = await yts(videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text)
@@ -20,13 +20,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const vistas = formatViews(views)
     const canal = author?.name || 'Desconocido'
 
-    const infoMessage = `
-🕸️ *Titulo:* *${title}*
-🌿 *Canal:* ${canal}
-🍋 *Vistas:* ${vistas}
-🍃 *Duración:* ${timestamp || 'Desconocido'}
-📆 *Publicado:* ${ago || 'Desconocido'}
-🚀 *Enlace:* ${url}`.trim()
+    const infoMessage = ` *${title}*
+
+> 📺 *Canal:* ${canal}
+> 👁️ *Vistas:* ${vistas}
+> ⏱ *Duración:* ${timestamp || 'Desconocido'}
+> 📆 *Publicado:* ${ago || 'Desconocido'}
+> 🔗 *Enlace:* ${url}`.trim()
 
     await conn.sendMessage(m.chat, {
       image: { url: thumbnail },
@@ -45,16 +45,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     if (command === 'playaudio') {
       try {
-        const apiUrl = `https://api.vreden.my.id/api/v1/download/youtube/audio?url=${url}&quality=128`
+        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=mp3`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.status || !json.result?.download?.url)
+        if (!json.success || !json.result?.downloadUrl)
           throw '*⚠ No se obtuvo un enlace de audio válido.*'
 
-        const audioUrl = json.result.download.url
-        const titulo = json.result.metadata.title || title
-        const cover = json.result.metadata.thumbnail || thumbnail
+        const audioUrl = json.result.downloadUrl
+        const titulo = json.result.title || title
+        const cover = json.result.cover || thumbnail
 
         await conn.sendMessage(m.chat, {
           audio: { url: audioUrl },
@@ -62,8 +62,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           fileName: `${titulo}.mp3`,
           contextInfo: {
             externalAdReply: {
-              title: titulo,
-              body: '',
+              title: `🎧 ${titulo}`,
+              body: 'Descarga Completa ♻️',
               mediaType: 1,
               thumbnailUrl: cover,
               sourceUrl: url,
@@ -72,7 +72,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           }
         }, { quoted: m })
 
-        await m.react('🎶')
+        await m.react('✅')
       } catch (e) {
         console.error(e)
         return conn.reply(m.chat, '*⚠ No se pudo enviar el audio. Puede ser muy pesado o hubo un error en la API.*', m)
@@ -81,18 +81,18 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     else if (command === 'playvideo') {
       try {
-        const apiUrl = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)`
+        const apiUrl = `https://api.nekolabs.web.id/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=360`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.status || !json.data?.dl)
+        if (!json.success || !json.result?.downloadUrl)
           throw '⚠ No se obtuvo enlace de video válido.'
 
-        const videoUrl = json.data.dl
-        const titulo = json.data.title || title
+        const videoUrl = json.result.downloadUrl
+        const titulo = json.result.title || title
 
-        const caption = `> ♻️ *Título:* ${titulo}
-> 🎋 *Duración:* ${timestamp || 'Desconocido'}`.trim()
+        const caption = `> ♻️ *Titulo:* ${titulo}
+> 🎋 *Duración:* ${json.result.duration || timestamp || 'Desconocido'}`.trim()
 
         await conn.sendMessage(m.chat, {
           video: { url: videoUrl },
@@ -102,16 +102,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           contextInfo: {
             externalAdReply: {
               title: titulo,
-              body: '',
-              thumbnailUrl: thumbnail,
+              body: '📽️ Descarga Completa',
+              thumbnailUrl: json.result.cover || thumbnail,
               sourceUrl: url,
               mediaType: 1,
-              renderLargerThumbnail: false
+              renderLargerThumbnail: true
             }
           }
         }, { quoted: m })
 
-        await m.react('🎥')
+        await m.react('✅')
       } catch (e) {
         console.error(e)
         return conn.reply(m.chat, '⚠ No se pudo enviar el video. Puede ser muy pesado o hubo un error en la API.', m)
@@ -128,8 +128,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.command = ['playaudio', 'playvideo']
-handler.help = ['playaudio', 'playvideo']
+handler.command = handler.help = ['playaudio', 'playvideo']
 handler.tags = ['descargas']
 export default handler
 
@@ -139,4 +138,4 @@ function formatViews(views) {
   if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
   if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
   return views.toString()
-}
+        }
