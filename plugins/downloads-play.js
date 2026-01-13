@@ -26,7 +26,7 @@ const handler = async (m, { conn, text, command }) => {
         image: thumb,
         caption: `❄️ *Título:* ☃️ ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
-> 💫 *Vistas:* ${vistas}
+> 💫 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
 > ✨ *Publicado:* ${ago}
 > 🌐 *Link:* ${url}`
