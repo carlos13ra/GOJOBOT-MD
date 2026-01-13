@@ -1,224 +1,142 @@
 import fetch from "node-fetch"
 import yts from "yt-search"
-import crypto from "crypto"
-import axios from "axios"
+
+const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(m.chat, `🌴 Por favor, ingresa el nombre o enlace del video.`, m, rcanal)
+      return conn.reply(m.chat, `▶️ *Por favor, ingresa el nombre o enlace del video.*`, m)
 
-    await m.react('☃️')
+    let videoIdMatch = text.match(youtubeRegexID)
+    let search = await yts(videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text)
+    let video = videoIdMatch
+      ? search.all.find(v => v.videoId === videoIdMatch[1]) || search.videos.find(v => v.videoId === videoIdMatch[1])
+      : search.videos?.[0]
 
-    const videoMatch = text.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/|v\/)?([a-zA-Z0-9_-]{11})/)
-    const query = videoMatch ? `https://youtu.be/${videoMatch[1]}` : text
+    if (!video) return conn.reply(m.chat, '✧ No se encontraron resultados para tu búsqueda.', m)
 
-    const search = await yts(query)
-    const result = videoMatch
-      ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all[0]
-      : search.all[0]
-
-    if (!result) throw '⚠️ No se encontraron resultados.'
-
-    const { title, thumbnail, timestamp, views, ago, url, author, seconds } = result
-    if (seconds > 60000) throw '⚠ El video supera el límite de duración (10 minutos).'
-
+    const { title, thumbnail, timestamp, views, ago, url, author } = video
     const vistas = formatViews(views)
-    const info = `🕸️ Descargando *<${title}>*\n
-🎋 *Canal:* ${author.name}
-🍊 *Vistas:* ${vistas}
-🌿︎ *Duración:* ${timestamp}
-✨︎ *Publicado:* ${ago}
-🍉 *Link » ${url}`
+    const canal = author?.name || 'Desconocido'
 
-    const thumb = (await conn.getFile(thumbnail)).data
-    await conn.sendMessage(m.chat, { image: thumb, caption: info, ...rcanal }, { quoted: fkontak })
+    const infoMessage = `
+🕸️ *Titulo:* *${title}*
+🌿 *Canal:* ${canal}
+🍋 *Vistas:* ${vistas}
+🍃 *Duración:* ${timestamp || 'Desconocido'}
+📆 *Publicado:* ${ago || 'Desconocido'}
+🚀 *Enlace:* ${url}`.trim()
 
-    if (['play', 'mp3'].includes(command)) {
-      await m.react('🎧')
-      const audio = await savetube.download(url, "audio")
-      if (!audio?.status) throw `❌ Error al obtener el audio: ${audio.error}`
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: { url: audio.result.download },
-          fileName: `${title}.mp3`,
-          mimetype: 'audio/mpeg'
-        },
-        { quoted: m }
-      )
-      await m.react('✔️')
-    }
-
-    else if (['play2', 'mp4'].includes(command)) {
-      await m.react('🎬')
-      const video = await getVid(url)
-      if (!video?.url) throw '⚠ No se pudo obtener el video.'
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          video: { url: video.url },
-          fileName: `${title}.mp4`,
-          mimetype: 'video/mp4',
-          caption: `> ⭐ *${title}*`
-        },
-        { quoted: m }
-      )
-      await m.react('✔️')
-    }
-
-  } catch (e) {
-    await m.react('✖️')
-    console.error(e)
-    return conn.reply(
-      m.chat,
-      typeof e === 'string'
-        ? e
-        : '⚠︎ Ocurrió un error inesperado.\n> Usa *' + usedPrefix + 'report* para informarlo.\n\n' + e.message,
-      m
-    )
-  }
-}
-
-handler.command = handler.help = ['play', 'play2', 'mp3', 'mp4']
-handler.tags = ['descargas']
-handler.group = true
-
-export default handler
-
-async function getVid(url) {
-  const apis = [
-    {
-      api: 'Yupra',
-      endpoint: `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`,
-      extractor: res => res?.result?.formats?.[0]?.url
-    }
-  ]
-  return await fetchFromApis(apis)
-}
-
-async function fetchFromApis(apis) {
-  for (const { api, endpoint, extractor } of apis) {
-    try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 10000)
-      const res = await fetch(endpoint, { signal: controller.signal }).then(r => r.json())
-      clearTimeout(timeout)
-      const link = extractor(res)
-      if (link) return { url: link, api }
-    } catch (err) {
-      console.log(`❌ Error en API ${api}:`, err.message)
-    }
-    await new Promise(resolve => setTimeout(resolve, 500))
-  }
-  return null
-}
-
-const savetube = {
-  api: {
-    base: "https://media.savetube.me/api",
-    info: "/v2/info",
-    download: "/download",
-    cdn: "/random-cdn"
-  },
-  headers: {
-    accept: "*/*",
-    "content-type": "application/json",
-    origin: "https://yt.savetube.me",
-    referer: "https://yt.savetube.me/",
-    "user-agent": "Postify/1.0.0"
-  },
-  crypto: {
-    hexToBuffer: (hexString) => {
-      const matches = hexString.match(/.{1,2}/g)
-      return Buffer.from(matches.join(""), "hex")
-    },
-    decrypt: async (enc) => {
-      const secretKey = "C5D58EF67A7584E4A29F6C35BBC4EB12"
-      const data = Buffer.from(enc, "base64")
-      const iv = data.slice(0, 16)
-      const content = data.slice(16)
-      const key = savetube.crypto.hexToBuffer(secretKey)
-      const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv)
-      let decrypted = decipher.update(content)
-      decrypted = Buffer.concat([decrypted, decipher.final()])
-      return JSON.parse(decrypted.toString())
-    },
-  },
-  youtube: (url) => {
-    const patterns = [
-      /youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /youtube.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      /youtu.be\/([a-zA-Z0-9_-]{11})/
-    ]
-    for (let pattern of patterns) {
-      if (pattern.test(url)) return url.match(pattern)[1]
-    }
-    return null
-  },
-  request: async (endpoint, data = {}, method = "post") => {
-    try {
-      const { data: response } = await axios({
-        method,
-        url: `${endpoint.startsWith("http") ? "" : savetube.api.base}${endpoint}`,
-        data: method === "post" ? data : undefined,
-        params: method === "get" ? data : undefined,
-        headers: savetube.headers
-      })
-      return { status: true, code: 200, data: response }
-    } catch (error) {
-      return { status: false, code: error.response?.status || 500, error: error.message }
-    }
-  },
-  getCDN: async () => {
-    const response = await savetube.request(savetube.api.cdn, {}, "get")
-    if (!response.status) return response
-    return { status: true, code: 200, data: response.data.cdn }
-  },
-  download: async (link, type = "audio") => {
-    const id = savetube.youtube(link)
-    if (!id) return { status: false, code: 400, error: "No se pudo obtener ID del video" }
-    try {
-      const cdnx = await savetube.getCDN()
-      if (!cdnx.status) return cdnx
-      const cdn = cdnx.data
-      const videoInfo = await savetube.request(
-        `https://${cdn}${savetube.api.info}`,
-        { url: `https://www.youtube.com/watch?v=${id}` }
-      )
-      if (!videoInfo.status) return videoInfo
-      const decrypted = await savetube.crypto.decrypt(videoInfo.data.data)
-      const downloadData = await savetube.request(
-        `https://${cdn}${savetube.api.download}`,
-        {
-          id,
-          downloadType: "audio",
-          quality: "mp3",
-          key: decrypted.key
-        }
-      )
-      if (!downloadData.data.data?.downloadUrl)
-        return { status: false, code: 500, error: "No se pudo obtener link de descarga" }
-
-      return {
-        status: true,
-        result: {
-          download: downloadData.data.data.downloadUrl,
-          title: decrypted.title || "Desconocido"
+    await conn.sendMessage(m.chat, {
+      image: { url: thumbnail },
+      caption: infoMessage,
+      contextInfo: {
+        externalAdReply: {
+          title: title,
+          body: "",
+          thumbnailUrl: thumbnail,
+          sourceUrl: url,
+          mediaType: 1,
+          renderLargerThumbnail: false
         }
       }
-    } catch (error) {
-      return { status: false, code: 500, error: error.message }
+    }, { quoted: m })
+
+    if (command === 'playaudio') {
+      try {
+        const apiUrl = `https://api.vreden.my.id/api/v1/download/youtube/audio?url=${url}&quality=128`
+        const res = await fetch(apiUrl)
+        const json = await res.json()
+
+        if (!json.status || !json.result?.download?.url)
+          throw '*⚠ No se obtuvo un enlace de audio válido.*'
+
+        const audioUrl = json.result.download.url
+        const titulo = json.result.metadata.title || title
+        const cover = json.result.metadata.thumbnail || thumbnail
+
+        await conn.sendMessage(m.chat, {
+          audio: { url: audioUrl },
+          mimetype: 'audio/mpeg',
+          fileName: `${titulo}.mp3`,
+          contextInfo: {
+            externalAdReply: {
+              title: titulo,
+              body: '',
+              mediaType: 1,
+              thumbnailUrl: cover,
+              sourceUrl: url,
+              renderLargerThumbnail: false
+            }
+          }
+        }, { quoted: m })
+
+        await m.react('🎶')
+      } catch (e) {
+        console.error(e)
+        return conn.reply(m.chat, '*⚠ No se pudo enviar el audio. Puede ser muy pesado o hubo un error en la API.*', m)
+      }
     }
+
+    else if (command === 'playvideo') {
+      try {
+        const apiUrl = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)`
+        const res = await fetch(apiUrl)
+        const json = await res.json()
+
+        if (!json.status || !json.data?.dl)
+          throw '⚠ No se obtuvo enlace de video válido.'
+
+        const videoUrl = json.data.dl
+        const titulo = json.data.title || title
+
+        const caption = `> ♻️ *Título:* ${titulo}
+> 🎋 *Duración:* ${timestamp || 'Desconocido'}`.trim()
+
+        await conn.sendMessage(m.chat, {
+          video: { url: videoUrl },
+          caption,
+          mimetype: 'video/mp4',
+          fileName: `${titulo}.mp4`,
+          contextInfo: {
+            externalAdReply: {
+              title: titulo,
+              body: '',
+              thumbnailUrl: thumbnail,
+              sourceUrl: url,
+              mediaType: 1,
+              renderLargerThumbnail: false
+            }
+          }
+        }, { quoted: m })
+
+        await m.react('🎥')
+      } catch (e) {
+        console.error(e)
+        return conn.reply(m.chat, '⚠ No se pudo enviar el video. Puede ser muy pesado o hubo un error en la API.', m)
+      }
+    }
+
+    else {
+      return conn.reply(m.chat, '✧ Comando no reconocido.', m)
+    }
+
+  } catch (err) {
+    console.error(err)
+    return m.reply(`⚠ Ocurrió un error:\n${err}`)
   }
 }
+
+handler.command = ['playaudio', 'playvideo']
+handler.help = ['playaudio', 'playvideo']
+handler.tags = ['descargas']
+export default handler
 
 function formatViews(views) {
   if (views === undefined) return "No disponible"
-  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B (${views.toLocaleString()})`
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M (${views.toLocaleString()})`
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k (${views.toLocaleString()})`
+  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B (${views.toLocaleString()})`
+  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
+  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
   return views.toString()
-                                               }
+}
