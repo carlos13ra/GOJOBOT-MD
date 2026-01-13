@@ -1,160 +1,192 @@
 import fetch from "node-fetch"
 import yts from "yt-search"
+import crypto from "crypto"
+import axios from "axios"
 
-const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
-
-const handler = async (m, { conn, text, command }) => {
+const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(
-        m.chat,
-        `🪻 *Por favor, ingresa el nombre o enlace del video.*`,
-        m,
-        rcanal
-      )
+      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.* ☃️`, m, rcanal)
 
-    let videoIdMatch = text.match(youtubeRegexID)
-    let search = await yts(
-      videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text
-    )
+    await m.react('🎶')
 
-    let video = videoIdMatch
-      ? search.all.find(v => v.videoId === videoIdMatch[1]) ||
-        search.videos.find(v => v.videoId === videoIdMatch[1])
-      : search.videos?.[0]
+    const videoMatch = text.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/|v\/)?([a-zA-Z0-9_-]{11})/)
+    const query = videoMatch ? `https://youtu.be/${videoMatch[1]}` : text
 
-    if (!video)
-      return conn.reply(
-        m.chat,
-        '✧ No se encontraron resultados para tu búsqueda.',
-        m
-      )
+    const search = await yts(query)
+    const allItems = (search?.videos?.length ? search.videos : search.all) || []
+    const result = videoMatch
+      ? allItems.find(v => v.videoId === videoMatch[1]) || allItems[0]
+      : allItems[0]
 
-    const { title, thumbnail, timestamp, views, ago, url, author } = video
+    if (!result) throw 'No se encontraron resultados.'
+
+    const { title = 'Desconocido', thumbnail, timestamp = 'N/A', views, ago = 'N/A', url = query, author = {} } = result
     const vistas = formatViews(views)
-    const canal = author?.name || 'Desconocido'
-    const canalLink = author?.url || 'https://youtube.com'
 
-    const infoMessage = `🍃 *${title}*
+    const res3 = await fetch("https://files.catbox.moe/wfd0ze.jpg")
+    const thumb3 = Buffer.from(await res3.arrayBuffer())
 
-> ✿ *Canal:* ${canal}
-> ✎ *Vistas:* ${vistas}
-> ❑ *Duración:* ${timestamp || 'Desconocido'}
-> ☁︎ *Publicado:* ${ago || 'Desconocido'}
-> ➪ *Enlace:* ${url}
-
-> ✧︎ *Canal:* ${canalLink}`.trim()
-
-    const thumb = (await conn.getFile(thumbnail))?.data
-
-    const JT = {
-      contextInfo: {
-        externalAdReply: {
-          title: title,
-          body: textbot,
-          mediaType: 1,
-          previewType: 0,
-          mediaUrl: url,
-          sourceUrl: url,
-          thumbnail: thumb,
-          renderLargerThumbnail: false,
-        },
-      },
+    const fkontak2 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        documentMessage: {
+          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢.... ..",
+          fileName: global.botname || "Bot",
+          jpegThumbnail: thumb3
+        }
+      }
     }
 
-    await conn.reply(m.chat, infoMessage, m, JT)
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        documentMessage: {
+          title: `「 ${title} 」`,
+          fileName: global.botname || "Bot",
+          jpegThumbnail: thumb3
+        }
+      }
+    }
 
-    if (command === 'playaudio') {
-      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytmp3?url=${encodeURIComponent(url)}`
-      const res = await fetch(apiUrl)
-      const json = await res.json()
+    const info = `❄️ *Título:* ☃️ ${title}
+> ▶️ *Canal:* ${author.name || 'Desconocido'}
+> 💫 *Vistas:* ${vistas}
+> ⏳ *Duración:* ${timestamp}
+> ✨ *Publicado:* ${ago}
+> 🌐 *Link:* ${url}`
 
-      if (!json.status || !json.result?.download)
-        throw '*⚠ No se obtuvo un enlace de audio válido.*'
+    const thumb = (await conn.getFile(thumbnail)).data
+    await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak2 })
 
-      const data = json.result
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: { url: data.download },
-          mimetype: 'audio/mpeg',
-          fileName: `${data.title}.mp3`,
-          ptt: false,
-          contextInfo: {
-            externalAdReply: {
-              title: data.title,
-              body: canal,
-              mediaType: 1,
-              thumbnailUrl: data.thumbnail,
-              sourceUrl: url,
-              renderLargerThumbnail: true,
-            },
-          },
-        },
-        { quoted: fkontak }
-      )
-
+    if (['play', 'audio'].includes(command)) {
       await m.react('🎧')
-    }
 
-    if (command === 'playvideo') {
-      const quality = '480'
-      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytdl?url=${encodeURIComponent(url)}&type=video&quality=${quality}`
-
-      const res = await fetch(apiUrl)
-      const json = await res.json()
-
-      if (!json.status || !json.result?.url)
-        throw '⚠ No se obtuvo enlace de video válido.'
-
-      const data = json.result
+      const audio = await getAudio(url)
+      if (!audio?.status) throw `Error al obtener el audio: ${audio?.error || 'Desconocido'}`
 
       await conn.sendMessage(
         m.chat,
         {
-          video: { url: data.url },
-          caption: title,
-          mimetype: 'video/mp4',
-          fileName: `${data.title}.mp4`,
-          contextInfo: {
-            externalAdReply: {
-              title: data.title,
-              body: canal,
-              thumbnailUrl: data.thumbnail || thumbnail,
-              sourceUrl: url,
-              mediaType: 1,
-              renderLargerThumbnail: false,
-            },
-          },
+          audio: { url: audio.result.download },
+          mimetype: 'audio/mpeg',
+          fileName: `${title}.mp3`
         },
         { quoted: fkontak }
       )
 
-      await m.react('🎥')
+      await m.react('✔️')
     }
 
-  } catch (err) {
-    console.error(err)
-    return conn.reply(
-      m.chat,
-      `⚠ Ocurrió un error:\n${err}`,
-      m,
-      rcanal
-    )
+    else if (['play2', 'video'].includes(command)) {
+      await m.react('🎬')
+
+      const video = await getVid(url)
+      if (!video?.url) throw 'No se pudo obtener el video.'
+
+      await conn.sendMessage(
+        m.chat,
+        {
+          video: { url: video.url },
+          fileName: `${title}.mp4`,
+          mimetype: 'video/mp4',
+          caption: `> 🎵 *${title}*`
+        },
+        { quoted: fkontak }
+      )
+
+      await m.react('✔️')
+    }
+
+  } catch (e) {
+    await m.react('✖️')
+    console.error(e)
+    const msg = typeof e === 'string'
+      ? e
+      : `⚠️ Ocurrió un error inesperado.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e?.message || JSON.stringify(e)}`
+    return conn.reply(m.chat, msg, m)
   }
 }
 
-handler.command = ['playaudio', 'playvideo']
-handler.help = ['playaudio', 'playvideo']
+handler.command = handler.help = ['play', 'play2', 'audio', 'video']
 handler.tags = ['download']
-
 export default handler
 
-function formatViews(views) {
-  if (views === undefined) return "No disponible"
-  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B (${views.toLocaleString()})`
-  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
-  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
-  return views.toString()
+
+// ====================
+// API ULTRAPLUS (OFICIAL)
+// ====================
+
+async function getVid(url) {
+  try {
+    const { data } = await axios.post(
+      "https://api-sky.ultraplus.click/youtube/resolve",
+      {
+        url,
+        type: "video",
+        quality: "720"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: "sk_4b83fc27-8f8b-44f8-a17e-a2b078318f68"
+        }
+      }
+    )
+
+    if (!data?.status || !data?.result?.url) return null
+
+    return {
+      url: data.result.url,
+      title: data.result.title || "video"
+    }
+
+  } catch (e) {
+    console.log("Error getVid:", e?.response?.data || e.message)
+    return null
+  }
 }
+
+async function getAudio(url) {
+  try {
+    const { data } = await axios.post(
+      "https://api-sky.ultraplus.click/youtube/resolve",
+      {
+        url,
+        type: "audio",
+        quality: "128"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: "sk_4b83fc27-8f8b-44f8-a17e-a2b078318f68"
+        }
+      }
+    )
+
+    if (!data?.status || !data?.result?.url)
+      return { status: false, error: "No se pudo obtener audio" }
+
+    return {
+      status: true,
+      result: {
+        download: data.result.url,
+        title: data.result.title || "audio"
+      }
+    }
+
+  } catch (e) {
+    return {
+      status: false,
+      error: e?.response?.data?.message || e.message
+    }
+  }
+}
+
+function formatViews(views) {
+  if (views === undefined || views === null) return "No disponible"
+  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`
+  return views.toString()
+        }
