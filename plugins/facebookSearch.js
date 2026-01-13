@@ -1,246 +1,210 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
-import fetch from 'node-fetch';
+import axios from 'axios'
+import * as cheerio from 'cheerio'
 
-const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-const BASE_PAGE = 'https://fdownloader.net/es';
-const VERIFY_ENDPOINT = 'https://fdownloader.net/api/userverify';
+/* ───────── CONSTANTES ───────── */
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const BASE_PAGE = 'https://fdownloader.net/es'
+const VERIFY_ENDPOINT = 'https://fdownloader.net/api/userverify'
+const MAX_RESULTS = 5
 
-const fetchConfigFromPage = async () => {
-    const response = await axios.get(BASE_PAGE, {
-        headers: {
-            'User-Agent': USER_AGENT
-        }
-    });
+const delay = ms => new Promise(r => setTimeout(r, ms))
 
-    const $ = cheerio.load(response.data);
-    const scripts = [];
+/* ───────── CONFIG FDOWNLOADER ───────── */
+async function fetchConfigFromPage() {
+  const { data } = await axios.get(BASE_PAGE, {
+    headers: { 'User-Agent': USER_AGENT },
+    timeout: 15000
+  })
 
-    $('script').each((_, script) => {
-        const content = $(script).html();
-        if (content && content.includes('var k_url_search')) {
-            scripts.push(content);
-        }
-    });
+  const $ = cheerio.load(data)
+  let blob = ''
 
-    const blob = scripts.join('\n');
+  $('script').each((_, s) => {
+    const t = $(s).html()
+    if (t && t.includes('k_url_search')) blob += t
+  })
 
-    const extract = (name) => {
-        const pattern = new RegExp(`${name}\\s*=\\s*"([^"]+)"`);
-        const match = blob.match(pattern);
-        return match ? match[1] : '';
-    };
+  const grab = k =>
+    blob.match(new RegExp(`${k}\\s*=\\s*"([^"]+)"`))?.[1] || ''
 
-    return {
-        k_exp: extract('k_exp'),
-        k_token: extract('k_token'),
-        k_url_search: extract('k_url_search'),
-        k_url_convert: extract('k_url_convert'),
-        k_lang: extract('k_lang') || 'es',
-        c_token: extract('c_token'),
-        k_prefix_name: extract('k_prefix_name')
-    };
-};
+  return {
+    k_exp: grab('k_exp'),
+    k_token: grab('k_token'),
+    k_url_search: grab('k_url_search'),
+    k_lang: grab('k_lang') || 'es'
+  }
+}
 
-const getCFTurnstileToken = async (targetUrl) => {
-    const params = new URLSearchParams({ url: targetUrl });
-    const { data } = await axios.post(VERIFY_ENDPOINT, params.toString(), {
-        headers: {
-            'User-Agent': USER_AGENT,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Origin: 'https://fdownloader.net',
-            Referer: BASE_PAGE
-        }
-    });
+/* ───────── TOKEN CLOUDFLARE ───────── */
+async function getCFTurnstileToken(url) {
+  const body = new URLSearchParams({ url }).toString()
 
-    if (!data?.success || !data.token) {
-        throw new Error('No se pudo obtener el token de verificación.');
+  const { data } = await axios.post(VERIFY_ENDPOINT, body, {
+    headers: {
+      'User-Agent': USER_AGENT,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Origin: 'https://fdownloader.net',
+      Referer: BASE_PAGE
+    },
+    timeout: 15000
+  })
+
+  if (!data?.success || !data.token)
+    throw 'No se pudo obtener token de verificación'
+
+  return data.token
+}
+
+/* ───────── BUSCAR EN FDOWNLOADER ───────── */
+async function postSearch(cfg, url, token) {
+  const payload = new URLSearchParams({
+    k_exp: cfg.k_exp,
+    k_token: cfg.k_token,
+    q: url,
+    lang: cfg.k_lang,
+    web: 'fdownloader.net',
+    v: 'v2',
+    cftoken: token
+  }).toString()
+
+  const { data } = await axios.post(cfg.k_url_search, payload, {
+    headers: {
+      'User-Agent': USER_AGENT,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Origin: 'https://fdownloader.net',
+      Referer: BASE_PAGE
+    },
+    timeout: 15000
+  })
+
+  if (data?.status !== 'ok') throw 'FDownloader rechazó la solicitud'
+  return data.data
+}
+
+/* ───────── PARSEAR FORMATOS ───────── */
+function parseRows(html) {
+  const $ = cheerio.load(html)
+  const rows = []
+
+  $('.table tbody tr').each((_, tr) => {
+    const quality = $(tr).find('.video-quality').text().trim()
+    const link = $(tr).find('a[href]')
+
+    if (link.length) {
+      rows.push({
+        quality,
+        url: link.attr('href')
+      })
     }
-    return data.token;
-};
+  })
 
-const postAjaxSearch = async (config, targetUrl, cftoken) => {
-    const payload = new URLSearchParams({
-        k_exp: config.k_exp,
-        k_token: config.k_token,
-        q: targetUrl,
-        html: '',
-        lang: config.k_lang,
-        web: 'fdownloader.net',
-        v: 'v2',
-        w: '',
-        cftoken
-    });
+  return rows
+}
 
-    const { data } = await axios.post(config.k_url_search, payload.toString(), {
-        headers: {
-            'User-Agent': USER_AGENT,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Origin: 'https://fdownloader.net',
-            Referer: BASE_PAGE
-        }
-    });
+/* ───────── ELEGIR MEJOR URL ───────── */
+function pickBest(formats = []) {
+  return (
+    formats.find(v => /HD/i.test(v.quality))?.url ||
+    formats.find(v => /SD/i.test(v.quality))?.url ||
+    formats[0]?.url ||
+    null
+  )
+}
 
-    if (data?.status !== 'ok') {
-        throw new Error(`Respuesta inesperada del API: ${JSON.stringify(data)}`);
-    }
+/* ───────── OBTENER VIDEO DIRECTO ───────── */
+async function getDirectVideoUrl(fbUrl) {
+  const cfg = await fetchConfigFromPage()
+  const token = await getCFTurnstileToken(fbUrl)
+  await delay(600)
+  const html = await postSearch(cfg, fbUrl, token)
+  const formats = parseRows(html)
+  return pickBest(formats)
+}
 
-    return data;
-};
+/* ───────── BUSCAR VIDEOS POR TEXTO ───────── */
+async function fbSearchByText(query) {
+  const api = `https://fbsearch.ryzecodes.xyz/search?q=${encodeURIComponent(query)}`
+  const { data } = await axios.get(api, { timeout: 15000 })
 
-const parseRows = (html) => {
-    const $ = cheerio.load(html);
-    const rows = [];
+  if (!data?.status || !Array.isArray(data.videos)) return []
+  return data.videos.slice(0, MAX_RESULTS)
+}
 
-    $('.table tbody tr').each((_, tr) => {
-        const row = $(tr);
-        const quality = row.find('.video-quality').text().trim();
-        const cells = row.find('td');
-        const actionCell = cells.eq(2);
-        const link = actionCell.find('a');
-
-        if (link.length) {
-            rows.push({
-                quality,
-                requiresRender: false,
-                label: link.text().trim(),
-                url: link.attr('href')
-            });
-            return;
-        }
-
-        const button = actionCell.find('button');
-        if (button.length) {
-            rows.push({
-                quality,
-                requiresRender: true,
-                label: button.text().trim(),
-                videourl: button.data('videourl'),
-                videocodec: button.data('videocodec'),
-                videotype: button.data('videotype'),
-                fquality: button.data('fquality')
-            });
-        }
-    });
-
-    return rows;
-};
-
-const getFacebookDownloadInfo = async (targetUrl) => {
-    if (!targetUrl.startsWith('http')) {
-        throw new Error('Proporciona un enlace válido de Facebook.');
-    }
-
-    const config = await fetchConfigFromPage();
-    const cftoken = await getCFTurnstileToken(targetUrl);
-
-    await delay(500);
-
-    const searchResponse = await postAjaxSearch(config, targetUrl, cftoken);
-    const formats = parseRows(searchResponse.data || '');
-
-    return {
-        target: targetUrl,
-        config,
-        cftoken,
-        formats
-    };
-};
-
-const MAX_ALBUM = 5;
-
-const pickBestDirectUrl = (formats = []) => {
-    const hd = formats.find(f => !f.requiresRender && typeof f.url === 'string' && f.url && (f.quality || '').includes('HD'));
-    const sd = formats.find(f => !f.requiresRender && typeof f.url === 'string' && f.url && (f.quality || '').includes('SD'));
-    const anyDirect = formats.find(f => !f.requiresRender && typeof f.url === 'string' && f.url);
-    const anyUrl = formats.find(f => typeof f.url === 'string' && f.url);
-    return hd?.url || sd?.url || anyDirect?.url || anyUrl?.url || null;
-};
-
-const getDirectVideoUrl = async (facebookUrl) => {
-    const info = await getFacebookDownloadInfo(facebookUrl);
-    return pickBestDirectUrl(info.formats);
-};
-
-const downloadAndSend = async (m, conn, url, title = 'Facebook Video') => {
-    try {
-        const finalUrl = await getDirectVideoUrl(url);
-
-        if (finalUrl) {
-            await conn.sendMessage(m.chat, { 
-                video: { url: finalUrl }, 
-                caption: `🎬 *${title}*\n🔗 ${url}` 
-            }, { quoted: m });
-        } else {
-            m.reply('No se pudo generar un enlace de descarga con FDownloader.');
-        }
-
-    } catch (err) {
-        console.error(err);
-        m.reply(`Error al descargar: ${err.message}`);
-    }
-};
-
+/* ───────── HANDLER ───────── */
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-    if (text && text.match(/^https?:\/\/(www\.)?(facebook|fb|fb)\.(com|watch|me|gg)\/.+/i)) {
-        await conn.reply(m.chat, `_Enlace detectado. Iniciando descarga..._`, m);
-        return await downloadAndSend(m, conn, text);
-    }
+  if (!text)
+    throw `Ejemplo:\n${usedPrefix + command} gatos\n${usedPrefix + command} https://fb.watch/xxxx`
 
-    if (!text) throw `*Por favor ingresa una búsqueda.*\nEjemplo: ${usedPrefix + command} gatos`;
+  const fbRegex =
+    /^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.watch)\//i
 
-    m.reply('*Buscando en Facebook... 🔎*');
+  /* ───── CASO 1: ENLACE ───── */
+  if (fbRegex.test(text)) {
+    await conn.reply(m.chat, '⏳ Descargando video...', m)
 
     try {
-        const apiUrl = `https://fbsearch.ryzecodes.xyz/search?q=${encodeURIComponent(text)}`;
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw `API Error: ${response.statusText}`;
+      const videoUrl = await getDirectVideoUrl(text)
+      if (!videoUrl) throw 'Sin enlace directo'
 
-        const data = await response.json();
-
-        if (!data.status || !data.videos || data.videos.length === 0) {
-            return m.reply('No se encontraron resultados.');
-        }
-
-        const candidates = data.videos.slice(0, MAX_ALBUM);
-
-        const medias = [];
-        for (const v of candidates) {
-            const title = v.title === 'Unknown' ? 'Facebook Video' : v.title;
-            try {
-                const directUrl = await getDirectVideoUrl(v.link);
-                if (!directUrl) continue;
-                medias.push({
-                    type: 'video',
-                    data: { url: directUrl },
-                    caption: `🎬 *${title}*\n📌 ${v.type || 'Video'}\n🔗 ${v.link}`
-                });
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        if (medias.length >= 2) {
-            await conn.sendSylphy(m.chat, medias, { quoted: m, delay: 700 });
-            return;
-        }
-
-        if (medias.length === 1) {
-            await conn.sendMessage(m.chat, { video: medias[0].data, caption: medias[0].caption }, { quoted: m });
-            return;
-        }
-
-        return m.reply('No pude generar enlaces directos para esos resultados.');
-
+      return await conn.sendMessage(
+        m.chat,
+        {
+          video: { url: videoUrl },
+          caption: '🎬 Facebook Video'
+        },
+        { quoted: m }
+      )
     } catch (e) {
-        console.error(e);
-        m.reply(`Error: ${e.message}`);
+      console.error(e)
+      return m.reply('❌ Error al descargar el video')
     }
-};
+  }
 
-handler.help = ['fbsearch']
-handler.command = ['fbplay', 'fbsearch']
-handler.tags = ["download"]
+  /* ───── CASO 2: BÚSQUEDA ───── */
+  m.reply('🔎 Buscando videos en Facebook...')
+
+  try {
+    const results = await fbSearchByText(text)
+    if (!results.length)
+      return m.reply('No se encontraron resultados.')
+
+    let sent = 0
+
+    for (const v of results) {
+      try {
+        const direct = await getDirectVideoUrl(v.link)
+        if (!direct) continue
+
+        await conn.sendMessage(
+          m.chat,
+          {
+            video: { url: direct },
+            caption: `🎬 ${v.title || 'Facebook Video'}`
+          },
+          { quoted: m }
+        )
+
+        sent++
+        if (sent >= 3) break
+        await delay(900)
+      } catch {}
+    }
+
+    if (!sent)
+      return m.reply('No pude descargar ningún resultado.')
+
+  } catch (e) {
+    console.error(e)
+    m.reply('❌ Error en la búsqueda')
+  }
+}
+
+/* ───────── EXPORT ───────── */
+handler.help = ['fbsearch <texto|link>']
+handler.command = ['fbsearch', 'fbplay']
+handler.tags = ['download']
 handler.group = true
+
+export default handler
