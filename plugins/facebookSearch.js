@@ -11,7 +11,7 @@ const MAX_RESULTS = 3
 
 const delay = ms => new Promise(r => setTimeout(r, ms))
 
-/* ───────── FDOWNLOADER CONFIG ───────── */
+/* ───────── FDOWNLOADER ───────── */
 async function fetchConfigFromPage() {
   const { data } = await axios.get(BASE_PAGE, {
     headers: { 'User-Agent': USER_AGENT }
@@ -36,7 +36,6 @@ async function fetchConfigFromPage() {
   }
 }
 
-/* ───────── TOKEN CF ───────── */
 async function getCFTurnstileToken(url) {
   const body = new URLSearchParams({ url }).toString()
 
@@ -55,7 +54,6 @@ async function getCFTurnstileToken(url) {
   return data.token
 }
 
-/* ───────── BUSCAR VIDEO EN FDOWNLOADER ───────── */
 async function postSearch(cfg, url, token) {
   const payload = new URLSearchParams({
     k_exp: cfg.k_exp,
@@ -76,11 +74,10 @@ async function postSearch(cfg, url, token) {
     }
   })
 
-  if (data?.status !== 'ok') throw 'FD error'
+  if (data?.status !== 'ok') throw 'FDownloader error'
   return data.data
 }
 
-/* ───────── PARSEAR FORMATOS ───────── */
 function parseRows(html) {
   const $ = cheerio.load(html)
   const rows = []
@@ -112,10 +109,10 @@ async function getDirectVideoUrl(fbUrl) {
   return pickBest(formats)
 }
 
-/* ───────── BUSCAR FACEBOOK POR TEXTO (DDG) ───────── */
+/* ───────── BUSCADOR REAL (DDG LITE) ───────── */
 async function searchFacebookLinks(query) {
   const q = `site:facebook.com OR site:fb.watch ${query}`
-  const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(q)}`
+  const url = `https://duckduckgo.com/lite/?q=${encodeURIComponent(q)}`
 
   const { data } = await axios.get(url, {
     headers: { 'User-Agent': USER_AGENT }
@@ -124,10 +121,17 @@ async function searchFacebookLinks(query) {
   const $ = cheerio.load(data)
   const links = new Set()
 
-  $('a.result__a').each((_, a) => {
+  $('a[href^="/l/?"]').each((_, a) => {
     const href = $(a).attr('href')
-    if (href && (href.includes('facebook.com') || href.includes('fb.watch'))) {
-      links.add(href.split('&')[0])
+    const match = href.match(/uddg=([^&]+)/)
+    if (match) {
+      const realUrl = decodeURIComponent(match[1])
+      if (
+        realUrl.includes('facebook.com') ||
+        realUrl.includes('fb.watch')
+      ) {
+        links.add(realUrl)
+      }
     }
   })
 
@@ -165,7 +169,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
         sent++
         if (sent >= MAX_RESULTS) break
-        await delay(1000)
+        await delay(1200)
       } catch {}
     }
 
