@@ -40,7 +40,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const result = data.result
 
-    // ===== THUMBNAIL PARA DOCUMENTO =====
     let thumbDoc = null
     try {
       const img = await Jimp.read(result.thumbnail)
