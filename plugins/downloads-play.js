@@ -5,7 +5,7 @@ import fs from "fs"
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text) return m.reply('▶️ Escribe el nombre o link del video')
+    if (!text) return m.reply('▶️ Escribe el nombre o link del video', m, rcanal)
 
     await m.react('🎶')
 
@@ -25,7 +25,7 @@ const handler = async (m, { conn, text, command }) => {
 > 💫 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
 > ✨ *Publicado:* ${ago}
-> 🌐 *Link:* ${url}`
+> 🌐 *Link:* ${url}`, ...fake
     }, { quoted: m })
 
     const isAudio = ['play', 'audio'].includes(command)
