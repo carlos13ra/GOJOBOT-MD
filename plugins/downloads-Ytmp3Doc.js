@@ -1,5 +1,4 @@
 import axios from "axios"
-import Jimp from "jimp"
 import yts from "yt-search"
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
@@ -40,23 +39,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const result = data.result
 
-    let thumbDoc = null
-    try {
-      const img = await Jimp.read(result.thumbnail)
-      img.resize(300, Jimp.AUTO).quality(70)
-      thumbDoc = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch (err) {
-      console.log("⚠️ Error al procesar miniatura:", err.message)
-      thumbDoc = Buffer.alloc(0)
-    }
-
     await conn.sendMessage(
       m.chat,
       {
         document: { url: result.media.audio },
         mimetype: "audio/mpeg",
-        fileName: `${result.title}.mp3`,
-        ...(thumbDoc ? { jpegThumbnail: thumbDoc } : {})
+        fileName: `${result.title}.mp3`
       },
       { quoted: m }
     )
