@@ -1,56 +1,43 @@
-import axios from "axios"
+import yts from 'yt-search';
+import fetch from 'node-fetch';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
-      return conn.reply(
-        m.chat,
-        `📌 Ingresa el nombre de la canción o un enlace de YouTube.\n\n> Ejemplo: ${usedPrefix + command} DJ Malam Pagi`,
-        m
-      )
+      return conn.reply(m.chat, `🌱 Ingresa el nombre del video a buscar.\n\n> Ejemplo: ${usedPrefix + command} Rick Astley`, m);
 
-    await m.react("🎶")
-    const url = text.trim()
+    const search = await yts(text);
+    const video = search.videos[0];
+    if (!video) return conn.reply(m.chat, 'No se encontraron resultados.', m);
 
-    const { data } = await axios.post(
-      "https://api-sky.ultraplus.click/youtube-mp3",
-      { url },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          apikey: "Shadow"
-        }
-      }
-    )
+    const { title, duration, author, ago, url, views, thumbnail } = video;
 
-    if (!data.status) throw "No se pudo obtener el audio."
+    const caption = `*Título:* ${title}\n` +
+      `*Duración:* ${duration}\n` +
+      `*Canal:* ${author.name}\n` +
+      `*Publicado:* ${ago}\n` +
+      `*Vistas:* ${views.toLocaleString()}\n` +
+      `*Link:* ${url}\n\n🌱 Descargando audio...`;
 
-    const res = data.result
-    const audioUrl = res.media.audio
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: { url: audioUrl },
-        mimetype: "audio/mpeg",
-        fileName: `${res.title}.mp3`
-      },
-      { quoted: m }
-    )
+    await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption }, { quoted: m });
 
-    await m.react("✅")
-  } catch (e) {
-    console.error(e)
-    await m.react("❌")
-    conn.reply(
-      m.chat,
-      `❌ *Error al descargar el audio*\n\nIntenta con otro enlace.`,
-      m
-    )
+    const apiUrl = `https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`;
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+
+    if (!data.success) return conn.reply(m.chat, '❌ No se pudo descargar el audio.', m);
+
+    const audioUrl = data.data.download_url;
+    await conn.sendMessage(m.chat, { audio: { url: audioUrl }, mimetype: 'audio/mpeg', fileName: `${title}.mp3` }, { quoted: m });
+
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, '⚠️ Ocurrió un error al buscar o descargar el audio.', m);
   }
-}
+};
 
-handler.help = ["ytmp3 <url>"]
-handler.tags = ["downloader"]
-handler.command = ["ytmp3"]
+handler.help = ['ytmp3 <url>'];
+handler.tags = ['download'];
+handler.command = ['ytmp3''];
 
-export default handler
+export default handler;
