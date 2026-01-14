@@ -130,10 +130,6 @@ const yt = {
   }
 }
 
-/* =======================
-   FASTSTART VIDEO
-======================= */
-
 async function faststart(buffer) {
   const i = `./in_${Date.now()}.mp4`
   const o = `./out_${Date.now()}.mp4`
