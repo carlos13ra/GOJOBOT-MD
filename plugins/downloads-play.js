@@ -1,111 +1,138 @@
 import fetch from "node-fetch"
 import yts from "yt-search"
-import axios from "axios"
+import { spawn } from "child_process"
+import fs from "fs"
+
+
+const yt = {
+  static: Object.freeze({
+    baseUrl: 'https://cnv.cx',
+    headers: {
+      'accept-encoding': 'gzip, deflate, br, zstd',
+      'origin': 'https://frame.y2meta-uk.com',
+      'user-agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
+    }
+  }),
+
+  resolvePayload(link, f) {
+    const tipo = f.endsWith('k') ? 'mp3' : 'mp4'
+    return {
+      link,
+      format: tipo,
+      audioBitrate: tipo === 'mp3' ? f.replace('k', '') : '128',
+      videoQuality: tipo === 'mp4' ? f.replace('p', '') : '720',
+      filenameStyle: 'pretty',
+      vCodec: 'h264'
+    }
+  },
+
+  sanitize(name) {
+    return name.replace(/[^a-z0-9]/gi, '_').toLowerCase()
+  },
+
+  async getKey() {
+    const r = await fetch(this.static.baseUrl + '/v2/sanity/key', {
+      headers: this.static.headers
+    })
+    return r.json()
+  },
+
+  async convert(url, f) {
+    const { key } = await this.getKey()
+    const payload = this.resolvePayload(url, f)
+    const r = await fetch(this.static.baseUrl + '/v2/converter', {
+      method: 'POST',
+      headers: { ...this.static.headers, key },
+      body: new URLSearchParams(payload)
+    })
+    return r.json()
+  }
+}
+
+
+async function faststart(buffer) {
+  const i = `./in_${Date.now()}.mp4`
+  const o = `./out_${Date.now()}.mp4`
+  fs.writeFileSync(i, buffer)
+
+  await new Promise(res => {
+    spawn('ffmpeg', [
+      '-y', '-i', i,
+      '-c', 'copy',
+      '-movflags', '+faststart',
+      o
+    ]).on('close', res)
+  })
+
+  const out = fs.readFileSync(o)
+  fs.unlinkSync(i)
+  fs.unlinkSync(o)
+  return out
+}
+
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text?.trim())
-      return conn.reply(m.chat, `*▶️ Por favor, ingresa el nombre o enlace del video.* ☃️`, m)
+    if (!text) return m.reply('▶️ Escribe el nombre o link del video')
 
     await m.react('🎶')
 
-    const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))([a-zA-Z0-9_-]{11})/)
-    const query = videoMatch ? `https://youtu.be/${videoMatch[1]}` : text
+    const match = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))([a-zA-Z0-9_-]{11})/)
+    const query = match ? `https://youtu.be/${match[1]}` : text
 
     const search = await yts(query)
-    const result = search.videos?.[0]
-    if (!result) throw 'No se encontraron resultados.'
+    const video = search.videos[0]
+    if (!video) throw 'No se encontró nada'
 
-    const { title, thumbnail, timestamp, views, ago, url, author } = result
+    const { title, url, thumbnail, timestamp, views, ago, author } = video
 
-    const thumb = (await conn.getFile(thumbnail)).data
-
-    await conn.sendMessage(
-      m.chat,
-      {
-        image: thumb,
-        caption: `❄️ *Título:* ☃️ ${title}
+    await conn.sendMessage(m.chat, {
+      image: { url: thumbnail },
+      caption: `❄️ *Título:* ☃️ ${title}
 > ▶️ *Canal:* ${author.name || 'Desconocido'}
 > 💫 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
 > ✨ *Publicado:* ${ago}
 > 🌐 *Link:* ${url}`
-      },
-      { quoted: m }
-    )
+    }, { quoted: m })
 
-    if (['play', 'audio'].includes(command)) {
-      await m.react('🎧')
+    const isAudio = ['play', 'audio'].includes(command)
+    const formato = isAudio ? '128k' : '480p'
 
-      const api = `https://sylphy.xyz/download/ytmp3?url=${encodeURIComponent(url)}&api_key=sylphy-aJPapTL76Z_1768347962499_h55ioq6hw`
-      const res = await fetch(api)
-      const json = await res.json()
+    await m.react(isAudio ? '🎧' : '🎬')
 
-      if (!json.status || !json.result?.dl_url)
-        throw 'No se pudo obtener el audio.'
+    const data = await yt.convert(url, formato)
+    const fileName = yt.sanitize(data.filename)
 
+    const r = await fetch(data.url)
+    const buffer = Buffer.from(await r.arrayBuffer())
+
+    if (isAudio) {
       await conn.sendMessage(
         m.chat,
-        {
-          audio: { url: json.result.dl_url },
-          mimetype: 'audio/mpeg',
-          fileName: `${title}.mp3`
-        },
+        { audio: buffer, mimetype: 'audio/mpeg', fileName: `${fileName}.mp3` },
         { quoted: m }
       )
-
-      await m.react('✔️')
-    }
-
-    if (['play2', 'video'].includes(command)) {
-      await m.react('🎬')
-
-      const { data } = await axios.post(
-        "https://api-sky.ultraplus.click/youtube/resolve",
-        {
-          url,
-          type: "video",
-          quality: "720"
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "Shadow"
-          }
-        }
-      )
-
-      if (!data?.status || !data?.result?.url)
-        throw 'No se pudo obtener el video.'
-
+    } else {
+      const fixed = await faststart(buffer)
       await conn.sendMessage(
         m.chat,
-        {
-          video: { url: data.result.url },
-          mimetype: 'video/mp4',
-          fileName: `${title}.mp4`
-        },
+        { video: fixed, mimetype: 'video/mp4', fileName: `${fileName}.mp4` },
         { quoted: m }
       )
-
-      await m.react('✔️')
     }
+
+    await m.react('✔️')
 
   } catch (e) {
-    await m.react('✖️')
     console.error(e)
-    conn.reply(m.chat, `⚠️ Error:\n${e}`, m)
+    await m.react('❌')
+    m.reply('⚠️ Error al descargar')
   }
 }
 
-handler.command = handler.help = ['play', 'play2', 'audio', 'video']
+handler.command = ['play', 'audio', 'video', 'play2']
+handler.help = handler.command
 handler.tags = ['download']
 export default handler
-
-function formatViews(v) {
-  if (!v) return 'N/A'
-  if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B'
-  if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M'
-  if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K'
-  return v.toString()
-}
