@@ -45,16 +45,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     if (command === 'playaudio') {
       try {
-        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=mp3`
+        const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytmp3v2?url=${encodeURIComponent(url)}`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.success || !json.result?.downloadUrl)
+        if (!json.status || !json.data?.downloadUrl)
           throw '*⚠ No se obtuvo un enlace de audio válido.*'
 
-        const audioUrl = json.result.downloadUrl
-        const titulo = json.result.title || title
-        const cover = json.result.cover || thumbnail
+        const audioUrl = json.data.downloadUrl
+        const titulo = json.data.title || title
+        const cover = thumbnail
 
         await conn.sendMessage(m.chat, {
           audio: { url: audioUrl },
@@ -138,4 +138,4 @@ function formatViews(views) {
   if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
   if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
   return views.toString()
-        }
+}
