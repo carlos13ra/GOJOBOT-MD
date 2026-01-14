@@ -2,9 +2,6 @@ import axios from "axios"
 import Jimp from "jimp"
 import yts from "yt-search"
 
-const youtubeRegex =
-  /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([a-zA-Z0-9_-]{11})/
-
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     if (!text?.trim())
@@ -16,17 +13,24 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     await m.react("🎶")
 
-    let url = text.trim()
-    let videoUrl = url
+    let input = text.trim()
+    let videoUrl = input
+    let videoInfo = null
 
-    if (!youtubeRegex.test(url)) {
-      const search = await yts(url)
-      if (!search.videos || !search.videos.length)
+    // 🔍 TEXTO O URL
+    if (!/^(https?:\/\/)/i.test(input)) {
+      const search = await yts(input)
+      if (!search.videos?.length)
         throw "No se encontraron resultados."
 
-      videoUrl = search.videos[0].url
+      videoInfo = search.videos[0]
+      videoUrl = videoInfo.url
+    } else {
+      const search = await yts(videoUrl)
+      videoInfo = search.videos?.[0]
     }
 
+    // 🎵 API MP3
     const { data } = await axios.post(
       "https://api-sky.ultraplus.click/youtube-mp3",
       { url: videoUrl },
@@ -41,26 +45,37 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!data.status) throw "No se pudo obtener el audio."
 
     const result = data.result
-    const audioUrl = result.media.audio
 
-    let thumbDoc = null
-    try {
-      const img = await Jimp.read(result.thumbnail)
-      img.resize(300, Jimp.AUTO).quality(70)
-      thumbDoc = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch (err) {
-      console.log("⚠️ Error al procesar miniatura:", err.message)
-      thumbDoc = Buffer.alloc(0)
+    // 🖼️ MINIATURA (VISIBLE)
+    if (videoInfo?.thumbnail) {
+      let thumb
+      try {
+        const img = await Jimp.read(videoInfo.thumbnail)
+        img.resize(400, Jimp.AUTO).quality(80)
+        thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
+      } catch {
+        thumb = null
+      }
+
+      if (thumb) {
+        await conn.sendMessage(
+          m.chat,
+          {
+            image: thumb,
+            caption: `🎧 *${result.title}*\n\n⏱ Duración: ${videoInfo.timestamp || "N/A"}`
+          },
+          { quoted: m }
+        )
+      }
     }
 
-
+    // 📄 DOCUMENTO MP3
     await conn.sendMessage(
       m.chat,
       {
-        document: { url: audioUrl },
+        document: { url: result.media.audio },
         mimetype: "audio/mpeg",
-        fileName: `${result.title}.mp3`,
-        jpegThumbnail: thumbDoc
+        fileName: `${result.title}.mp3`
       },
       { quoted: m }
     )
@@ -71,13 +86,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await m.react("❌")
     conn.reply(
       m.chat,
-      `❌ *Error al descargar el audio*\n\nIntenta con otro enlace o nombre.`,
+      `❌ *Error al descargar el audio*`,
       m
     )
   }
 }
 
-handler.help = ["ytmp3 <texto|url>"]
+handler.help = ["ytmp3doc <texto|url>"]
 handler.tags = ["downloader"]
 handler.command = ["ytmp3doc"]
 
