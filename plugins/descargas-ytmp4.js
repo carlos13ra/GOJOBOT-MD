@@ -1,79 +1,87 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
+import axios from "axios"
 
-function formatSize(bytes) {
-  if (bytes === 0 || isNaN(bytes)) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-const handler = async (m, { conn, text, usedPrefix, command }) => {
+let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
-    if (!text?.trim()) {
+    if (!text?.trim())
       return conn.reply(
         m.chat,
-        `🎋 *Ingresa el enlace o nombre del video de YouTube.*\n\nEjemplo:\n${usedPrefix + command} Naruto opening 1`,
+        `✳️ Uso:\n${usedPrefix + command} <url> [calidad]\n\n📌 Ejemplo:\n${usedPrefix + command} https://youtu.be/O179dcpDiF8 720`,
         m
       )
-    }
 
-    await m.react('🕒')
-    await conn.reply(m.chat, '*_👻 Buscando tu video onichan..._*', m)
+    await m.react("🎥")
 
-    let videoUrl = text
+    let args = text.split(" ")
+    let url = args[0]
+    let quality = args[1] || "360"
 
-    if (!/^https?:\/\//.test(text)) {
-      const search = await yts(text)
-      if (!search.videos || !search.videos.length) {
-        throw 'No se encontraron resultados 😿'
+    const optionsRes = await axios.post(
+      "https://api-sky.ultraplus.click/youtube-mp4",
+      { url },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: "Shadow"
+        }
       }
-      videoUrl = search.videos[0].url
-    }
+    )
 
-    const apiUrl = `https://api-shadowxyz.vercel.app/download/ytmp4V2?url=${encodeURIComponent(videoUrl)}`
-    const response = await fetch(apiUrl)
-    if (!response.ok) throw 'No se pudo obtener información del video.'
+    if (!optionsRes.data.status)
+      throw "No se pudieron obtener las calidades."
 
-    const data = await response.json()
-    const res = data.result
-    if (!res?.download_url) throw 'No se pudo obtener el enlace de descarga.'
+    const info = optionsRes.data.result
+    const available = info.options.video.map(v => v.quality)
+    if (!available.includes(quality))
+      return conn.reply(
+        m.chat,
+        `❌ *Calidad no disponible*\n\n📺 Disponibles:\n${available.join(", ")}`,
+        m
+      )
 
-    const head = await fetch(res.download_url, { method: "HEAD" })
-    const size = Number(head.headers.get("content-length") || 0)
-    const sizeMB = size / 1024 / 1024
+    const resolveRes = await axios.post(
+      "https://api-sky.ultraplus.click/youtube-mp4/resolve",
+      {
+        url,
+        type: "video",
+        quality
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: "Shadow"
+        }
+      }
+    )
 
-    let caption = `🍃 *Título:* ${res.title}
-🕒 *Duración:* ${res.duration}
-📺 *YouTube:* ${res.youtube_url}
-💾 *Tamaño:* ${formatSize(size)}
-────────────────────
-✨ *Descarga completa*`
+    if (!resolveRes.data.status)
+      throw "No se pudo generar el video."
 
-    let sendType = sizeMB > 100 ? "document" : "video"
+    const media = resolveRes.data.result.media
 
-    await conn.sendMessage(m.chat, {
-      [sendType]: { url: res.download_url },
-      mimetype: "video/mp4",
-      fileName: `${res.title}.mp4`,
-      caption,
-      thumbnail: res.thumbnail
-        ? await (await fetch(res.thumbnail)).buffer()
-        : null
-    }, { quoted: m })
+ 
+    await conn.sendMessage(
+      m.chat,
+      {
+        video: { url: media.dl_inline || media.dl_download },
+        caption: `🎬 ${info.title}\n📽️ ${quality}p`
+      },
+      { quoted: m }
+    )
 
-    await m.react('✔️')
-
+    await m.react("✅")
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, `⚠️ *Ocurrió un error:*\n${e}`, m)
+    await m.react("❌")
+    conn.reply(
+      m.chat,
+      `❌ *Error al descargar el video*\n\nIntenta nuevamente.`,
+      m
+    )
   }
 }
 
-handler.help = ["ytmp4 <url | texto>"]
-handler.tags = ["download"]
-handler.command = ["ytmp4", "playmp4"]
-handler.group = true
+handler.help = ["ytmp4 <url> [calidad]"]
+handler.tags = ["downloader"]
+handler.command = ["ytmp4"]
 
 export default handler
