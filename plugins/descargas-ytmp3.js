@@ -27,16 +27,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const res = data.result
     const audioUrl = res.media.audio
-
-    let info = `
-🎵 *Título:* ${res.title}
-👤 *Autor:* ${res.author?.name || "YouTube"}
-⏱️ *Duración:* ${res.duration || "Desconocida"}
-
-📥 *Descargando MP3...*
-`.trim()
-
-    await conn.reply(m.chat, info, m)
     await conn.sendMessage(
       m.chat,
       {
