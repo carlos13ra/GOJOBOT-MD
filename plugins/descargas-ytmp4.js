@@ -34,7 +34,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!available.includes(quality))
       return conn.reply(
         m.chat,
-        `❌ *Calidad no disponible*\n\n📺 Disponibles:\n${available.join(", ")}`,
+        `🥗 *Calidad no disponible*\n\n📺 Disponibles:\n${available.join(", ")}`,
         m
       )
 
@@ -63,7 +63,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       m.chat,
       {
         video: { url: media.dl_inline || media.dl_download },
-        caption: `🎬 ${info.title}\n📽️ ${quality}p`
+        caption: `🌾 ${info.title}\n🌱 ${quality}p`
       },
       { quoted: m }
     )
