@@ -65,7 +65,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         )
 
         await conn.sendMessage(m.chat, { sticker: st })
-        await new Promise(r => setTimeout(r, 200)) // velocidad controlada
+        await new Promise(r => setTimeout(r, 200))
       } catch (e) {
         console.log("⚠️ Error en un sticker:", e.message)
       }
