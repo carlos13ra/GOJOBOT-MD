@@ -19,7 +19,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
     try {
         await message.react('⏳️');
      
-        const { data: response } = await axios.get(`https://delirius-apiofc.vercel.app/search/tiktoksearch?query=${text}`);
+        const { data: response } = await axios.get(`https://api.delirius.store/search/tiktoksearch?query=${text}`);
         let searchResults = response.meta;
 
         shuffleArray(searchResults);
