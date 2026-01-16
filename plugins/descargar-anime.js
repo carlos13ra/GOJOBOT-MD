@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import Jimp from "jimp";
 import { download, detail, search } from "../lib/anime.js";
 
 async function getLangs(episodes) {
