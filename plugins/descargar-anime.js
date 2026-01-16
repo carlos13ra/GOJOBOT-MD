@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import Jimp from "jimp";
 import { download, detail, search } from "../lib/anime.js";
 
 async function getLangs(episodes) {
@@ -158,8 +157,7 @@ handler.before = async (m, { conn }) => {
                 document: { url: videoUrl },
                 fileName: `${session.title} - cap ${epi} ${idiomaLabel}.mp4`,
                 mimetype: "video/mp4",
-                caption: `💫 *${session.title}* - cap ${epi}\n🗿 Idioma: ${idiomaLabel}`,
-                ...(thumb ? { jpegThumbnail: thumb } : {})
+                caption: `💫 *${session.title}* - cap ${epi}\n🗿 Idioma: ${idiomaLabel}`
             },
             { quoted: m }
         );
