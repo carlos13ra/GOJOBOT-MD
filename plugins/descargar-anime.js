@@ -3,181 +3,155 @@ import Jimp from "jimp";
 import { download, detail, search } from "../lib/anime.js";
 
 async function getLangs(episodes) {
-    const list = [];
-    for (const ep of episodes) {
-        try {
-            const dl = await download(ep.link);
-            const langs = [];
-            if (dl?.dl?.sub) langs.push("sub");
-            if (dl?.dl?.dub) langs.push("dub");
-            list.push({ ...ep, lang: langs });
-        } catch {
-            list.push({ ...ep, lang: [] });
-        }
-    }
-    return list;
-}
-
-async function createThumbnail(coverUrl, title, episode, idiomaLabel) {
+  const list = [];
+  for (const ep of episodes) {
     try {
-        const img = await Jimp.read(coverUrl);
-        const fontTitle = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-        const fontInfo = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
-
-        img.blur(2);
-        const overlay = new Jimp(img.bitmap.width, 80, "rgba(0,0,0,0.6)");
-        img.composite(overlay, 0, img.bitmap.height - 80);
-
-        img.print(fontTitle, 20, img.bitmap.height - 70, `${title}`);
-        img.print(fontInfo, 20, img.bitmap.height - 35, `Ep ${episode} • ${idiomaLabel}`);
-
-        return await img.getBufferAsync(Jimp.MIME_JPEG);
-    } catch (err) {
-        console.error("⚠️ Error creando thumbnail:", err);
-        return Buffer.alloc(0);
+      const dl = await download(ep.link);
+      const langs = [];
+      if (dl?.dl?.sub) langs.push("sub");
+      if (dl?.dl?.dub) langs.push("dub");
+      list.push({ ...ep, lang: langs });
+    } catch {
+      list.push({ ...ep, lang: [] });
     }
+  }
+  return list;
 }
 
 let handler = async (m, { command, usedPrefix, conn, text, args }) => {
-    if (!text) return m.reply(
-        `❄️ *Ingresa el título de algún anime o la URL.*\n\n` +
-        `• ${usedPrefix + command} Mushoku Tensei\n` +
-        `• ${usedPrefix + command} https://animeav1.com/media/mushoku-tensei`
-    );
+  if (!text) return m.reply(
+    `❄️ *Ingresa el título del anime o la URL*\n\n` +
+    `• ${usedPrefix + command} Jujutsu Kaisen\n` +
+    `• ${usedPrefix + command} https://animeav1.com/media/jujutsu-kaisen`
+  );
 
-    try {
-        if (text.includes("https://animeav1.com/media/")) {
-            m.react("⌛");
-            let info = await detail(args[0]);
-            let { title, altTitle, description, cover, votes, rating, total, genres } = info;
+  try {
+    if (text.includes("https://animeav1.com/media/")) {
+      m.react("⌛");
 
-            let episodes = await getLangs(info.episodes);
-            const gen = genres.join(", ");
+      const info = await detail(args[0]);
+      const { title, altTitle, description, cover, votes, rating, total, genres } = info;
 
-            let eps = episodes.map(e => {
-                return `• Episodio ${e.ep} (${e.lang.includes("sub") ? "SUB" : ""}${e.lang.includes("dub") ? (e.lang.includes("sub") ? " & " : "") + "DUB" : ""})`;
-            }).join("\n");
+      const episodes = await getLangs(info.episodes);
+      const gen = genres.join(", ");
 
-            let caption = `
+      const eps = episodes.map(e =>
+        `• Episodio ${e.ep} (${e.lang.includes("sub") ? "SUB" : ""}${e.lang.includes("dub") ? (e.lang.includes("sub") ? " & " : "") + "DUB" : ""})`
+      ).join("\n");
+
+      const caption = `
 乂 \`\`\`ANIME - DOWNLOAD\`\`\`
 
-≡ 👌 *Título :* ${title} - ${altTitle}
-≡ 🗣️ *Descripción :* ${description}
-≡ 🥭 *Votos :* ${votes}
-≡ 🍂 *Rating :* ${rating}
-≡ 🗿 *Géneros :* ${gen}
-≡ 🤩 *Episodios totales :* ${total}
-≡ 💫 *Episodios disponibles :*
+≡ 🎬 *Título:* ${title} - ${altTitle}
+≡ 📝 *Descripción:* ${description}
+≡ ⭐ *Rating:* ${rating}
+≡ 🍂 *Géneros:* ${gen}
+≡ 🎞️ *Episodios:* ${total}
 
 ${eps}
 
-> Responde a este mensaje con el número del episodio y el idioma. Ejemplo: *1 sub*, *3 dub*
+> Responde con: *1 sub* o *1 dub*
 `.trim();
 
-            let buffer = await (await fetch(cover)).arrayBuffer();
-            let sent = await conn.sendMessage(
-                m.chat,
-                { image: Buffer.from(buffer), caption },
-                { quoted: m }
-            );
+      const img = await Jimp.read(cover);
+      img.resize(400, Jimp.AUTO).quality(80);
+      const thumb = await img.getBufferAsync(Jimp.MIME_JPEG);
 
-            conn.anime = conn.anime || {};
-            conn.anime[m.sender] = {
-                title,
-                episodes,
-                cover,
-                key: sent.key,
-                downloading: false,
-                timeout: setTimeout(() => delete conn.anime[m.sender], 600_000)
-            };
+      const sent = await conn.sendMessage(
+        m.chat,
+        { image: thumb, caption },
+        { quoted: m }
+      );
 
-        } else {
-            m.react("🔍");
-            const results = await search(text);
-            if (!results.length) return m.reply("❌ No se encontraron resultados.", m);
+      conn.anime = conn.anime || {};
+      conn.anime[m.sender] = {
+        title,
+        episodes,
+        cover,
+        key: sent.key,
+        downloading: false,
+        timeout: setTimeout(() => delete conn.anime[m.sender], 600_000)
+      };
 
-            let cap = `乂 *ANIME - SEARCH*\n`;
-            results.slice(0, 15).forEach((res, index) => {
-                cap += `\n\`${index + 1}\`\n≡ 👻 *Title :* ${res.title}\n≡ 🥭 *Link :* ${res.link}\n`;
-            });
+    } else {
+      m.react("🔍");
+      const results = await search(text);
+      if (!results.length) return m.reply("❌ No se encontraron resultados.");
 
-            await conn.sendMessage(m.chat, { text: cap }, { quoted: m });
-            m.react("💩");
-        }
-    } catch (e) {
-        console.error("Error en handler anime:", e);
-        m.reply("⚠️ Error al procesar la solicitud: " + e.message);
+      let cap = `乂 *ANIME - SEARCH*\n`;
+      results.slice(0, 15).forEach((res, i) => {
+        cap += `\n\`${i + 1}\` ${res.title}\n${res.link}\n`;
+      });
+
+      await conn.sendMessage(m.chat, { text: cap }, { quoted: m });
     }
+
+  } catch (e) {
+    console.error(e);
+    m.reply("⚠️ Error al procesar el anime.");
+  }
 };
 
 handler.before = async (m, { conn }) => {
-    conn.anime = conn.anime || {};
-    const session = conn.anime[m.sender];
-    if (!session || !m.quoted || m.quoted.id !== session.key.id) return;
+  conn.anime = conn.anime || {};
+  const session = conn.anime[m.sender];
+  if (!session || !m.quoted || m.quoted.id !== session.key.id) return;
+  if (session.downloading) return;
 
-    if (session.downloading) return m.reply("⏳ Ya estás descargando un episodio. Espera a que termine.");
+  let [epStr, lang] = m.text.trim().split(/\s+/);
+  const epi = parseInt(epStr);
+  lang = lang?.toLowerCase();
 
-    let [epStr, langInput] = m.text.trim().split(/\s+/);
-    const epi = parseInt(epStr);
-    let idioma = langInput?.toLowerCase();
+  if (isNaN(epi)) return m.reply("❌ Episodio inválido.");
 
-    if (isNaN(epi)) return m.reply("❌ Número de episodio no válido.");
+  const episode = session.episodes.find(e => parseInt(e.ep) === epi);
+  if (!episode) return m.reply("❌ Episodio no encontrado.");
 
-    const episode = session.episodes.find(e => parseInt(e.ep) === epi);
-    if (!episode) return m.reply(`❌ Episodio ${epi} no encontrado.`);
+  const inf = await download(episode.link);
+  const idiomas = Object.keys(inf.dl || {});
+  if (!idiomas.length) return m.reply("❌ No hay idiomas.");
 
-    const inf = await download(episode.link);
-    const availableLangs = Object.keys(inf.dl || {});
-    if (!availableLangs.length) return m.reply(`❌ No hay idiomas disponibles para el episodio ${epi}.`);
+  if (!lang || !idiomas.includes(lang)) lang = idiomas[0];
 
-    if (!idioma || !availableLangs.includes(idioma)) {
-        idioma = availableLangs[0];
-    }
+  const videoUrl = inf.dl[lang];
+  const idiomaLabel = lang === "sub" ? "SUB ESP" : "LATINO";
 
-    const idiomaLabel = idioma === "sub" ? "sub español" : "español latino";
-    await m.reply(`🍁 Descargando *${session.title}* - cap ${epi} (${idiomaLabel})`);
-    m.react("📥");
+  session.downloading = true;
+  m.react("📥");
 
-    session.downloading = true;
+  // Miniatura
+  let thumb;
+  try {
+    const img = await Jimp.read(session.cover);
+    img.resize(300, Jimp.AUTO).quality(80);
+    thumb = await img.getBufferAsync(Jimp.MIME_JPEG);
+  } catch {
+    thumb = Buffer.alloc(0);
+  }
 
-    try {
-        const videoUrl = inf.dl[idioma];
-        let thumb = null;
-        try {
-            const img = await Jimp.read(session.cover);
-            img.resize(300, Jimp.AUTO).quality(70);
-            thumb = await img.getBufferAsync(Jimp.MIME_JPEG);
-        } catch (err) {
-            console.log("⚠️ Error al procesar miniatura:", err.message);
-            thumb = Buffer.alloc(0);
-        }
+  // 👉 ENVÍO COMO VIDEO REAL (SIN BLOQUEO, MÁXIMA CALIDAD)
+  await conn.sendMessage(
+    m.chat,
+    {
+      video: { url: videoUrl },
+      mimetype: "video/mp4",
+      fileName: `${session.title} - cap ${epi} [1080p].mp4`,
+      jpegThumbnail: thumb,
+      caption: `🎬 *${session.title}*\n📺 Cap ${epi}\n🎧 Idioma: ${idiomaLabel}\n📀 Calidad: *1080p (máxima disponible)*`
+    },
+    { quoted: m }
+  );
 
-        await conn.sendMessage(
-            m.chat,
-            {
-                document: { url: videoUrl },
-                fileName: `${session.title} - cap ${epi} ${idiomaLabel}.mp4`,
-                mimetype: "video/mp4",
-                caption: `💫 *${session.title}* - cap ${epi}\n🗿 Idioma: ${idiomaLabel}`
-            },
-            { quoted: m }
-        );
-
-        m.react("✅");
-    } catch (err) {
-        console.error("Error al descargar:", err);
-        m.reply("⚠️ Error al descargar el episodio: " + err.message);
-    }
-
-    clearTimeout(session.timeout);
-    delete conn.anime[m.sender];
+  m.react("✅");
+  clearTimeout(session.timeout);
+  delete conn.anime[m.sender];
 };
 
-handler.command = ["anime", "animedl", "animes"];
+handler.command = ["anime", "animedl"];
 handler.tags = ["download"];
 handler.help = ["animedl"];
-handler.premium = true;
 handler.group = true;
 handler.register = true;
+handler.premium = true;
 
 export default handler;
