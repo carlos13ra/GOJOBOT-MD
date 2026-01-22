@@ -3,7 +3,8 @@ import { promises as fs } from 'fs'
 
 const FILE_PATH = './lib/characters.json'
 
-async function loadCharacters () {
+// Función para cargar personajes
+async function loadCharacters() {
   try {
     await fs.access(FILE_PATH)
   } catch {
@@ -13,20 +14,20 @@ async function loadCharacters () {
   return JSON.parse(data)
 }
 
-function flattenCharacters (data) {
+// Función para aplanar personajes
+function flattenCharacters(data) {
   return Object.values(data).flatMap(v =>
     Array.isArray(v.characters) ? v.characters : []
   )
 }
 
-function formatTag (str) {
-  return String(str || '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '_')
+// Función para formatear tag
+function formatTag(str) {
+  return String(str || '').toLowerCase().trim().replace(/\s+/g, '_')
 }
 
-async function buscarImagen (name) {
+// Función para buscar imágenes
+async function buscarImagen(name) {
   const tag = formatTag(name)
   const urls = [
     `https://danbooru.donmai.us/posts.json?tags=${tag}`,
@@ -35,9 +36,7 @@ async function buscarImagen (name) {
 
   for (const url of urls) {
     try {
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      })
+      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } })
       if (!res.ok) continue
       const json = await res.json()
       const arr = Array.isArray(json) ? json : json.posts || []
@@ -50,68 +49,65 @@ async function buscarImagen (name) {
   return []
 }
 
+// Handler principal
 const handler = async (m, { conn, usedPrefix, command }) => {
-  if (!m.isGroup)
-    return m.reply('❌ Este comando solo funciona en grupos')
+
+  if (!m.isGroup) return m.reply('❌ Este comando solo funciona en grupos')
 
   const groupId = m.chat
   const userId = m.sender
+  const userName = m.pushName || 'Desconocido'
 
-  // ===== INICIALIZAR DB =====
-  if (!global.db.data.characters)
-    global.db.data.characters = {}
-
-  if (!global.db.data.characters[groupId])
-    global.db.data.characters[groupId] = {}
-
-  if (!global.db.data.users[userId])
-    global.db.data.users[userId] = {}
+  // ===== INICIALIZAR DB POR GRUPO =====
+  if (!global.db.data.characters) global.db.data.characters = {}
+  if (!global.db.data.characters[groupId]) global.db.data.characters[groupId] = {}
 
   // ===== CARGAR PERSONAJES =====
   const data = await loadCharacters()
   const list = flattenCharacters(data)
-  if (!list.length)
-    return m.reply('⚠️ No hay personajes disponibles')
+  if (!list.length) return m.reply('⚠️ No hay personajes disponibles')
 
+  // ===== ELEGIR PERSONAJE ALEATORIO =====
   const char = list[Math.floor(Math.random() * list.length)]
-  const charId = String(char.id)
-  const charName = char.name || 'Sin nombre'
+  const characterId = String(char.id)
+  const characterName = char.name || 'Sin nombre'
 
-  // ===== IMAGEN =====
-  const imgs = await buscarImagen(charName)
+  // ===== BUSCAR IMAGEN =====
+  const imgs = await buscarImagen(characterName)
   if (!imgs.length)
-    return m.reply(`⚠️ No se encontraron imágenes para *${charName}*`)
-
+    return m.reply(`⚠️ No se encontraron imágenes para *${characterName}*`)
   const image = imgs[Math.floor(Math.random() * imgs.length)]
 
-  // ===== DATOS DEL PERSONAJE (POR GRUPO) =====
-  if (!global.db.data.characters[groupId][charId])
-    global.db.data.characters[groupId][charId] = {}
+  // ===== GUARDAR PERSONAJE SOLO EN ESTE GRUPO =====
+  if (!global.db.data.characters[groupId][characterId])
+    global.db.data.characters[groupId][characterId] = {}
 
-  const charData = global.db.data.characters[groupId][charId]
+  const charData = global.db.data.characters[groupId][characterId]
 
-  charData.id = charId
-  charData.name = charName
+  charData.id = characterId
+  charData.name = characterName
   charData.reservedBy = userId
-  charData.group = groupId
+  charData.reservedName = userName
   charData.time = Date.now()
+  charData.group = groupId
 
-  // ===== RESPUESTA =====
+  // ===== MENSAJE DE RECLAMO =====
   const text = `
-❀ Nombre » *${charName}*
+❀ Nombre » *${characterName}*
 ♡ Estado » *Reclamado*
-✦ Grupo » *Este grupo*
+✦ Usuario » *${userName}*
 `.trim()
 
   await conn.sendFile(
     m.chat,
     image,
-    `${charName}.jpg`,
+    `${characterName}.jpg`,
     text,
     m
   )
 }
 
+// CONFIGURACIÓN DEL HANDLER
 handler.help = ['rw']
 handler.tags = ['gacha']
 handler.command = ['rw']
