@@ -30,7 +30,7 @@ if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) return m.reply(`ꕥ E
 let time = global.db.data.users[m.sender].Subs + 120000
 if (new Date - global.db.data.users[m.sender].Subs < 120000) return conn.reply(m.chat, `ꕥ Debes esperar ${msToTime(time - new Date())} para volver a vincular un *Sub-Bot.*`, m)
 let socklimit = global.conns.filter(sock => sock?.user).length
-if (socklimit >= 50) {
+if (socklimit >= 40) {
 return m.reply(`ꕥ No se han encontrado espacios para *Sub-Bots* disponibles.`)
 }
 let mentionedJid = await m.mentionedJid
