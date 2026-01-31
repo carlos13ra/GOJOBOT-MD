@@ -39,7 +39,7 @@ const handler = async (m, { conn, usedPrefix, botname }) => {
 
   await conn.reply(
     m.chat,
-    `❀ Bot principal asignado:\n@${who.split('@')[0]}\n\n> Solo este bot responderá en este grupo.`,
+    `❀ Bot principal asignado:\n@${who.split('@')[0]}\n\n> Solo este bot responderá en este grupo🥭.`,
     m,
     { mentions: [who] }
   )
