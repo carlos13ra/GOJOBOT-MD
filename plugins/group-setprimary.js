@@ -1,7 +1,7 @@
 import ws from 'ws'
 import fs from 'fs'
 
-const FILE = './database/primary.json'
+const FILE = './lib/primary.json'
 
 const handler = async (m, { conn, usedPrefix }) => {
 
