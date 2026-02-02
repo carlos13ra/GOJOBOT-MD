@@ -5,53 +5,72 @@ import Jimp from "jimp"
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
-    if (!text?.trim())
+    if (!text?.trim()) {
       return conn.reply(
         m.chat,
-        `📌 Ingresa el nombre de la canción o un enlace de YouTube.\n\n> Ejemplo: ${usedPrefix + command} DJ Malam Pagi`,
+        `📌 Ingresa el nombre de la canción o un enlace de YouTube.\n\n> Ejemplo: ${usedPrefix + command} Hola`,
         m
       )
+    }
 
     await m.react("🎶")
 
     let input = text.trim()
-    let videoUrl = input
-    let videoData = null
+    let videoData
+    let videoUrl
 
-    if (!/^(https?:\/\/)/i.test(input)) {
+
+    if (!/^https?:\/\//i.test(input)) {
       const search = await yts(input)
-      if (!search.videos?.length)
-        throw "No se encontraron resultados."
-
+      if (!search.videos?.length) throw "No se encontraron resultados."
       videoData = search.videos[0]
       videoUrl = videoData.url
     } else {
-      const search = await yts(videoUrl)
+      const search = await yts(input)
       videoData = search.videos?.[0]
+      videoUrl = input
     }
 
-    if (!videoData) throw "No se pudo obtener información del video."
+    if (!videoData) throw "No se pudo obtener info del video."
 
-    const { data } = await axios.post(
-      "https://api-sky.ultraplus.click/youtube-mp3",
-      { url: videoUrl },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          apikey: "Shadow"
+    let result
+    try {
+      const { data } = await axios.get(
+        "https://api-yume.vercel.app/download/ytdlV2",
+        {
+          params: {
+            q: videoData.title,
+            format: "mp3",
+            quality: "128"
+          }
         }
-      }
-    )
+      )
 
-    if (!data.status) throw "No se pudo obtener el audio."
+      if (!data.status) throw "API principal falló"
+      result = data.result
+    } catch (e) {
+  
+      const { data } = await axios.get(
+        "https://api-yume.vercel.app/download/ytdl",
+        {
+          params: {
+            url: videoUrl,
+            type: "audio",
+            quality: "128"
+          }
+        }
+      )
 
-    const result = data.result
-    const audioUrl = result.media.audio
+      if (!data.status) throw "API de respaldo falló"
+      result = data.result
+    }
+
+    const audioUrl = result.dl_url
 
     const getFileSize = async (url) => {
       try {
-        const head = await fetch(url, { method: "HEAD" })
-        const size = head.headers.get("content-length")
+        const res = await fetch(url, { method: "HEAD" })
+        const size = res.headers.get("content-length")
         if (!size) return "Desconocido"
         return `${(Number(size) / 1024 / 1024).toFixed(2)} MB`
       } catch {
@@ -63,12 +82,10 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     let thumbDoc = null
     try {
-      const img = await Jimp.read(videoData.thumbnail)
+      const img = await Jimp.read(result.thumbnail || videoData.thumbnail)
       img.resize(300, Jimp.AUTO).quality(70)
       thumbDoc = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch {
-      thumbDoc = null
-    }
+    } catch {}
 
     await conn.sendMessage(
       m.chat,
@@ -77,7 +94,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         mimetype: "audio/mpeg",
         fileName: `${result.title}.mp3`,
         caption: `> 🌾 \`ᴛɪᴛᴜʟᴏ:\` *${result.title}*
-> 🌿 \`ᴛᴀᴍᴀɴ̃ᴏ:\` *${fileSize}*`,
+> 🌿 \`ᴛᴀᴍᴀɴ̃ᴏ:\` *${fileSize}*
+> 🎧 \`ᴄᴀʟɪᴅᴀᴅ:\` *${result.quality || "128"} kbps*`,
         ...(thumbDoc ? { jpegThumbnail: thumbDoc } : {})
       },
       { quoted: m }
