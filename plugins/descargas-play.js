@@ -33,7 +33,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       caption: infoMessage,
       contextInfo: {
         externalAdReply: {
-          title: title,
+          title,
           body: "",
           thumbnailUrl: thumbnail,
           sourceUrl: url,
@@ -45,16 +45,16 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     if (command === 'playaudio') {
       try {
-        const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytmp3v2?url=${encodeURIComponent(url)}`
+        const apiUrl = `https://api-yume.vercel.app/download/ytdl?url=${encodeURIComponent(url)}&type=audio&quality=128`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.status || !json.data?.downloadUrl)
-          throw '*⚠ No se obtuvo un enlace de audio válido.*'
+        if (!json.status || !json.result?.dl_url)
+          throw '⚠ No se obtuvo enlace de audio válido.'
 
-        const audioUrl = json.data.downloadUrl
-        const titulo = json.data.title || title
-        const cover = thumbnail
+        const audioUrl = json.result.dl_url
+        const titulo = json.result.title || title
+        const cover = json.result.thumbnail || thumbnail
 
         await conn.sendMessage(m.chat, {
           audio: { url: audioUrl },
@@ -63,7 +63,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           contextInfo: {
             externalAdReply: {
               title: `🎧 ${titulo}`,
-              body: 'Descarga Completa ♻️',
+              body: `Calidad: ${json.result.quality}kbps`,
               mediaType: 1,
               thumbnailUrl: cover,
               sourceUrl: url,
@@ -75,24 +75,23 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         await m.react('✅')
       } catch (e) {
         console.error(e)
-        return conn.reply(m.chat, '*⚠ No se pudo enviar el audio. Puede ser muy pesado o hubo un error en la API.*', m)
+        return conn.reply(m.chat, '*⚠ No se pudo enviar el audio. Puede ser pesado o la API falló.*', m)
       }
     }
 
     else if (command === 'playvideo') {
       try {
-        const apiUrl = `https://api.nekolabs.web.id/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=360`
+        const apiUrl = `https://api-yume.vercel.app/download/ytdl?url=${encodeURIComponent(url)}&type=video&quality=480`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.success || !json.result?.downloadUrl)
+        if (!json.status || !json.result?.dl_url)
           throw '⚠ No se obtuvo enlace de video válido.'
 
-        const videoUrl = json.result.downloadUrl
+        const videoUrl = json.result.dl_url
         const titulo = json.result.title || title
 
-        const caption = `> ♻️ *Titulo:* ${titulo}
-> 🎋 *Duración:* ${json.result.duration || timestamp || 'Desconocido'}`.trim()
+        const caption = `> 🌾 *Título:* ${titulo}`.trim()
 
         await conn.sendMessage(m.chat, {
           video: { url: videoUrl },
@@ -103,7 +102,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
             externalAdReply: {
               title: titulo,
               body: '📽️ Descarga Completa',
-              thumbnailUrl: json.result.cover || thumbnail,
+              thumbnailUrl: json.result.thumbnail || thumbnail,
               sourceUrl: url,
               mediaType: 1,
               renderLargerThumbnail: true
@@ -114,7 +113,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         await m.react('✅')
       } catch (e) {
         console.error(e)
-        return conn.reply(m.chat, '⚠ No se pudo enviar el video. Puede ser muy pesado o hubo un error en la API.', m)
+        return conn.reply(m.chat, '⚠ No se pudo enviar el video. Puede ser pesado o la API falló.', m)
       }
     }
 
