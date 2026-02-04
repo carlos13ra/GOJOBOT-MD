@@ -174,5 +174,9 @@ export default async function handler(m, { conn, args }) {
   }
 }
 
+handler.help = ['reino']
+handler.tags = ['rpg']
 handler.command = ['reino']
 handler.group = true
+
+export default handler
