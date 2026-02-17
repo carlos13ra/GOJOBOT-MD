@@ -1,5 +1,5 @@
 {
-"name": "Gojo-Bot-MD",
+"name": "GojoBot-MD",
 "version": "1.8.2",
 "description": "WhatsApp Bot Multi Device",
 "main": "index.js",
@@ -13,18 +13,18 @@
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/Carlos13ra/GOJOBOT-MD.git"
+"url": "git+https://github.com/carlos13ra/GojoBot-MD.git"
 },  
-"author": "Carlos",
+"author": "Shadow.xyz",
 "license": "MIT-License",
 "bugs": {
-"url": "https://github.com/Carlos13ra/GOJOBOT-MD/issues"
+"url": "https://github.com/carlos13ra/GojoBot-MD/issues"
 },
-"homepage": "https://github.com/Carlos13ra/GOJOBOT-MD#readme",
+"homepage": "https://github.com/carlos13ra/GojoBot-MD#readme",
 "dependencies": {
 "@hapi/boom": "^10.0.1",
 "@vitalets/google-translate-api": "^8.0.0",
-"@whiskeysockets/baileys" : "github:Ado21/BailMod",
+"@whiskeysockets/baileys": "github:gatanina-li/baileys",
 "acrcloud": "^1.4.0",
 "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
 "awesome-phonenumber": "^3.4.0",
@@ -38,8 +38,6 @@
 "formdata-node": "^5.0.0",
 "google-libphonenumber": "3.2.38",
 "human-readable": "^0.2.1",
-"jsdom": "^20.0.1",
-"jszip": "^3.10.1",
 "jimp": "^0.16.3",
 "lodash": "^4.17.21",
 "lowdb": "^3.0.0",
