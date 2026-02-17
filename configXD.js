@@ -12,12 +12,13 @@ global.botNumber = "" //Ejemplo: 573218138672
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.owner = [
-"51900922660",
+"51963315293",
 "51978385249",
-"51919199620"
+"51919199620",
+"51921563358"
 ]
 
-global.suittag = ["51978385249"] 
+global.suittag = ["51963315293"] 
 global.prems = []
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -36,9 +37,9 @@ global.textbot = "gσᴊσ вσт ν3 • мα∂є ву ¢αяℓσѕ.яν"
 global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝙲𝙰𝚁𝙻𝙾𝚂.𝚁𝚅"
 global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ ƈαɾʅσʂ.ɾʋ"
 global.etiqueta = "✫ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ❄️ ⊹꙰ "
-global.currency = "ᴅᴏʟᴀʀᴇs💶"
-global.banner = "https://files.catbox.moe/2tqywz.jpg"
-global.icono = "https://files.catbox.moe/e6br3k.jpg"
+global.currency = "g᥆𝗍іᥴᥲs"
+global.banner = "https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1767454349524_108341.jpeg"
+global.icono = "https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1767407101485_190377.jpeg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -60,7 +61,9 @@ yupra: { url: "https://api.yupra.my.id", key: null },
 vreden: { url: "https://api.vreden.web.id", key: null },
 delirius: { url: "https://api.delirius.store", key: null },
 zenzxz: { url: "https://api.zenzxz.my.id", key: null },
-siputzx: { url: "https://api.siputzx.my.id", key: null }
+siputzx: { url: "https://api.siputzx.my.id", key: null },
+adonix: { url: "https://api-adonix.ultraplus.click", key: 'shadow.xyz' },
+stellar: { url: "https://api.stellarwa.xyz", key: "this-xyz"}
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
