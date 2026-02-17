@@ -28,15 +28,11 @@ const mention = bot.replace(/[^0-9]/g, '')
 return `❀ @${mention}
 > ✿ Bot: ${isMainBot ? 'Principal' : 'Sub-Bot'}
 > ❏ Online: ${uptime}`}).join("\n\n") : `✧ No hay bots activos en este grupo`
-const message = `╭─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ─ׅ┈┈┈┈
-├─────❥͜📡
-│ ୧🍒 🄿🄰🄽🄴🄻 / 🅂🄾🄲🄺🄴🅃 💫୨
-╰━━╮•◍⃝߭۫ꯨ🚀۪〬.࠭⤿ʅ 🍬‌᰷্᳝᳸᳸᳸‌᭄ː•╭━━╯
-    ִ *╰━━╮❒︴ʟɪsᴛ ᴅᴇ ʙᴏᴛs ᴀᴄᴛɪᴠᴏs ✦*
+const message = ` \`𝙻𝙸𝚂𝚃𝙰 𝙳𝙴 𝙱𝙾𝚃𝚂 𝙰𝙲𝚃𝙸𝚅𝙾𝚂 :\`
 
-   ˗ˏˋ 💎 ˎˊ˗ Principal: *1*
-   ˗ˏˋ 💫 ˎˊ˗ Subs: *${users.length - 1}*
-   ˗ˏˋ 📌 ˎˊ˗ En este grupo: *${groupBots.length}* bots
+ ˗ˏˋ 🍙 ˎˊ˗ Principal: *1*
+ ˗ˏˋ 🌾 ˎˊ˗ Subs: *${users.length - 1}*
+ ˗ˏˋ 🍄 ˎˊ˗ En este grupo: *${groupBots.length}* bots
  
 ${botsGroup}`
 const mentionList = groupBots.map(bot => bot.endsWith("@s.whatsapp.net") ? bot : `${bot}@s.whatsapp.net`)

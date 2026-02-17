@@ -21,7 +21,7 @@ data = json.data.map(v => v.url)
 }
 if (!data.length) return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido.`, m)
 for (let media of data) {
-await conn.sendFile(m.chat, media, 'instagram.mp4', `💫 Aquí tienes ฅ^•ﻌ•^ฅ.`, m)
+await conn.sendFile(m.chat, media, 'instagram.mp4', `> 🍙 Aquí tienes ฅ^•ﻌ•^ฅ.`, m)
 await m.react('✔️')
 }} catch (error) {
 await m.react('✖️')

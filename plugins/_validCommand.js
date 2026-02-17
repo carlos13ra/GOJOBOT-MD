@@ -23,10 +23,14 @@ export async function before(m, { conn }) {
   }
 
   const mensajes = [
-    `❌ *Comando inválido*\n\n🔍 *${command}* no existe\n📖 Usa *${usedPrefix}menu*`,
-    `⚠️ *Error*\n\nEl comando *${command}* no está registrado\n✨ Menú: *${usedPrefix}menu*`,
-    `🚫 *Comando desconocido*\n\n👉 Ver comandos:\n*${usedPrefix}menu*`,
-    `🥭 *Ups…*\n\nNo encontré *${command}*\n📌 Usa *${usedPrefix}menu*`
+    `🙃 ¡Vaya! *${command}* no existe.\n🔎 Prueba con *${usedPrefix}menu* para ver todos los comandos.`,
+    `🤔 Hmm… *${command}* parece perdido.\n📚 Usa *${usedPrefix}menu* para encontrar lo que buscas.`,
+    `🚨 Error: comando *${command}* no reconocido.\n✨ Ve al menú con *${usedPrefix}menu*`,
+    `😅 Ups… no conozco *${command}*.\n📌 Explora los comandos con *${usedPrefix}menu*`,
+    `🛑 ¡Alerta! *${command}* no está disponible.\n🔧 Ingresa *${usedPrefix}menu* para ver opciones válidas.`,
+    `🌟 ¡Hola! No encontré *${command}*.\n📖 Descubre todos los comandos en *${usedPrefix}menu*`,
+    `❗ Oops… *${command}* no existe aquí.\n👀 Echa un vistazo al menú: *${usedPrefix}menu*`,
+    `💡 Consejo: *${command}* no es un comando válido.\n🎯 Usa *${usedPrefix}menu* para orientarte.`
   ];
 
   const texto = mensajes[Math.floor(Math.random() * mensajes.length)];

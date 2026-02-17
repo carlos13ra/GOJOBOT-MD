@@ -12,19 +12,14 @@ let handler = async (m, { conn }) => {
     let ramUso = ramTotal - ramLibre
     let uptime = process.uptime()
 
-    let teks = `
-╭──〔 ⚡ 𝗣𝗜𝗡𝗚 & 𝗦𝗧𝗔𝗧𝗨𝗦 〕──╮
-│
-│ 🌱 *Bot:* ${botname}
-│ ⚡ *Latencia:* ${latensi.toFixed(3)} ms
-│ ⏱️ *Uptime:* ${formatTime(uptime)}
-│
-│ 🖥️ *Sistema:* ${os.platform()} (${os.arch()})
-│ 🧠 *Node:* ${process.version}
-│
-│ 💾 *RAM usada:* ${ramUso} MB / ${ramTotal} MB
-│
-╰────────────────────────╯`
+    let teks = `*'ׄ𐚁ִㅤS T A T U S - PINGׄ ₍ ᐢ..ᐢ ₎'*
+
+*🍄 Bot      : ›* ${botname}
+*🌳 Latency : ›* ${latensi.toFixed(3)} ms
+*🌱 Uptime  : ›* ${formatTime(uptime)}
+*🪷 Sistema  : ›* ${os.platform()} (${os.arch()}) 
+*🍙 Node  : ›* ${process.version}
+*🌿 Ram usage  : ›* ${ramUso} MB / ${ramTotal} MB`
 
     conn.reply(m.chat, teks, m, rcanal)
   })

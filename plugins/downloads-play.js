@@ -20,12 +20,12 @@ const handler = async (m, { conn, text, command }) => {
 
     await conn.sendMessage(m.chat, {
       image: { url: thumbnail },
-      caption: `❄️ *Título:* ☃️ ${title}
-> ▶️ *Canal:* ${author.name || 'Desconocido'}
-> 💫 *Vistas:* ${formatViews(views)}
+      caption: `🌳 *Título:* ${title}
+> 🍄 *Canal:* ${author.name || 'Desconocido'}
+> 🥦 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
-> ✨ *Publicado:* ${ago}
-> 🌐 *Link:* ${url}`, ...fake
+> 🌾 *Publicado:* ${ago}
+> 🍓 *Link:* ${url}`, ...fake
     }, { quoted: m })
 
     const isAudio = ['play', 'audio'].includes(command)

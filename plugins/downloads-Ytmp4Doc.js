@@ -36,7 +36,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     try {
       const { data } = await axios.get(
-        "https://api-yume.vercel.app/download/ytdlV2",
+        "https://nexus-light-beryl.vercel.app/download/ytdlV2",
         {
           params: {
             q: videoData.title,
@@ -51,7 +51,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     } catch {
   
       const { data } = await axios.get(
-        "https://api-yume.vercel.app/download/ytdl",
+        "https://nexus-light-beryl.vercel.app/download/ytdl",
         {
           params: {
             url: videoUrl,

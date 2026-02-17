@@ -31,7 +31,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       { quoted: m }
     )
 
-    const apiUrl = `https://api-yume.vercel.app/download/ytmp4v2?url=${encodeURIComponent(url)}`
+    const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytmp4v2?url=${encodeURIComponent(url)}`
     const res = await fetch(apiUrl)
     const json = await res.json()
 
