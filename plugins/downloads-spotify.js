@@ -1,6 +1,3 @@
-// - By Shadow-xyz
-// -51919199620
-
 import axios from 'axios'
 import fetch from 'node-fetch'
 
@@ -20,18 +17,9 @@ let handler = async (m, { conn, text }) => {
       throw 'No se encontró la canción.'
 
     const data = search.data.data[0]
-    const {
-      title,
-      artist,
-      album,
-      duration,
-      popularity,
-      publish,
-      url: spotifyUrl,
-      image
-    } = data
+    const { title, artist, album, duration, popularity, publish, url: spotifyUrl, image } = data
 
-    const caption =
+    const info =
       `「🌳」Descargando *<${title}>*\n\n` +
       `> • Autor » *${artist}*\n` +
       (album ? `> • Álbum » *${album}*\n` : '') +
@@ -43,7 +31,7 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(
       m.chat,
       {
-        text: caption,
+        text: info,
         contextInfo: {
           externalAdReply: {
             title: '✧ Spotify • Music ✧',
@@ -98,7 +86,7 @@ let handler = async (m, { conn, text }) => {
         contextInfo: {
           externalAdReply: {
             title: title,
-            body: '✿ Servidor: SpotDown',
+            body: '✿ Download completado',
             thumbnailUrl: image,
             sourceUrl: spotifyUrl,
             mediaType: 1,
