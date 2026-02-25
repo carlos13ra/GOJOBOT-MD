@@ -14,7 +14,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       ? search.all.find(v => v.videoId === videoIdMatch[1]) || search.videos.find(v => v.videoId === videoIdMatch[1])
       : search.videos?.[0]
 
-    if (!video) return conn.reply(m.chat, '✧ No se encontraron resultados para tu búsqueda.', m)
+    if (!video)
+      return conn.reply(m.chat, '✧ No se encontraron resultados para tu búsqueda.', m)
 
     const { title, thumbnail, timestamp, views, ago, url, author } = video
     const vistas = formatViews(views)
@@ -43,18 +44,19 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     }, { quoted: m })
 
+    // ================= AUDIO =================
     if (command === 'playaudio') {
       try {
-        const apiUrl = `https://api-yume.vercel.app/download/ytdl?url=${encodeURIComponent(url)}&type=audio&quality=128`
+        const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytaudio?url=${encodeURIComponent(url)}`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.status || !json.result?.dl_url)
+        if (!json.status || !json.result?.download)
           throw '⚠ No se obtuvo enlace de audio válido.'
 
-        const audioUrl = json.result.dl_url
+        const audioUrl = json.result.download
         const titulo = json.result.title || title
-        const cover = json.result.thumbnail || thumbnail
+        const filesizeMB = (json.result.filesize / 1024 / 1024).toFixed(2)
 
         await conn.sendMessage(m.chat, {
           audio: { url: audioUrl },
@@ -63,9 +65,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           contextInfo: {
             externalAdReply: {
               title: `🎧 ${titulo}`,
-              body: `Calidad: ${json.result.quality}kbps`,
+              body: `Peso: ${filesizeMB} MB`,
               mediaType: 1,
-              thumbnailUrl: cover,
+              thumbnailUrl: thumbnail,
               sourceUrl: url,
               renderLargerThumbnail: false
             }
@@ -79,19 +81,21 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     }
 
+    // ================= VIDEO =================
     else if (command === 'playvideo') {
       try {
-        const apiUrl = `https://api-yume.vercel.app/download/ytdl?url=${encodeURIComponent(url)}&type=video&quality=480`
+        const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytvideo?url=${encodeURIComponent(url)}`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        if (!json.status || !json.result?.dl_url)
+        if (!json.status || !json.result?.download)
           throw '⚠ No se obtuvo enlace de video válido.'
 
-        const videoUrl = json.result.dl_url
+        const videoUrl = json.result.download
         const titulo = json.result.title || title
 
-        const caption = `> 🌾 *Título:* ${titulo}`.trim()
+        const caption = `> 🌾 *Título:* ${titulo}
+> 📽️ *Calidad:* ${json.result.quality}`.trim()
 
         await conn.sendMessage(m.chat, {
           video: { url: videoUrl },
@@ -101,8 +105,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           contextInfo: {
             externalAdReply: {
               title: titulo,
-              body: '📽️ Descarga Completa',
-              thumbnailUrl: json.result.thumbnail || thumbnail,
+              body: `📽️ Calidad ${json.result.quality}`,
+              thumbnailUrl: thumbnail,
               sourceUrl: url,
               mediaType: 1,
               renderLargerThumbnail: true
