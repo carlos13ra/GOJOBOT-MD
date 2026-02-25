@@ -32,41 +32,19 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     if (!videoData) throw "No se pudo obtener info del video."
 
-    let result
-
-    try {
-      const { data } = await axios.get(
-        "https://nexus-light-beryl.vercel.app/download/ytdlV2",
-        {
-          params: {
-            q: videoData.title,
-            format: "mp4",
-            quality: "480"
-          }
+    const { data } = await axios.get(
+      "https://nexus-light-beryl.vercel.app/download/ytvideo",
+      {
+        params: {
+          url: videoUrl
         }
-      )
+      }
+    )
 
-      if (!data.status) throw "API principal falló"
-      result = data.result
-    } catch {
-  
-      const { data } = await axios.get(
-        "https://nexus-light-beryl.vercel.app/download/ytdl",
-        {
-          params: {
-            url: videoUrl,
-            type: "video",
-            quality: "480"
-          }
-        }
-      )
+    if (!data.status) throw "API falló"
 
-      if (!data.status) throw "API de respaldo falló"
-      result = data.result
-    }
-
-    const videoDl = result.dl_url
-
+    const result = data.result
+    const videoDl = result.download
 
     const getFileSize = async (url) => {
       try {
@@ -83,7 +61,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     let thumbDoc = null
     try {
-      const img = await Jimp.read(result.thumbnail || videoData.thumbnail)
+      const img = await Jimp.read(videoData.thumbnail)
       img.resize(300, Jimp.AUTO).quality(70)
       thumbDoc = await img.getBufferAsync(Jimp.MIME_JPEG)
     } catch {}
@@ -95,7 +73,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         mimetype: "video/mp4",
         fileName: `${result.title}.mp4`,
         caption: `> 🎬 \`ᴛɪᴛᴜʟᴏ:\` *${result.title}*
-> ⏱️ \`ᴅᴜʀᴀᴄɪᴏ́ɴ:\` *${result.duration || videoData.timestamp}*
+> ⏱️ \`ᴅᴜʀᴀᴄɪᴏ́ɴ:\` *${videoData.timestamp}*
 > 📦 \`ᴛᴀᴍᴀɴ̃ᴏ:\` *${fileSize}*
 > 📺 \`ᴄᴀʟɪᴅᴀᴅ:\` *${result.quality || "360p"}*`,
         ...(thumbDoc ? { jpegThumbnail: thumbDoc } : {})
