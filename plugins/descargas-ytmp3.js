@@ -32,28 +32,27 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       { quoted: m }
     )
 
-    // 🔥 NUEVA API
-    const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytaudio?url=${encodeURIComponent(url)}`
+    const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytmp3v2?url=${encodeURIComponent(url)}`
     const res = await fetch(apiUrl)
     const json = await res.json()
 
-    if (!json.status || !json.result?.download)
+    if (!json.status || !json.result?.dl_url)
       return conn.reply(m.chat, '❌ No se pudo descargar el audio.', m)
 
-    const audioUrl = json.result.download
+    const audioUrl = json.result.dl_url
     const titulo = json.result.title
-    const filesizeKB = (json.result.filesize / 1024).toFixed(2)
+    const bitrate = json.result.bitrate
 
     await conn.sendMessage(
       m.chat,
       {
         audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
-        fileName: `${titulo}.mp3`,
+        fileName: `${titulo}`,
         contextInfo: {
           externalAdReply: {
             title: `🎧 ${titulo}`,
-            body: `Peso: ${filesizeKB} KB`,
+            body: `Calidad: ${bitrate}`,
             thumbnailUrl: thumbnail,
             sourceUrl: url,
             mediaType: 1,
