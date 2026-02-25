@@ -17,24 +17,33 @@ let handler = async (m, { conn, text }) => {
       throw 'No se encontró la canción.'
 
     const data = search.data.data[0]
-    const { title, artist, album, duration, popularity, publish, url: spotifyUrl, image } = data
+    const {
+      title,
+      artist,
+      album,
+      duration,
+      popularity,
+      publish,
+      url: spotifyUrl,
+      image
+    } = data
 
-    const info =
+    const caption =
       `「🌳」Descargando *<${title}>*\n\n` +
-      `> • Autor » *${artist}*\n` +
-      (album ? `> • Álbum » *${album}*\n` : '') +
-      (duration ? `> • Duración » *${duration}*\n` : '') +
-      (popularity ? `> • Popularidad » *${popularity}*\n` : '') +
-      (publish ? `> • Publicado » *${publish}*\n` : '') +
+      `> 🍄 Autor » *${artist}*\n` +
+      (album ? `> 🌾 Álbum » *${album}*\n` : '') +
+      (duration ? `> 🎍 Duración » *${duration}*\n` : '') +
+      (popularity ? `> 🎅 Popularidad » *${popularity}*\n` : '') +
+      (publish ? `> 🌿 Publicado » *${publish}*\n` : '') +
       `> ☕ Enlace » ${spotifyUrl}`
 
     await conn.sendMessage(
       m.chat,
       {
-        text: info,
+        text: caption,
         contextInfo: {
           externalAdReply: {
-            title: '✧ Spotify • Music ✧',
+            title: '🎇 ✧ Spotify • Music ✧ 🎇',
             body: artist,
             thumbnailUrl: image,
             sourceUrl: spotifyUrl,
@@ -86,7 +95,7 @@ let handler = async (m, { conn, text }) => {
         contextInfo: {
           externalAdReply: {
             title: title,
-            body: '✿ Download completado',
+            body: '✿ Servidor: SpotDown',
             thumbnailUrl: image,
             sourceUrl: spotifyUrl,
             mediaType: 1,
@@ -111,5 +120,6 @@ handler.help = ['spotify']
 handler.tags = ['download']
 handler.command = ['spotify', 'splay']
 handler.group = true
+handler.register = true
 
 export default handler
