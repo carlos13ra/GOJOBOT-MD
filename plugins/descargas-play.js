@@ -1,59 +1,6 @@
 import yts from 'yt-search'
 import axios from 'axios'
 
-function convertid(url) {
-  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|embed|watch|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[&?]|$)/
-  const match = url.match(regex)
-  return match ? match[1] : null
-}
-
-function mapaudioquality(bitrate) {
-  if (bitrate == 320) return 0
-  if (bitrate == 256) return 1
-  if (bitrate == 128) return 4
-  if (bitrate == 96) return 5
-  return 4
-}
-
-async function request(url, data) {
-  return axios.post(url, data, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 10)',
-      'Content-Type': 'application/json',
-      origin: 'https://cnvmp3.com',
-      referer: 'https://cnvmp3.com/v51'
-    }
-  })
-}
-
-async function cnvmp3(yturl, quality = 128) {
-  const youtube_id = convertid(yturl)
-  if (!youtube_id) throw new Error('Invalid yt url')
-
-  const finalQuality = mapaudioquality(parseInt(quality))
-  const yturlfull = `https://www.youtube.com/watch?v=${youtube_id}`
-
-  const viddata = await request(
-    'https://cnvmp3.com/get_video_data.php',
-    { url: yturlfull, token: "1234" }
-  )
-
-  const download = await request(
-    'https://cnvmp3.com/download_video_ucep.php',
-    {
-      url: yturlfull,
-      quality: finalQuality,
-      title: viddata.data.title,
-      formatValue: 1
-    }
-  )
-
-  return {
-    title: viddata.data.title,
-    download: download.data.download_link
-  }
-}
-
 const handler = async (m, { conn, text, command }) => {
   if (!text) return m.reply('🔎 Ingresa nombre o link de YouTube')
 
@@ -80,24 +27,38 @@ const handler = async (m, { conn, text, command }) => {
   }, { quoted: m })
 
   if (command === 'playaudio') {
+    try {
+      const api = `https://api.apocalypse.web.id/download/ytmp3?url=${encodeURIComponent(video.url)}&bitrate=128`
+      const { data } = await axios.get(api)
 
-    const audio = await cnvmp3(video.url, 128)
+      if (!data.status) throw 'Error al obtener audio'
 
-    await conn.sendMessage(m.chat, {
-      audio: { url: audio.download },
-      mimetype: 'audio/mpeg',
-      fileName: `${audio.title}.mp3`
-    }, { quoted: m })
+      await conn.sendMessage(m.chat, {
+        audio: { url: data.result.url },
+        mimetype: 'audio/mpeg',
+        fileName: `${data.result.title}.mp3`
+      }, { quoted: m })
 
+    } catch (e) {
+      m.reply('❌ Error al descargar el audio')
+    }
   }
 
   if (command === 'playvideo') {
+    try {
+      const api = `https://nexus-light-beryl.vercel.app/download/ytvideo?url=${encodeURIComponent(video.url)}`
+      const { data } = await axios.get(api)
 
-    await conn.sendMessage(m.chat, {
-      video: { url: video.url },
-      caption: `🎥 ${video.title}`
-    }, { quoted: m })
+      if (!data.status) throw 'Error al obtener video'
 
+      await conn.sendMessage(m.chat, {
+        video: { url: data.result.download },
+        caption: `🎥 ${data.result.title}\n📺 Calidad: ${data.result.quality}`
+      }, { quoted: m })
+
+    } catch (e) {
+      m.reply('❌ Error al descargar el video')
+    }
   }
 
   await m.react('✅')
