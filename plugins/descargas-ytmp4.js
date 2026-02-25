@@ -58,7 +58,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         { quoted: m }
       )
     } else {
-      // 🎥 Video normal
       await conn.sendMessage(
         m.chat,
         {
