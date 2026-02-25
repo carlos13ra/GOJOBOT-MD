@@ -1,144 +1,110 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
+import yts from 'yt-search'
+import axios from 'axios'
 
-const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
+function convertid(url) {
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|embed|watch|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[&?]|$)/
+  const match = url.match(regex)
+  return match ? match[1] : null
+}
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-  try {
-    if (!text?.trim())
-      return conn.reply(m.chat, `☃️ *Por favor, ingresa el nombre o enlace del video.*`, m)
+function mapaudioquality(bitrate) {
+  if (bitrate == 320) return 0
+  if (bitrate == 256) return 1
+  if (bitrate == 128) return 4
+  if (bitrate == 96) return 5
+  return 4
+}
 
-    let videoIdMatch = text.match(youtubeRegexID)
-    let search = await yts(videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text)
-    let video = videoIdMatch
-      ? search.all.find(v => v.videoId === videoIdMatch[1]) || search.videos.find(v => v.videoId === videoIdMatch[1])
-      : search.videos?.[0]
-
-    if (!video)
-      return conn.reply(m.chat, '✧ No se encontraron resultados para tu búsqueda.', m)
-
-    const { title, thumbnail, timestamp, views, ago, url, author } = video
-    const vistas = formatViews(views)
-    const canal = author?.name || 'Desconocido'
-
-    const infoMessage = ` *${title}*
-
-> 📺 *Canal:* ${canal}
-> 👁️ *Vistas:* ${vistas}
-> ⏱ *Duración:* ${timestamp || 'Desconocido'}
-> 📆 *Publicado:* ${ago || 'Desconocido'}
-> 🔗 *Enlace:* ${url}`.trim()
-
-    await conn.sendMessage(m.chat, {
-      image: { url: thumbnail },
-      caption: infoMessage,
-      contextInfo: {
-        externalAdReply: {
-          title,
-          body: "",
-          thumbnailUrl: thumbnail,
-          sourceUrl: url,
-          mediaType: 1,
-          renderLargerThumbnail: false
-        }
-      }
-    }, { quoted: m })
-
-    // ================= AUDIO =================
-    if (command === 'playaudio') {
-      try {
-        const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytaudio?url=${encodeURIComponent(url)}`
-        const res = await fetch(apiUrl)
-        const json = await res.json()
-
-        if (!json.status || !json.result?.download)
-          throw '⚠ No se obtuvo enlace de audio válido.'
-
-        const audioUrl = json.result.download
-        const titulo = json.result.title || title
-        const filesizeMB = (json.result.filesize / 1024 / 1024).toFixed(2)
-
-        await conn.sendMessage(m.chat, {
-          audio: { url: audioUrl },
-          mimetype: 'audio/mpeg',
-          fileName: `${titulo}.mp3`,
-          contextInfo: {
-            externalAdReply: {
-              title: `🎧 ${titulo}`,
-              body: `Peso: ${filesizeMB} MB`,
-              mediaType: 1,
-              thumbnailUrl: thumbnail,
-              sourceUrl: url,
-              renderLargerThumbnail: false
-            }
-          }
-        }, { quoted: m })
-
-        await m.react('✅')
-      } catch (e) {
-        console.error(e)
-        return conn.reply(m.chat, '*⚠ No se pudo enviar el audio. Puede ser pesado o la API falló.*', m)
-      }
+async function request(url, data) {
+  return axios.post(url, data, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 10)',
+      'Content-Type': 'application/json',
+      origin: 'https://cnvmp3.com',
+      referer: 'https://cnvmp3.com/v51'
     }
+  })
+}
 
-    // ================= VIDEO =================
-    else if (command === 'playvideo') {
-      try {
-        const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytvideo?url=${encodeURIComponent(url)}`
-        const res = await fetch(apiUrl)
-        const json = await res.json()
+async function cnvmp3(yturl, quality = 128) {
+  const youtube_id = convertid(yturl)
+  if (!youtube_id) throw new Error('Invalid yt url')
 
-        if (!json.status || !json.result?.download)
-          throw '⚠ No se obtuvo enlace de video válido.'
+  const finalQuality = mapaudioquality(parseInt(quality))
+  const yturlfull = `https://www.youtube.com/watch?v=${youtube_id}`
 
-        const videoUrl = json.result.download
-        const titulo = json.result.title || title
+  const viddata = await request(
+    'https://cnvmp3.com/get_video_data.php',
+    { url: yturlfull, token: "1234" }
+  )
 
-        const caption = `> 🌾 *Título:* ${titulo}
-> 📽️ *Calidad:* ${json.result.quality}`.trim()
-
-        await conn.sendMessage(m.chat, {
-          video: { url: videoUrl },
-          caption,
-          mimetype: 'video/mp4',
-          fileName: `${titulo}.mp4`,
-          contextInfo: {
-            externalAdReply: {
-              title: titulo,
-              body: `📽️ Calidad ${json.result.quality}`,
-              thumbnailUrl: thumbnail,
-              sourceUrl: url,
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        }, { quoted: m })
-
-        await m.react('✅')
-      } catch (e) {
-        console.error(e)
-        return conn.reply(m.chat, '⚠ No se pudo enviar el video. Puede ser pesado o la API falló.', m)
-      }
+  const download = await request(
+    'https://cnvmp3.com/download_video_ucep.php',
+    {
+      url: yturlfull,
+      quality: finalQuality,
+      title: viddata.data.title,
+      formatValue: 1
     }
+  )
 
-    else {
-      return conn.reply(m.chat, '✧ Comando no reconocido.', m)
-    }
-
-  } catch (err) {
-    console.error(err)
-    return m.reply(`⚠ Ocurrió un error:\n${err}`)
+  return {
+    title: viddata.data.title,
+    download: download.data.download_link
   }
 }
 
-handler.command = handler.help = ['playaudio', 'playvideo']
-handler.tags = ['descargas']
-export default handler
+const handler = async (m, { conn, text, command }) => {
+  if (!text) return m.reply('🔎 Ingresa nombre o link de YouTube')
 
-function formatViews(views) {
-  if (views === undefined) return "No disponible"
-  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B (${views.toLocaleString()})`
-  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
-  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
-  return views.toString()
+  await m.react('⏳')
+
+  let search = await yts(text)
+  let video = search.videos[0]
+
+  if (!video) return m.reply('❌ No se encontró el video')
+
+  const info = `
+🎬 *${video.title}*
+
+👤 Canal: ${video.author.name}
+⏱ Duración: ${video.timestamp}
+👁 Vistas: ${video.views.toLocaleString()}
+📅 Publicado: ${video.ago}
+🔗 Link: ${video.url}
+`.trim()
+
+  await conn.sendMessage(m.chat, {
+    image: { url: video.thumbnail },
+    caption: info
+  }, { quoted: m })
+
+  if (command === 'playaudio') {
+
+    const audio = await cnvmp3(video.url, 128)
+
+    await conn.sendMessage(m.chat, {
+      audio: { url: audio.download },
+      mimetype: 'audio/mpeg',
+      fileName: `${audio.title}.mp3`
+    }, { quoted: m })
+
+  }
+
+  if (command === 'playvideo') {
+
+    await conn.sendMessage(m.chat, {
+      video: { url: video.url },
+      caption: `🎥 ${video.title}`
+    }, { quoted: m })
+
+  }
+
+  await m.react('✅')
 }
+
+handler.command = ['playaudio', 'playvideo']
+handler.help = ['playaudio <texto>', 'playvideo <texto>']
+handler.tags = ['descargas']
+
+export default handler
