@@ -33,7 +33,7 @@ global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ ƈαɾʅσʂ.ɾʋ"
 global.etiqueta = "✫ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ❄️ ⊹꙰ "
 global.currency = "g᥆𝗍іᥴᥲs"
 global.banner = "https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1767454349524_108341.jpeg"
-global.icono = "https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/majvr.jpeg"
+global.icono = "https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/vdoua.jpeg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
