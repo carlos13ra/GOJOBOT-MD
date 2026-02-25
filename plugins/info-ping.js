@@ -3,14 +3,15 @@ import os from 'os'
 import { exec } from 'child_process'
 
 let handler = async (m, { conn }) => {
-  const timestamp = speed()
-  const latensi = speed() - timestamp
+  const start = speed()
 
   exec('neofetch --stdout', async (error, stdout) => {
     let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
     let ramLibre = (os.freemem() / 1024 / 1024).toFixed(0)
     let ramUso = ramTotal - ramLibre
     let uptime = process.uptime()
+
+    const latensi = speed() - start
 
     let teks = `*'ׄ𐚁ִㅤS T A T U S - PINGׄ ₍ ᐢ..ᐢ ₎'*
 
