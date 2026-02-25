@@ -12,7 +12,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const search = await yts(text)
     const video = search.videos[0]
-    if (!video) return conn.reply(m.chat, '❌ No se encontraron resultados.', m)
+    if (!video)
+      return conn.reply(m.chat, '❌ No se encontraron resultados.', m)
 
     const { title, duration, author, ago, url, views, thumbnail } = video
 
@@ -31,21 +32,34 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       { quoted: m }
     )
 
+    // 🔥 NUEVA API
     const apiUrl = `https://nexus-light-beryl.vercel.app/download/ytaudio?url=${encodeURIComponent(url)}`
     const res = await fetch(apiUrl)
     const json = await res.json()
 
-    if (!json.status)
+    if (!json.status || !json.result?.download)
       return conn.reply(m.chat, '❌ No se pudo descargar el audio.', m)
 
-    const audioUrl = json.data.download
+    const audioUrl = json.result.download
+    const titulo = json.result.title
+    const filesizeKB = (json.result.filesize / 1024).toFixed(2)
 
     await conn.sendMessage(
       m.chat,
       {
         audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
-        fileName: `${json.data.title}.mp3`
+        fileName: `${titulo}.mp3`,
+        contextInfo: {
+          externalAdReply: {
+            title: `🎧 ${titulo}`,
+            body: `Peso: ${filesizeKB} KB`,
+            thumbnailUrl: thumbnail,
+            sourceUrl: url,
+            mediaType: 1,
+            renderLargerThumbnail: false
+          }
+        }
       },
       { quoted: m }
     )
