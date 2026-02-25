@@ -1,66 +1,82 @@
 import fetch from 'node-fetch'
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
+const handler = async (m, { conn, text }) => {
   if (!text)
-    return m.reply(`▶️ *Ingresa el nombre o artista que quieres buscar en SoundCloud.*`)
+    return m.reply('🎵 *Escribe el nombre de la canción a buscar en SoundCloud.*')
 
   try {
-    let trackInfo = {}
+    const searchRes = await fetch(`https://nexus-light-beryl.vercel.app/search/soundcloud?q=${encodeURIComponent(text)}`)
+    const searchJson = await searchRes.json()
 
-    const downloadAudio = async (url) => {
-      const res = await fetch(`https://api.zenzxz.my.id/api/downloader/soundcloud?url=${encodeURIComponent(url)}`)
-      const json = await res.json()
-      if (!json.success) throw new Error('No se pudo descargar el audio.')
-      return json.data
-    }
+    if (!searchJson.status || !searchJson.results?.length)
+      return m.reply('❌ No se encontraron resultados.')
 
-    if (text.includes('soundcloud.com')) {
-      trackInfo = await downloadAudio(text)
-    } else {
-      const res = await fetch(`https://api.delirius.store/search/soundcloud?q=${encodeURIComponent(text)}&limit=1`)
-      const json = await res.json()
-      if (!json.status || !json.data?.length) return m.reply('No se encontraron resultados.')
+    const first = searchJson.results[0]
 
-      const track = json.data[0]
-      const download = await downloadAudio(track.link)
+    const caption = `
+╭━━━⬣ 🎧 *SoundCloud Result*
+┃ *Título:* ${first.title}
+┃ *Artista:* ${first.artist}
+┃ *Duración:* ${first.duration}
+┃ *Likes:* ${first.likes}
+┃ *Reproducciones:* ${first.plays}
+┃ *Comentarios:* ${first.comments}
+┃ *Publicado:* ${first.created}
+┃ *Enlace:* ${first.link || 'No disponible'}
+╰━━━⬣
 
-      trackInfo = { ...download, ...track, duration_seconds: Math.floor(track.duration / 1000), source_url: track.link, thumbnail: track.image }
-    }
+⬇️ Descargando audio...
+`.trim()
 
-    const duracionSeg = trackInfo.duration_seconds || 0
-    const duracion = `${Math.floor(duracionSeg / 60)}:${(duracionSeg % 60).toString().padStart(2, '0')}`
+    await conn.sendMessage(
+      m.chat,
+      { image: { url: first.image }, caption },
+      { quoted: m }
+    )
 
-    const infoFields = [
-      ['Título', trackInfo.title],
-      ['Artista', trackInfo.artist],
-      ['Álbum', trackInfo.album],
-      ['Género', trackInfo.genre],
-      ['Label', trackInfo.label_name || trackInfo.label],
-      ['Licencia', trackInfo.license],
-      ['Likes', trackInfo.likes],
-      ['Reproducciones', trackInfo.play],
-      ['Comentarios', trackInfo.comments],
-      ['Duración', duracion],
-      ['Enlace', trackInfo.source_url]
-    ]
+    if (!first.link)
+      return m.reply('❌ Este resultado no tiene enlace válido para descargar.')
 
-    const caption = [
-      '╭━━━⬣ *SoundCloud Music* 📀',
-      ...infoFields.map(([k, v]) => `┃ 🎶 ${k}: ${v ?? '-'}`),
-      '╰━━━⬣'
-    ].join('\n')
+    const downloadRes = await fetch(`https://nexus-light-beryl.vercel.app/download/soundcloud?url=${encodeURIComponent(first.link)}`)
+    const downloadJson = await downloadRes.json()
 
-    await conn.sendMessage(m.chat, { image: { url: trackInfo.thumbnail }, caption }, { quoted: m })
-    await conn.sendMessage(m.chat, { audio: { url: trackInfo.download_url }, mimetype: 'audio/mpeg', fileName: `${trackInfo.title || 'soundcloud'}.mp3` }, { quoted: m })
+    if (!downloadJson.status || !downloadJson.result?.download_url)
+      return m.reply('❌ No se pudo descargar el audio.')
+
+    const track = downloadJson.result
+    const totalSec = Math.floor(track.duration / 1000)
+    const duration = `${Math.floor(totalSec / 60)}:${(totalSec % 60)
+      .toString()
+      .padStart(2, '0')}`
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: { url: track.download_url },
+        mimetype: 'audio/mpeg',
+        fileName: `${track.title}.mp3`,
+        contextInfo: {
+          externalAdReply: {
+            title: track.title,
+            body: null,
+            thumbnailUrl: track.artwork,
+            sourceUrl: track.permalink,
+            mediaType: 1,
+            renderLargerThumbnail: false
+          }
+        }
+      },
+      { quoted: m }
+    )
 
   } catch (err) {
     console.error(err)
-    m.reply('*Ocurrió un error al procesar la canción.')
+    m.reply('⚠️ Error al procesar la solicitud.')
   }
 }
 
 handler.command = ['sound', 'soundcloud']
-handler.help = ['soundcloud <nombre o artista>']
+handler.help = ['sound <nombre>']
 handler.tags = ['download']
 
 export default handler
