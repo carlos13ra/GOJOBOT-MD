@@ -40,7 +40,7 @@
 "human-readable": "^0.2.1",
 "jsdom": "^20.0.1",
 "jszip": "^3.10.1",
-"jimp": "^0.16.3",
+"jimp": "latest",
 "lodash": "^4.17.21",
 "lowdb": "^3.0.0",
 "megajs": "^1.1.3",
