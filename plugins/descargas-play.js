@@ -28,15 +28,15 @@ const handler = async (m, { conn, text, command }) => {
 
   if (command === 'playaudio') {
     try {
-      const api = `https://api.apocalypse.web.id/download/ytmp3?url=${encodeURIComponent(video.url)}&bitrate=128`
+      const api = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=shadow-xyz&url=${encodeURIComponent(video.url)}`
       const { data } = await axios.get(api)
 
       if (!data.status) throw 'Error al obtener audio'
 
       await conn.sendMessage(m.chat, {
-        audio: { url: data.result.url },
+        audio: { url: data.data.url },
         mimetype: 'audio/mpeg',
-        fileName: `${data.result.title}.mp3`
+        fileName: `${data.data.title}.mp3`
       }, { quoted: m })
 
     } catch (e) {
