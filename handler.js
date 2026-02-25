@@ -239,16 +239,9 @@ global.comando = command
                         
 if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
   
-// Primary by: Alex 🐼
+// Primary
 if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
-const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
-const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
-const primaryBotInGroup = participants.some(p => p.jid === global.db.data.chats[m.chat].primaryBot)
-if (primaryBotConn && primaryBotInGroup || global.db.data.chats[m.chat].primaryBot === global.conn.user.jid) {
 throw !1
-} else {
-global.db.data.chats[m.chat].primaryBot = null
-}} else {
 }
 
 if (!isAccept) continue
@@ -367,17 +360,17 @@ global.dfail = (type, m, conn) => {
 
    owner: ` ׄ 🌾 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙙𝙚𝙨𝙖𝙧𝙧𝙤𝙡𝙡𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
 
-   mods: ` ׄ 🍉 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙢𝙤𝙙𝙚𝙧𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+   mods: ` ׄ 🍉 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙖 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙢𝙤𝙙𝙚𝙧𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
 
-   premium: ` ׄ 🍋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙪𝙨𝙪𝙖𝙧𝙞𝙤𝙨 𝙥𝙧𝙚𝙢𝙞𝙪𝙢.`,
+   premium: ` ׄ 🍋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙖 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙪𝙨𝙪𝙖𝙧𝙞𝙤𝙨 𝙥𝙧𝙚𝙢𝙞𝙪𝙢.`,
 
-   group: ` ׄ 🌿 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙚𝙣 𝙜𝙧𝙪𝙥𝙤𝙨.`,
+   group: ` ׄ 🌿 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙖 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙚𝙣 𝙜𝙧𝙪𝙥𝙤𝙨.`,
 
-   private: ` ׄ 🌀 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙖𝙡 𝙘𝙝𝙖𝙩 𝙥𝙧𝙞𝙫𝙖𝙙𝙤 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+   private: ` ׄ 🌀 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙖 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙖𝙡 𝙘𝙖𝙧𝙖 𝙖 𝙘𝙖𝙧𝙖.`,
 
-   admin: ` ׄ 🎋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙖𝙙𝙢𝙞𝙣𝙨 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥𝙤.`,
+   admin: ` ׄ 🎋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙖 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥���𝙧 𝙡𝙤𝙨 𝙖𝙙𝙢𝙞𝙣𝙨 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥���.`,
 
-   botAdmin: ` ׄ 🚀 ׅ  𝙋𝙖𝙧𝙖 𝙚𝙟𝙚𝙘𝙪𝙩𝙖𝙧 𝙚𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙙𝙚𝙗𝙤 𝙨𝙚𝙧 𝙖𝙙𝙢𝙞𝙣𝙞𝙨𝙩𝙧𝙖𝙙𝙤𝙧 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥𝙤.`,
+   botAdmin: ` ׄ 🚀 ׅ  𝙋𝙖𝙧𝙖 𝙚𝙟𝙖𝙘𝙪𝙩𝙖𝙧 𝙚𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙙𝙚𝙗𝙤 𝙨𝙚𝙧 𝙖𝙙𝙢𝙞𝙣𝙞𝙨𝙩𝙧𝙖𝙙𝙤𝙧 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥𝙤.`,
 
    restrict: `*_ ׄ ☁️ ׅ  Esta caracteristica está desactivada._*`
  }[type]
