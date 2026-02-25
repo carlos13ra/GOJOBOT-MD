@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const handler = async (m, { conn, text, usedPrefix }) => {
-if (!text) return conn.reply(m.chat, '❀ Por favor, ingresa un término de búsqueda o el enlace de TikTok.', m)
+if (!text) return conn.reply(m.chat, '*❀ Por favor, ingresa un término de búsqueda o el enlace de TikTok.*', m)
 const isUrl = /(?:https:?\/{2})?(?:www\.|vm\.|vt\.|t\.)?tiktok\.com\/([^\s&]+)/gi.test(text)
 try {
 await m.react('🕒')
