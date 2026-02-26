@@ -1,109 +1,124 @@
-let handler = async (m, { conn }) => {
+let handler = async (m, { conn, command }) => {
+
+  if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
   let user = global.db.data.users[m.sender]
-  if (!user) global.db.data.users[m.sender] = {}
 
   // =========================
-  // ACEPTAR / RECHAZAR
+  // OBJETIVO (RESPUESTA O MENCIÓN)
   // =========================
-  if (/^(aceptar|rechazar)$/i.test(m.text)) {
-    if (m.text.toLowerCase() === 'rechazar') {
-      user.pendingHijo = null
-      user.pendingHija = null
-      user.pendingMascota = null
-      return m.reply('❌ Propuesta rechazada')
-    }
-
-    // ACEPTAR HIJO
-    if (user.pendingHijo) {
-      let parent = user.pendingHijo
-      if (!global.db.data.users[parent].hijos) global.db.data.users[parent].hijos = []
-
-      global.db.data.users[parent].hijos.push(m.sender)
-      user.padre = parent
-      user.pendingHijo = null
-
-      return m.reply('👶 Ahora eres hijo oficialmente')
-    }
-
-    // ACEPTAR HIJA
-    if (user.pendingHija) {
-      let parent = user.pendingHija
-      if (!global.db.data.users[parent].hijas) global.db.data.users[parent].hijas = []
-
-      global.db.data.users[parent].hijas.push(m.sender)
-      user.padre = parent
-      user.pendingHija = null
-
-      return m.reply('👧 Ahora eres hija oficialmente')
-    }
-
-    // ACEPTAR MASCOTA
-    if (user.pendingMascota) {
-      let owner = user.pendingMascota
-      if (!global.db.data.users[owner].mascotas) global.db.data.users[owner].mascotas = []
-
-      global.db.data.users[owner].mascotas.push(m.sender)
-      user.dueno = owner
-      user.pendingMascota = null
-
-      return m.reply('🐶 Ahora eres mascota oficialmente')
-    }
-
-    return
-  }
-
-  // =========================
-  // PROHIBIR SI NO ES COMANDO
-  // =========================
-  let command = m.text.split(' ')[0].toLowerCase()
-
-  if (!['.prohijo', '.prohija', '.promascota'].includes(command)) return
-
   let target = m.mentionedJid?.[0] || m.quoted?.sender
-  if (!target) return m.reply('❌ Responde o etiqueta a alguien')
-
-  let sender = m.sender
-
-  if (!global.db.data.users[target]) global.db.data.users[target] = {}
 
   // =========================
   // PROHIJO
   // =========================
-  if (command === '.prohijo') {
-    global.db.data.users[target].pendingHijo = sender
+  if (command === 'prohijo') {
+    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
+
+    if (!global.db.data.users[target]) global.db.data.users[target] = {}
+
+    global.db.data.users[target].pendingHijo = m.sender
 
     return conn.sendMessage(m.chat, {
-      text: `👶 *Propuesta de hijo*\n\n@${sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hijo.\n\nResponde *aceptar* o *rechazar*`,
-      mentions: [sender, target]
+      text: `👶 *Propuesta de hijo*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hijo\n\nResponde *aceptar* o *rechazar*`,
+      mentions: [m.sender, target]
     }, { quoted: m })
   }
 
   // =========================
   // PROHIJA
   // =========================
-  if (command === '.prohija') {
-    global.db.data.users[target].pendingHija = sender
+  if (command === 'prohija') {
+    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
+
+    if (!global.db.data.users[target]) global.db.data.users[target] = {}
+
+    global.db.data.users[target].pendingHija = m.sender
 
     return conn.sendMessage(m.chat, {
-      text: `👧 *Propuesta de hija*\n\n@${sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hija.\n\nResponde *aceptar* o *rechazar*`,
-      mentions: [sender, target]
+      text: `👧 *Propuesta de hija*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hija\n\nResponde *aceptar* o *rechazar*`,
+      mentions: [m.sender, target]
     }, { quoted: m })
   }
 
   // =========================
   // PROMASCOTA
   // =========================
-  if (command === '.promascota') {
-    global.db.data.users[target].pendingMascota = sender
+  if (command === 'promascota') {
+    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
+
+    if (!global.db.data.users[target]) global.db.data.users[target] = {}
+
+    global.db.data.users[target].pendingMascota = m.sender
 
     return conn.sendMessage(m.chat, {
-      text: `🐶 *Propuesta de mascota*\n\n@${sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su mascota.\n\nResponde *aceptar* o *rechazar*`,
-      mentions: [sender, target]
+      text: `🐶 *Propuesta de mascota*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su mascota\n\nResponde *aceptar* o *rechazar*`,
+      mentions: [m.sender, target]
     }, { quoted: m })
+  }
+
+  // =========================
+  // ACEPTAR
+  // =========================
+  if (command === 'aceptar') {
+
+    // HIJO
+    if (user.pendingHijo) {
+      let parent = user.pendingHijo
+      let parentData = global.db.data.users[parent]
+
+      if (!parentData.hijos) parentData.hijos = []
+      parentData.hijos.push(m.sender)
+
+      user.padre = parent
+      user.pendingHijo = null
+
+      return m.reply('👶 Ahora eres hijo oficialmente')
+    }
+
+    // HIJA
+    if (user.pendingHija) {
+      let parent = user.pendingHija
+      let parentData = global.db.data.users[parent]
+
+      if (!parentData.hijas) parentData.hijas = []
+      parentData.hijas.push(m.sender)
+
+      user.padre = parent
+      user.pendingHija = null
+
+      return m.reply('👧 Ahora eres hija oficialmente')
+    }
+
+    // MASCOTA
+    if (user.pendingMascota) {
+      let owner = user.pendingMascota
+      let ownerData = global.db.data.users[owner]
+
+      if (!ownerData.mascotas) ownerData.mascotas = []
+      ownerData.mascotas.push(m.sender)
+
+      user.dueno = owner
+      user.pendingMascota = null
+
+      return m.reply('🐶 Ahora eres mascota oficialmente')
+    }
+
+    return m.reply('❌ No tienes propuestas pendientes')
+  }
+
+  // =========================
+  // RECHAZAR
+  // =========================
+  if (command === 'rechazar') {
+    user.pendingHijo = null
+    user.pendingHija = null
+    user.pendingMascota = null
+
+    return m.reply('❌ Propuesta rechazada')
   }
 }
 
-handler.customPrefix = /^(\.prohijo|\.prohija|\.promascota|aceptar|rechazar)$/i
-handler.command = new RegExp
+// 🔥 ESTA LÍNEA ES LA CLAVE
+handler.command = ['prohijo', 'prohija', 'promascota', 'aceptar', 'rechazar']
 
 export default handler
