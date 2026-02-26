@@ -1,135 +1,134 @@
-let TIEMPO_LIMITE = 5 * 60 * 1000 // 5 minutos
+const familyConfirm = {} // confirmaciones temporales
 
-let handler = async (m, { conn }) => {
+const handler = async (m, { conn, command }) => {
+  try {
+    if (!global.db.data.users) global.db.data.users = {}
 
-  if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
-  let user = global.db.data.users[m.sender]
+    const sender = m.sender
+    const target = m.quoted?.sender || m.mentionedJid?.[0]
 
-  let text = (m.text || '').toLowerCase().trim()
-  let command = text.split(' ')[0]
+    if (!target) {
+      return conn.reply(m.chat, '❌ Responde o etiqueta a alguien.', m)
+    }
 
-  let target = m.mentionedJid?.[0] || m.quoted?.sender
-
-  // =========================
-  // PROPUESTAS
-  // =========================
-
-  if (command === '.prohijo' || command === '.prohija' || command === '.promascota') {
-    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
+    if (sender === target) {
+      return conn.reply(m.chat, '❌ No puedes hacer eso contigo mismo.', m)
+    }
 
     if (!global.db.data.users[target]) global.db.data.users[target] = {}
+    if (!global.db.data.users[sender]) global.db.data.users[sender] = {}
 
-    let now = Date.now()
+    let type = ''
+    let emoji = ''
 
-    if (command === '.prohijo') {
-      global.db.data.users[target].pendingHijo = {
-        from: m.sender,
-        time: now
-      }
+    if (command === 'prohijo') {
+      type = 'hijo'
+      emoji = '👶'
     }
 
-    if (command === '.prohija') {
-      global.db.data.users[target].pendingHija = {
-        from: m.sender,
-        time: now
-      }
+    if (command === 'prohija') {
+      type = 'hija'
+      emoji = '👧'
     }
 
-    if (command === '.promascota') {
-      global.db.data.users[target].pendingMascota = {
-        from: m.sender,
-        time: now
-      }
+    if (command === 'promascota') {
+      type = 'mascota'
+      emoji = '🐶'
+    }
+
+    // guardar confirmación tipo marry
+    if (familyConfirm[target] && familyConfirm[target].timeout) {
+      clearTimeout(familyConfirm[target].timeout)
+    }
+
+    familyConfirm[target] = {
+      from: sender,
+      type,
+      timeout: setTimeout(() => {
+        delete familyConfirm[target]
+        conn.sendMessage(m.chat, {
+          text: `⏳ La propuesta de ${type} expiró.`,
+        }, { quoted: m })
+      }, 5 * 60 * 1000) // 5 minutos
     }
 
     return conn.sendMessage(m.chat, {
-      text: `👨‍👩‍👧 *Propuesta de familia*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su *${command.replace('.', '').replace('pro','')}*\n\n⏳ Tienes 5 minutos\n\nResponde:\n✔ aceptar / si\n❌ rechazar / no`,
-      mentions: [m.sender, target]
+      text: `${emoji} *@${sender.split('@')[0]}* quiere que *@${target.split('@')[0]}* sea su ${type}.\n\nResponde con *Si* o *No*\n⏳ Tienes 5 minutos.`,
+      mentions: [sender, target]
     }, { quoted: m })
-  }
 
-  // =========================
-  // ACEPTAR / SI
-  // =========================
-
-  if (['aceptar', 'si', 'sí'].includes(command)) {
-    let now = Date.now()
-
-    // HIJO
-    if (user.pendingHijo) {
-      if (now - user.pendingHijo.time > TIEMPO_LIMITE) {
-        user.pendingHijo = null
-        return m.reply('⌛ La propuesta expiró')
-      }
-
-      let parent = user.pendingHijo.from
-      let parentData = global.db.data.users[parent]
-
-      if (!parentData.hijos) parentData.hijos = []
-      parentData.hijos.push(m.sender)
-
-      user.padre = parent
-      user.pendingHijo = null
-
-      return m.reply('👶 Ahora eres hijo oficialmente')
-    }
-
-    // HIJA
-    if (user.pendingHija) {
-      if (now - user.pendingHija.time > TIEMPO_LIMITE) {
-        user.pendingHija = null
-        return m.reply('⌛ La propuesta expiró')
-      }
-
-      let parent = user.pendingHija.from
-      let parentData = global.db.data.users[parent]
-
-      if (!parentData.hijas) parentData.hijas = []
-      parentData.hijas.push(m.sender)
-
-      user.padre = parent
-      user.pendingHija = null
-
-      return m.reply('👧 Ahora eres hija oficialmente')
-    }
-
-    // MASCOTA
-    if (user.pendingMascota) {
-      if (now - user.pendingMascota.time > TIEMPO_LIMITE) {
-        user.pendingMascota = null
-        return m.reply('⌛ La propuesta expiró')
-      }
-
-      let owner = user.pendingMascota.from
-      let ownerData = global.db.data.users[owner]
-
-      if (!ownerData.mascotas) ownerData.mascotas = []
-      ownerData.mascotas.push(m.sender)
-
-      user.dueno = owner
-      user.pendingMascota = null
-
-      return m.reply('🐶 Ahora eres mascota oficialmente')
-    }
-
-    return m.reply('❌ No tienes propuestas pendientes')
-  }
-
-  // =========================
-  // RECHAZAR / NO
-  // =========================
-
-  if (['rechazar', 'no'].includes(command)) {
-    if (user.pendingHijo || user.pendingHija || user.pendingMascota) {
-      user.pendingHijo = null
-      user.pendingHija = null
-      user.pendingMascota = null
-      return m.reply('❌ Propuesta rechazada')
-    }
+  } catch (e) {
+    console.error(e)
   }
 }
 
-handler.customPrefix = /^(\.prohijo|\.prohija|\.promascota|aceptar|rechazar|si|sí|no)$/i
-handler.command = new RegExp
+// 🔥 RESPUESTAS (IGUAL QUE MARRY)
+handler.before = async (m, { conn }) => {
+  try {
+    if (!m.text) return
+    if (m.isBaileys) return
+
+    const text = m.text.trim()
+    const user = m.sender
+
+    if (!(user in familyConfirm)) return
+
+    const { from, type, timeout } = familyConfirm[user]
+
+    // ❌ RECHAZAR
+    if (/^No$/i.test(text)) {
+      clearTimeout(timeout)
+      delete familyConfirm[user]
+
+      return conn.sendMessage(m.chat, {
+        text: `❌ @${user.split('@')[0]} rechazó la propuesta.`,
+        mentions: [user, from]
+      }, { quoted: m })
+    }
+
+    // ✅ ACEPTAR
+    if (/^Si$/i.test(text)) {
+      clearTimeout(timeout)
+      delete familyConfirm[user]
+
+      if (!global.db.data.users[from]) global.db.data.users[from] = {}
+      if (!global.db.data.users[user]) global.db.data.users[user] = {}
+
+      let parent = global.db.data.users[from]
+      let child = global.db.data.users[user]
+
+      // inicializar arrays
+      if (!parent.hijos) parent.hijos = []
+      if (!parent.hijas) parent.hijas = []
+      if (!parent.mascotas) parent.mascotas = []
+
+      if (type === 'hijo') {
+        parent.hijos.push(user)
+        child.padre = from
+      }
+
+      if (type === 'hija') {
+        parent.hijas.push(user)
+        child.padre = from
+      }
+
+      if (type === 'mascota') {
+        parent.mascotas.push(user)
+        child.dueno = from
+      }
+
+      return conn.sendMessage(m.chat, {
+        text: `✅ Ahora @${user.split('@')[0]} es ${type} de @${from.split('@')[0]}`,
+        mentions: [user, from]
+      }, { quoted: m })
+    }
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+handler.command = ['prohijo', 'prohija', 'promascota']
+handler.group = true
 
 export default handler
