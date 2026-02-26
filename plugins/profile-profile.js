@@ -6,7 +6,6 @@ let handler = async (m, { conn, args, usedPrefix }) => {
 try {
 let texto = await m.mentionedJid
 let userId = texto.length > 0 ? texto[0] : (m.quoted ? await m.quoted.sender : m.sender)
-let name = await (async () => global.db.data.users[userId].name || (async () => { try { const n = await conn.getName(userId); return typeof n === 'string' && n.trim() ? n : userId.split('@')[0] } catch { return userId.split('@')[0] } })())()
 
 if (!global.db.data.users) global.db.data.users = {}
 if (!global.db.data.characters) global.db.data.characters = {}
@@ -14,7 +13,10 @@ if (!global.db.data.users[userId]) global.db.data.users[userId] = {}
 
 const user = global.db.data.users[userId]
 
-// 🔥 THERIANS (inicialización segura)
+// Nombre seguro
+let name = user.name || await conn.getName(userId).catch(() => userId.split('@')[0])
+
+// 🔥 THERIANS
 if (!user.terianx) user.terianx = null
 if (!user.terianxGenero) user.terianxGenero = null
 
@@ -38,17 +40,20 @@ const coin = user.coin || 0
 const bank = user.bank || 0
 const total = coin + bank
 
+// Ranking
 const sorted = Object.entries(global.db.data.users)
 .map(([k, v]) => ({ ...v, jid: k }))
 .sort((a, b) => (b.level || 0) - (a.level || 0))
 
 const rank = sorted.findIndex(u => u.jid === userId) + 1
 
+// XP progreso
 const progreso = (() => {
 let datos = xpRange(nivel, global.multiplier)
-return `${exp - datos.min} => ${datos.xp} _(${Math.floor(((exp - datos.min) / datos.xp) * 100)}%)_`
+return `${exp - datos.min} / ${datos.xp} (${Math.floor(((exp - datos.min) / datos.xp) * 100)}%)`
 })()
 
+// Premium
 const premium = user.premium || global.prems.map(v => v.replace(/\D+/g, '') + '@s.whatsapp.net').includes(userId)
 
 const isLeft = premium 
@@ -57,9 +62,10 @@ const isLeft = premium
   : (user.premiumTime ? await formatTime(user.premiumTime - Date.now()) : '—')) 
 : '—'
 
+// Harem
 const favId = user.favorite
 const favLine = favId && global.db.data.characters?.[favId] 
-? `\n๑ Claim favorito » *${global.db.data.characters[favId].name || '???'}*` 
+? `\n│ ⭐ Favorito: ${global.db.data.characters[favId].name || '???'}` 
 : ''
 
 const ownedIDs = Object.entries(global.db.data.characters)
@@ -74,36 +80,67 @@ const value = typeof char.value === 'number' ? char.value : 0
 return acc + value
 }, 0)
 
-const pp = await conn.profilePictureUrl(userId, 'image')
-.catch(_ => 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg')
+// Imagen segura (fix 404)
+let img
+try {
+  const pp = await conn.profilePictureUrl(userId, 'image')
+  const res = await fetch(pp)
+  img = await res.buffer()
+} catch {
+  const res = await fetch('https://i.imgur.com/2WZtOD6.jpeg')
+  img = await res.buffer()
+}
 
-// 🔥 PERFIL FINAL CON THERIANS
-const text = `*「✦」 Perfil ◢ ${name} ◤*
-${description}
+// Moneda
+const currency = global.currency || 'Coins'
 
-❀ Cumpleaños » *${cumpleanos}*
-⚥ Género » *${genero}*
-♡ Casado con » *${casado}*
+// ✨ ESTILO NUEVO (WhatsApp visual)
+const text = `┌─❖ 「 PERFIL 」
+│ 👤 ${name}
+│ ✎ ${description}
+└────────────
 
-🐀 Therians » *${user.terianx || 'No tiene'}*
-⚧ Tipo » *${user.terianxGenero 
-  ? (user.terianxGenero.charAt(0).toUpperCase() + user.terianxGenero.slice(1)) 
-  : 'No definido'}*
+┌─❖ 「 INFO 」
+│ 🎂 ${cumpleanos}
+│ ⚥ ${genero}
+│ 💍 ${casado}
+└────────────
 
-☆ Experiencia » *${exp.toLocaleString()}*
-❖ Nivel » *${nivel}*
-# Puesto » *#${rank}*
-➨ Progreso » *${progreso}*
-⸙ Premium » ${premium ? `✔️ (*${isLeft}*)` : '✖️'}
+┌─❖ 「 THERIAN 」
+│ 🐾 ${user.terianx || 'No tiene'}
+│ ⚧ ${
+  user.terianxGenero
+    ? user.terianxGenero.charAt(0).toUpperCase() + user.terianxGenero.slice(1)
+    : 'No definido'
+}
+└────────────
 
-ꕥ Harem » *${haremCount}*
-♤ Valor total » *${haremValue.toLocaleString()}*${favLine}
-⛁ Coins totales » *${total.toLocaleString()} ${currency}*
-❒ Comandos totales » *${user.commands || 0}*`
+┌─❖ 「 PROGRESO 」
+│ ⭐ Nivel: ${nivel}
+│ ✦ Exp: ${exp.toLocaleString()}
+│ 📊 ${progreso}
+│ 🏆 #${rank}
+│ 💎 ${premium ? `Premium (${isLeft})` : 'No premium'}
+└────────────
+
+┌─❖ 「 ECONOMÍA 」
+│ 🪙 ${coin.toLocaleString()}
+│ 🏦 ${bank.toLocaleString()}
+│ 💸 ${total.toLocaleString()} ${currency}
+└────────────
+
+┌─❖ 「 HAREM 」
+│ 👥 ${haremCount}
+│ 💎 ${haremValue.toLocaleString()}${favLine}
+└────────────
+
+┌─❖ 「 OTROS 」
+│ ⚙️ ${user.commands || 0} comandos
+└────────────`
 
 await conn.sendMessage(
   m.chat,
-  { image: { url: pp }, caption: text, mentions: [userId] },
+  { image: img, caption: text, mentions: [userId] },
   { quoted: fkontak }
 )
 
@@ -131,4 +168,4 @@ if (s) t.push(`${s} segundo${s > 1 ? 's' : ''}`)
 return t.length > 1 
 ? t.slice(0, -1).join(' ') + ' y ' + t.slice(-1) 
 : t[0]
-  }
+}
