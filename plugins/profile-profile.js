@@ -96,7 +96,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     // ✨ Texto elegante
     const text = `
 ╔═════════════════════╗
-║        ✨ 𝗣𝗘𝗥𝗙𝗜𝗟  ✨        ║
+        ✨ 𝗣𝗘𝗥𝗙𝗜𝗟  ✨        
 ╚═════════════════════╝
 
 👤 Nombre: *${user.name}*${favLine}
