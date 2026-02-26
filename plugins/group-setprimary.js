@@ -21,8 +21,16 @@ if (!subBots.includes(who)) return conn.reply(m.chat, `ꕥ El usuario mencionado
 if (chat.primaryBot === who) {
 return conn.reply(m.chat, `ꕥ @${who.split`@`[0]} ya esta como Bot primario en este grupo.`, m, { mentions: [who] });
 }
+
+// Validar que el bot seleccionado está realmente activo
+const primaryBotConn = global.conns.find(conn => conn?.user?.jid === who && conn?.ws?.socket && conn.ws.socket.readyState === ws.OPEN)
+if (!primaryBotConn) {
+return conn.reply(m.chat, `ꕥ El bot @${who.split`@`[0]} no está activo en este momento.\n> Intenta de nuevo cuando esté conectado.`, m, { mentions: [who] })
+}
+
 try {
 chat.primaryBot = who
+chat.primaryBotTime = Date.now()
 conn.reply(m.chat, `❀ Se ha establecido a @${who.split`@`[0]} como Bot primario de este grupo.\n> Ahora todos los comandos de este grupo serán ejecutados por @${who.split`@`[0]}.`, m, { mentions: [who] })
 } catch (e) {
 conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`, m)
