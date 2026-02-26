@@ -14,10 +14,30 @@ if (!global.db.data.users[userId]) global.db.data.users[userId] = {}
 
 const user = global.db.data.users[userId]
 
-// 🔥 THERIANS (inicialización segura)
+// 🔥 THERIANS
 if (!user.terianx) user.terianx = null
 if (!user.terianxGenero) user.terianxGenero = null
 
+// 🔥 FAMILIA
+if (!user.hijos) user.hijos = []
+if (!user.hijas) user.hijas = []
+if (!user.mascotas) user.mascotas = []
+
+const getNameSimple = async (jid) => {
+  if (!jid) return 'Nadie'
+  try {
+    let n = await conn.getName(jid)
+    return typeof n === 'string' && n.trim() ? n : jid.split('@')[0]
+  } catch {
+    return jid.split('@')[0]
+  }
+}
+
+const hijo = user.hijos[0] ? await getNameSimple(user.hijos[0]) : 'Nadie'
+const hija = user.hijas[0] ? await getNameSimple(user.hijas[0]) : 'Nadie'
+const mascota = user.mascotas[0] ? await getNameSimple(user.mascotas[0]) : 'Nadie'
+
+// 🔥 DATOS
 const cumpleanos = user.birth || 'Sin especificar :< (#setbirth)'
 const genero = user.genre || 'Sin especificar'
 const pareja = user.marry
@@ -77,7 +97,7 @@ return acc + value
 const pp = await conn.profilePictureUrl(userId, 'image')
 .catch(_ => 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg')
 
-// 🔥 PERFIL FINAL CON THERIANS
+// 🔥 PERFIL FINAL
 const text = `*「✦」 Perfil ◢ ${name} ◤*
 ${description}
 
@@ -89,7 +109,11 @@ ${description}
   ? (user.terianxGenero.charAt(0).toUpperCase() + user.terianxGenero.slice(1)) 
   : 'No definido'}*
 
-♡ Casado con » *${casado}*
+👪 Familia
+💍 Casado con » *${casado}*
+👦 Hijo » *${hijo}*
+👧 Hija » *${hija}*
+🐾 Mascota » *${mascota}*
 
 ☆ Experiencia » *${exp.toLocaleString()}*
 ❖ Nivel » *${nivel}*
