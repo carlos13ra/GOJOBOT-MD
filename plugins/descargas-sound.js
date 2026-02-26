@@ -5,7 +5,7 @@ const handler = async (m, { conn, text }) => {
     return m.reply('🎵 *Escribe el nombre de la canción a buscar en SoundCloud.*')
 
   try {
-    const searchRes = await fetch(`https://nexus-light-beryl.vercel.app/search/soundcloud?q=${encodeURIComponent(text)}`)
+    const searchRes = await fetch(`${global.APIs.light.url}/search/soundcloud?q=${encodeURIComponent(text)}`)
     const searchJson = await searchRes.json()
 
     if (!searchJson.status || !searchJson.results?.length)
@@ -37,7 +37,7 @@ const handler = async (m, { conn, text }) => {
     if (!first.link)
       return m.reply('❌ Este resultado no tiene enlace válido para descargar.')
 
-    const downloadRes = await fetch(`https://nexus-light-beryl.vercel.app/download/soundcloud?url=${encodeURIComponent(first.link)}`)
+    const downloadRes = await fetch(`${global.APIs.light.url}/download/soundcloud?url=${encodeURIComponent(first.link)}`)
     const downloadJson = await downloadRes.json()
 
     if (!downloadJson.status || !downloadJson.result?.download_url)
