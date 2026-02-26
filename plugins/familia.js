@@ -1,9 +1,12 @@
 let TIEMPO_LIMITE = 5 * 60 * 1000 // 5 minutos
 
-let handler = async (m, { conn, command }) => {
+let handler = async (m, { conn }) => {
 
   if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
   let user = global.db.data.users[m.sender]
+
+  let text = (m.text || '').toLowerCase().trim()
+  let command = text.split(' ')[0]
 
   let target = m.mentionedJid?.[0] || m.quoted?.sender
 
@@ -11,28 +14,28 @@ let handler = async (m, { conn, command }) => {
   // PROPUESTAS
   // =========================
 
-  if (['prohijo', 'prohija', 'promascota'].includes(command)) {
+  if (command === '.prohijo' || command === '.prohija' || command === '.promascota') {
     if (!target) return m.reply('❌ Responde o etiqueta a alguien')
 
     if (!global.db.data.users[target]) global.db.data.users[target] = {}
 
     let now = Date.now()
 
-    if (command === 'prohijo') {
+    if (command === '.prohijo') {
       global.db.data.users[target].pendingHijo = {
         from: m.sender,
         time: now
       }
     }
 
-    if (command === 'prohija') {
+    if (command === '.prohija') {
       global.db.data.users[target].pendingHija = {
         from: m.sender,
         time: now
       }
     }
 
-    if (command === 'promascota') {
+    if (command === '.promascota') {
       global.db.data.users[target].pendingMascota = {
         from: m.sender,
         time: now
@@ -40,16 +43,16 @@ let handler = async (m, { conn, command }) => {
     }
 
     return conn.sendMessage(m.chat, {
-      text: `📩 *Nueva propuesta*\n\n@${m.sender.split('@')[0]} te ha enviado una propuesta (${command.replace('pro','')})\n\n⏳ Tienes 5 minutos para responder\n\nResponde *aceptar* o *rechazar*`,
+      text: `👨‍👩‍👧 *Propuesta de familia*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su *${command.replace('.', '').replace('pro','')}*\n\n⏳ Tienes 5 minutos\n\nResponde:\n✔ aceptar / si\n❌ rechazar / no`,
       mentions: [m.sender, target]
     }, { quoted: m })
   }
 
   // =========================
-  // ACEPTAR
+  // ACEPTAR / SI
   // =========================
 
-  if (command === 'aceptar') {
+  if (['aceptar', 'si', 'sí'].includes(command)) {
     let now = Date.now()
 
     // HIJO
@@ -113,18 +116,20 @@ let handler = async (m, { conn, command }) => {
   }
 
   // =========================
-  // RECHAZAR
+  // RECHAZAR / NO
   // =========================
 
-  if (command === 'rechazar') {
-    user.pendingHijo = null
-    user.pendingHija = null
-    user.pendingMascota = null
-
-    return m.reply('❌ Propuesta rechazada')
+  if (['rechazar', 'no'].includes(command)) {
+    if (user.pendingHijo || user.pendingHija || user.pendingMascota) {
+      user.pendingHijo = null
+      user.pendingHija = null
+      user.pendingMascota = null
+      return m.reply('❌ Propuesta rechazada')
+    }
   }
 }
 
-handler.command = ['prohijo', 'prohija', 'promascota', 'aceptar', 'rechazar']
+handler.customPrefix = /^(\.prohijo|\.prohija|\.promascota|aceptar|rechazar|si|sí|no)$/i
+handler.command = new RegExp
 
 export default handler
