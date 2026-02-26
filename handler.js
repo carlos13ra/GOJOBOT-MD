@@ -13,6 +13,32 @@ clearTimeout(this)
 resolve()
 }, ms))
 
+const validatePrimaryBot = (primaryBotId, allConns) => {
+  if (!primaryBotId) return null
+  
+  const primaryConn = allConns.find(conn => {
+    return conn?.user?.jid === primaryBotId && 
+           conn?.ws?.socket && 
+           conn.ws.socket.readyState === ws.OPEN
+  })
+  
+  return primaryConn || null
+}
+
+const isPrimaryBotActive = async (primaryBotId, chat, botJid, isGroup) => {
+  if (!isGroup || !primaryBotId || primaryBotId === botJid) return true
+  
+  try {
+    const metadata = await this.groupMetadata(chat).catch(() => null)
+    if (!metadata?.participants) return false
+    
+    return metadata.participants.some(p => p.jid === primaryBotId)
+  } catch (err) {
+    console.error("Error validando bot primario:", err)
+    return false
+  }
+}
+
 export async function handler(chatUpdate) {
 this.msgqueque = this.msgqueque || []
 this.uptime = this.uptime || Date.now()
@@ -147,7 +173,7 @@ if (queque.indexOf(previousID) === -1) clearInterval(this)
 await delay(time)
 }, time)
 }
- 
+
 if (m.isBaileys) return
 m.exp += Math.ceil(Math.random() * 10)
 let usedPrefix
@@ -236,19 +262,42 @@ cmd.test(command) : cmd === command) :
 typeof plugin.command === "string" ?
 plugin.command === command : false
 global.comando = command
-                        
+
 if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
-  
-// Primary by: Alex 🐼
+
+// Primary by: Alex 🐼 - MEJORADO PARA ESTABILIDAD
 if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
-const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
-const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
-const primaryBotInGroup = participants.some(p => p.jid === global.db.data.chats[m.chat].primaryBot)
-if (primaryBotConn && primaryBotInGroup || global.db.data.chats[m.chat].primaryBot === global.conn.user.jid) {
-throw !1
+const primaryBotId = global.db.data.chats[m.chat].primaryBot
+const currentBotId = this.user.jid
+
+try {
+  // Validar que el primaryBot está conectado correctamente
+  const primaryBotConn = validatePrimaryBot(primaryBotId, global.conns)
+  
+  // Verificar si el bot primario está activo en el grupo
+  const isPrimaryActive = await isPrimaryBotActive.call(this, primaryBotId, m.chat, currentBotId, m.isGroup)
+  
+  if (primaryBotConn && isPrimaryActive) {
+    // El bot primario está activo y conectado, rechazar este
+    throw !1
+  } else if (!primaryBotConn && primaryBotId !== currentBotId) {
+    // Si el bot primario NO está conectado, limpiar la configuración
+    console.log(`[PRIMARY BOT] Bot ${primaryBotId} no disponible, limpiando configuración`)
+    global.db.data.chats[m.chat].primaryBot = null
+    // Permitir que este bot continúe procesando
+  } else if (!isPrimaryActive && m.isGroup) {
+    // Bot primario no está en el grupo, resetear
+    console.log(`[PRIMARY BOT] Bot ${primaryBotId} no está en el grupo, limpiando`)
+    global.db.data.chats[m.chat].primaryBot = null
+  }
+} catch (err) {
+  if (err === !1) {
+    // El bot primario debe procesar, no este
+    throw !1
+  }
+  console.error(`[PRIMARY BOT ERROR] ${err.message || err}`)
+}
 } else {
-global.db.data.chats[m.chat].primaryBot = null
-}} else {
 }
 
 if (!isAccept) continue
@@ -371,7 +420,7 @@ global.dfail = (type, m, conn) => {
 
    premium: ` ׄ 🍋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙪𝙨𝙪𝙖𝙧𝙞𝙤𝙨 𝙥𝙧𝙚𝙢𝙞𝙪𝙢.`,
 
-   group: ` ׄ 🌿 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙚𝙣 𝙜𝙧𝙪𝙥𝙤𝙨.`,
+   group: ` ׄ 🌿 ׅ  𝙀𝙡 ����𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙚𝙣 𝙜𝙧𝙪𝙥𝙤𝙨.`,
 
    private: ` ׄ 🌀 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙖𝙡 𝙘𝙝𝙖𝙩 𝙥𝙧𝙞𝙫𝙖𝙙𝙤 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
 
