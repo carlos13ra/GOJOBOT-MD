@@ -82,7 +82,7 @@ ${description}
 ❀ Cumpleaños » *${cumpleanos}*
 ⚥ Género » *${genero}*
 
-🧠 Therians » *${user.terianx || 'No tiene'}*
+🐀 Therians » *${user.terianx || 'No tiene'}*
 ⚧ Tipo » *${user.terianxGenero 
   ? (user.terianxGenero.charAt(0).toUpperCase() + user.terianxGenero.slice(1)) 
   : 'No definido'}*
