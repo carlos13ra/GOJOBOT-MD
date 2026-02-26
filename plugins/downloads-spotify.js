@@ -54,37 +54,20 @@ let handler = async (m, { conn, text }) => {
       },
       { quoted: m }
     )
- 
-    const songRes = await fetch(
-      `https://spotdown.org/api/song-details?url=${encodeURIComponent(spotifyUrl)}`,
-      {
-        headers: {
-          Accept: 'application/json, text/plain, */*'
-        }
-      }
-    )
 
-    if (!songRes.ok) throw 'Error al obtener datos de descarga.'
+    const apiDownload = `https://nexus-light-beryl.vercel.app/download/spotify?url=${encodeURIComponent(spotifyUrl)}`
+    const dlRes = await axios.get(apiDownload, { timeout: 20000 })
 
-    const songData = await songRes.json()
-    if (!songData.songs?.length) throw 'No se pudo procesar la canción.'
+    if (!dlRes.data.status || !dlRes.data.result?.download_url)
+      throw 'No se pudo obtener el enlace de descarga.'
 
-    const song = songData.songs[0]
+    const { download_url } = dlRes.data.result
 
-    const downloadRes = await fetch('https://spotdown.org/api/download', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ url: song.url })
-    })
+    const audioRes = await fetch(download_url)
+    if (!audioRes.ok) throw 'Error al descargar el audio.'
 
-    if (!downloadRes.ok || !downloadRes.body)
-      throw 'Error al descargar el audio.'
+    const buffer = await audioRes.buffer()
 
-    const buffer = await downloadRes.buffer()
-  
     await conn.sendMessage(
       m.chat,
       {
@@ -95,7 +78,7 @@ let handler = async (m, { conn, text }) => {
         contextInfo: {
           externalAdReply: {
             title: title,
-            body: '✿ Servidor: SpotDown',
+            body: '✿ Servidor: Nexus Light',
             thumbnailUrl: image,
             sourceUrl: spotifyUrl,
             mediaType: 1,
