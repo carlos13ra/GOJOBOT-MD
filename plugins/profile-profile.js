@@ -137,7 +137,7 @@ await m.reply(`⚠︎ Error en profile.\nUsa ${usedPrefix}report\n\n${error.mess
 }}
 
 handler.help = ['profile', 'perfil']
-handler.tags = ['rpg']
+handler.tags = ['rg']
 handler.command = ['profile', 'perfil', 'perfíl']
 handler.group = true
 
