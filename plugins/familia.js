@@ -1,57 +1,46 @@
+let TIEMPO_LIMITE = 5 * 60 * 1000 // 5 minutos
+
 let handler = async (m, { conn, command }) => {
 
   if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
   let user = global.db.data.users[m.sender]
 
-  // =========================
-  // OBJETIVO (RESPUESTA O MENCIÓN)
-  // =========================
   let target = m.mentionedJid?.[0] || m.quoted?.sender
 
   // =========================
-  // PROHIJO
+  // PROPUESTAS
   // =========================
-  if (command === 'prohijo') {
+
+  if (['prohijo', 'prohija', 'promascota'].includes(command)) {
     if (!target) return m.reply('❌ Responde o etiqueta a alguien')
 
     if (!global.db.data.users[target]) global.db.data.users[target] = {}
 
-    global.db.data.users[target].pendingHijo = m.sender
+    let now = Date.now()
+
+    if (command === 'prohijo') {
+      global.db.data.users[target].pendingHijo = {
+        from: m.sender,
+        time: now
+      }
+    }
+
+    if (command === 'prohija') {
+      global.db.data.users[target].pendingHija = {
+        from: m.sender,
+        time: now
+      }
+    }
+
+    if (command === 'promascota') {
+      global.db.data.users[target].pendingMascota = {
+        from: m.sender,
+        time: now
+      }
+    }
 
     return conn.sendMessage(m.chat, {
-      text: `👶 *Propuesta de hijo*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hijo\n\nResponde *aceptar* o *rechazar*`,
-      mentions: [m.sender, target]
-    }, { quoted: m })
-  }
-
-  // =========================
-  // PROHIJA
-  // =========================
-  if (command === 'prohija') {
-    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
-
-    if (!global.db.data.users[target]) global.db.data.users[target] = {}
-
-    global.db.data.users[target].pendingHija = m.sender
-
-    return conn.sendMessage(m.chat, {
-      text: `👧 *Propuesta de hija*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su hija\n\nResponde *aceptar* o *rechazar*`,
-      mentions: [m.sender, target]
-    }, { quoted: m })
-  }
-
-  // =========================
-  // PROMASCOTA
-  // =========================
-  if (command === 'promascota') {
-    if (!target) return m.reply('❌ Responde o etiqueta a alguien')
-
-    if (!global.db.data.users[target]) global.db.data.users[target] = {}
-
-    global.db.data.users[target].pendingMascota = m.sender
-
-    return conn.sendMessage(m.chat, {
-      text: `🐶 *Propuesta de mascota*\n\n@${m.sender.split('@')[0]} quiere que @${target.split('@')[0]} sea su mascota\n\nResponde *aceptar* o *rechazar*`,
+      text: `📩 *Nueva propuesta*\n\n@${m.sender.split('@')[0]} te ha enviado una propuesta (${command.replace('pro','')})\n\n⏳ Tienes 5 minutos para responder\n\nResponde *aceptar* o *rechazar*`,
       mentions: [m.sender, target]
     }, { quoted: m })
   }
@@ -59,11 +48,18 @@ let handler = async (m, { conn, command }) => {
   // =========================
   // ACEPTAR
   // =========================
+
   if (command === 'aceptar') {
+    let now = Date.now()
 
     // HIJO
     if (user.pendingHijo) {
-      let parent = user.pendingHijo
+      if (now - user.pendingHijo.time > TIEMPO_LIMITE) {
+        user.pendingHijo = null
+        return m.reply('⌛ La propuesta expiró')
+      }
+
+      let parent = user.pendingHijo.from
       let parentData = global.db.data.users[parent]
 
       if (!parentData.hijos) parentData.hijos = []
@@ -77,7 +73,12 @@ let handler = async (m, { conn, command }) => {
 
     // HIJA
     if (user.pendingHija) {
-      let parent = user.pendingHija
+      if (now - user.pendingHija.time > TIEMPO_LIMITE) {
+        user.pendingHija = null
+        return m.reply('⌛ La propuesta expiró')
+      }
+
+      let parent = user.pendingHija.from
       let parentData = global.db.data.users[parent]
 
       if (!parentData.hijas) parentData.hijas = []
@@ -91,7 +92,12 @@ let handler = async (m, { conn, command }) => {
 
     // MASCOTA
     if (user.pendingMascota) {
-      let owner = user.pendingMascota
+      if (now - user.pendingMascota.time > TIEMPO_LIMITE) {
+        user.pendingMascota = null
+        return m.reply('⌛ La propuesta expiró')
+      }
+
+      let owner = user.pendingMascota.from
       let ownerData = global.db.data.users[owner]
 
       if (!ownerData.mascotas) ownerData.mascotas = []
@@ -109,6 +115,7 @@ let handler = async (m, { conn, command }) => {
   // =========================
   // RECHAZAR
   // =========================
+
   if (command === 'rechazar') {
     user.pendingHijo = null
     user.pendingHija = null
@@ -118,7 +125,6 @@ let handler = async (m, { conn, command }) => {
   }
 }
 
-// 🔥 ESTA LÍNEA ES LA CLAVE
 handler.command = ['prohijo', 'prohija', 'promascota', 'aceptar', 'rechazar']
 
 export default handler
