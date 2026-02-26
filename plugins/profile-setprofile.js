@@ -1,133 +1,99 @@
-import { xpRange } from '../lib/levelling.js'
-import moment from 'moment-timezone'
+import { createHash } from 'crypto'
 import fetch from 'node-fetch'
+import moment from 'moment-timezone'
 
-let handler = async (m, { conn, args, usedPrefix }) => {
+const handler = async (m, { conn, command, usedPrefix, text }) => {
 try {
-let texto = await m.mentionedJid
-let userId = texto.length > 0 ? texto[0] : (m.quoted ? await m.quoted.sender : m.sender)
-let name = await (async () => global.db.data.users[userId].name || (async () => { try { const n = await conn.getName(userId); return typeof n === 'string' && n.trim() ? n : userId.split('@')[0] } catch { return userId.split('@')[0] } })())()
-
-if (!global.db.data.users) global.db.data.users = {}
-if (!global.db.data.characters) global.db.data.characters = {}
-if (!global.db.data.users[userId]) global.db.data.users[userId] = {}
-
-const user = global.db.data.users[userId]
-
-if (!user.terianx) user.terianx = null
-if (!user.terianxGenero) user.terianxGenero = null
-
-const cumpleanos = user.birth || 'Sin especificar :< (#setbirth)'
-const genero = user.genre || 'Sin especificar'
-const pareja = user.marry
-
-const casado = await (async () => 
-  pareja 
-    ? (global.db.data.users[pareja]?.name?.trim() || 
-      await conn.getName(pareja)
-        .then(n => typeof n === 'string' && n.trim() ? n : pareja.split('@')[0])
-        .catch(() => pareja.split('@')[0])) 
-    : 'Nadie'
-)()
-
-const description = user.description || 'Sin descripción :v'
-const exp = user.exp || 0
-const nivel = user.level || 0
-const coin = user.coin || 0
-const bank = user.bank || 0
-const total = coin + bank
-
-const sorted = Object.entries(global.db.data.users)
-.map(([k, v]) => ({ ...v, jid: k }))
-.sort((a, b) => (b.level || 0) - (a.level || 0))
-
-const rank = sorted.findIndex(u => u.jid === userId) + 1
-
-const progreso = (() => {
-let datos = xpRange(nivel, global.multiplier)
-return `${exp - datos.min} => ${datos.xp} _(${Math.floor(((exp - datos.min) / datos.xp) * 100)}%)_`
-})()
-
-const premium = user.premium || global.prems.map(v => v.replace(/\D+/g, '') + '@s.whatsapp.net').includes(userId)
-
-const isLeft = premium 
-? (global.prems.includes(userId.split('@')[0]) 
-  ? 'Permanente' 
-  : (user.premiumTime ? await formatTime(user.premiumTime - Date.now()) : '—')) 
-: '—'
-
-const favId = user.favorite
-const favLine = favId && global.db.data.characters?.[favId] 
-? `\n๑ Claim favorito » *${global.db.data.characters[favId].name || '???'}*` 
-: ''
-
-const ownedIDs = Object.entries(global.db.data.characters)
-.filter(([, c]) => c.user === userId)
-.map(([id]) => id)
-
-const haremCount = ownedIDs.length
-
-const haremValue = ownedIDs.reduce((acc, id) => {
-const char = global.db.data.characters[id] || {}
-const value = typeof char.value === 'number' ? char.value : 0
-return acc + value
-}, 0)
-
-const pp = await conn.profilePictureUrl(userId, 'image')
-.catch(_ => 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg')
-
-const text = `*「✦」 Perfil ◢ ${name} ◤*
-${description}
-
-❀ Cumpleaños » *${cumpleanos}*
-⚥ Género » *${genero}*
-
-🐀 Therians » *${user.terianx || 'No tiene'}*
-⚧ Tipo » *${user.terianxGenero 
-  ? (user.terianxGenero.charAt(0).toUpperCase() + user.terianxGenero.slice(1)) 
-  : 'No definido'}*
-
-♡ Casado con » *${casado}*
-
-☆ Experiencia » *${exp.toLocaleString()}*
-❖ Nivel » *${nivel}*
-# Puesto » *#${rank}*
-➨ Progreso » *${progreso}*
-⸙ Premium » ${premium ? `✔️ (*${isLeft}*)` : '✖️'}
-
-ꕥ Harem » *${haremCount}*
-♤ Valor total » *${haremValue.toLocaleString()}*${favLine}
-⛁ Coins totales » *${total.toLocaleString()} ${currency}*
-❒ Comandos totales » *${user.commands || 0}*`
-
-await conn.sendMessage(
-  m.chat,
-  { image: { url: pp }, caption: text, mentions: [userId] },
-  { quoted: fkontak }
-)
-
-} catch (error) {
-await m.reply(`⚠︎ Error en profile.\nUsa ${usedPrefix}report\n\n${error.message}`)
+const user = global.db.data.users[m.sender]
+if (command === 'setprofile') {
+return m.reply(`✦ Ingresa la categoría que quieras modificar.\n\n🜸 *_Categorías disponibles:_*\n\n*• ${usedPrefix}setbirth _<01/01/2000|(dia/mes/año)>_*\n> *Establece tu fecha de cumpleaños.*\n*• ${usedPrefix}delbirth*\n> *Borra tu fecha de cumpleaños establecida.*\n*• ${usedPrefix}setgenre _<Hombre|Mujer>_*\n> *Establece tu género.*\n*• ${usedPrefix}delgenre*\n> *Borra tu género establecido.*\n*• ${usedPrefix}setdesc _<texto>_*\n> *Establece una descripción para tu perfil.*\n*• ${usedPrefix}deldesc*\n> *Borra tu descripción establecida.*`)
+}
+switch (command) {
+case 'setbirth': {
+if (!text) return conn.reply(m.chat, `❀ Debes ingresar una fecha válida para tu cumpleaños.\n\n> ✐ Ejemplo » *${usedPrefix + command} 01/01/2000* (día/mes/año)`, m)
+function validarFechaNacimiento(text) {
+const regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+if (!regex.test(text)) return null
+const [dia, mes, año] = text.split('/').map(n => parseInt(n))
+const fecha = moment.tz({ day: dia, month: mes - 1, year: año }, 'America/Caracas')
+if (!fecha.isValid()) return null
+const ahora = moment.tz('America/Caracas')
+const edad = ahora.diff(fecha, 'years')
+if (edad < 5 || edad > 120) return null
+const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+return `${dia} de ${meses[mes - 1]} de ${año}`
+}
+const birth = validarFechaNacimiento(text)
+if (!birth) {
+return conn.reply(m.chat, `ꕥ La fecha ingresada no es válida o no tiene lógica.\n> Ejemplo: *${usedPrefix + command} 01/12/2000*`, m)
+}
+user.birth = birth
+return conn.reply(m.chat, `❀ Se ha establecido tu fecha de nacimiento como: *${user.birth}*!`, m)
+break
+}
+case 'delbirth': {
+if (!user.birth) {
+return conn.reply(m.chat, `ꕥ No tienes una fecha de nacimiento establecida que se pueda eliminar.`, m)
+}
+user.birth = ''
+return conn.reply(m.chat, `❀ Tu fecha de nacimiento ha sido eliminada.`, m)
+break
+}
+case 'setgenre': {
+if (!text) return conn.reply(m.chat, `❀ Debes ingresar un género válido.\n> Ejemplo » *${usedPrefix + command} hombre*`, m)
+function asignarGenre(text) {
+let genre
+switch (text.toLowerCase()) {
+case "hombre":
+genre = "Hombre"
+break
+case "mujer":
+genre = "Mujer"
+break
+default:
+return null
+}
+return genre
+}
+let genre = asignarGenre(text)
+if (!genre) {
+return conn.reply(m.chat, `ꕥ Recuerda elegir un género válido.\n> Ejemplo: ${usedPrefix + command} hombre`, m)
+}
+if (user.genre === genre) {
+return conn.reply(m.chat, `ꕥ Ya tienes establecido el género como *${user.genre}*.`, m)
+}
+user.genre = genre
+return conn.reply(m.chat, `❀ Se ha establecido tu género como: *${user.genre}*!`, m)
+break
+}
+case 'delgenre': {
+if (!user.genre) {
+return conn.reply(m.chat, `ꕥ No tienes un género asignado.`, m)
+}
+user.genre = ''
+return conn.reply(m.chat, `❀ Se ha eliminado tu género.`, m)
+break
+}
+case 'setdescription': case 'setdesc': {
+if (!text) return conn.reply(m.chat, `❀ Debes especificar una descripción válida para tu perfil.\n\n> ✐ Ejemplo » *${usedPrefix + command} Hola, uso WhatsApp!*`, m)
+user.description = text
+return conn.reply(m.chat, `❀ Se ha establecido tu descripcion, puedes revisarla con #profile ฅ^•ﻌ•^ฅ`, m)
+break
+}
+case 'deldescription': case 'deldesc': {
+if (!user.description) {
+return conn.reply(m.chat, `ꕥ No tienes una descripción establecida que se pueda eliminar.`, m)
+}
+user.description = ''
+return conn.reply(m.chat, `❀ Tu descripción ha sido eliminada.`, m)
+break
+}}} catch (error) {
+m.reply(`⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`)
 }}
 
-handler.help = ['profile', 'perfil']
+handler.help = ['setprofile', 'setbirth', 'delbirth', 'setgenre', 'setgenero', 'delgenre', 'setdescription', 'setdesc', 'deldescription', 'deldesc']
 handler.tags = ['rg']
-handler.command = ['profile', 'perfil', 'perfíl']
+handler.command = ['setprofile', 'setbirth', 'delbirth', 'setgenre', 'setgenero', 'delgenre', 'setdescription', 'setdesc', 'deldescription', 'deldesc']
 handler.group = true
 
 export default handler
-
-async function formatTime(ms) {
-let s = Math.floor(ms / 1000), m = Math.floor(s / 60), h = Math.floor(m / 60), d = Math.floor(h / 24)
-let months = Math.floor(d / 30), weeks = Math.floor((d % 30) / 7)
-s %= 60; m %= 60; h %= 24; d %= 7
-let t = months ? [`${months} mes${months > 1 ? 'es' : ''}`] :
-weeks ? [`${weeks} semana${weeks > 1 ? 's' : ''}`] :
-d ? [`${d} día${d > 1 ? 's' : ''}`] : []
-if (h) t.push(`${h} hora${h > 1 ? 's' : ''}`)
-if (m) t.push(`${m} minuto${m > 1 ? 's' : ''}`)
-if (s) t.push(`${s} segundo${s > 1 ? 's' : ''}`)
-return t.length > 1 
-? t.slice(0, -1).join(' ') + ' y ' + t.slice(-1) 
-: t[0]
-}
