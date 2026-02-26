@@ -55,7 +55,7 @@ let handler = async (m, { conn, text }) => {
       { quoted: m }
     )
 
-    const apiDownload = `https://nexus-light-beryl.vercel.app/download/spotify?url=${encodeURIComponent(spotifyUrl)}`
+    const apiDownload = `${global.APIs.light.url}/download/spotify?url=${encodeURIComponent(spotifyUrl)}`
     const dlRes = await axios.get(apiDownload, { timeout: 20000 })
 
     if (!dlRes.data.status || !dlRes.data.result?.download_url)
