@@ -6,19 +6,9 @@ let handler = async (m, { args, usedPrefix }) => {
   if (!user.terianx) user.terianx = null
   if (!user.terianxGenero) user.terianxGenero = null
 
-  // 📌 Si ya tiene Therian
-  if (user.terianx) {
-    return m.reply(`❌ Ya tienes un Therian asignado
-
-🧠 Therians » ${user.terianx}
-⚧ Tipo » ${user.terianxGenero}
-
-Si quieres cambiarlo, necesitarás un reset.`)
-  }
-
-  // 📌 Uso del comando
+  // 📌 Uso correcto
   if (args.length < 2) {
-    return m.reply(`🐾 *SETHERIANS - CREA TU THERIAN*
+    return m.reply(`🐾 *SETHERIANS - CREA O CAMBIA TU THERIAN*
 
 Usa:
 ${usedPrefix}setherians animal genero
@@ -33,7 +23,7 @@ ${usedPrefix}setherians tigre macho
 • hembra`)
   }
 
-  // 📌 Obtener datos
+  // 📌 Datos
   let genero = args[args.length - 1].toLowerCase()
   let animal = args.slice(0, -1).join(" ")
 
@@ -55,17 +45,30 @@ ${usedPrefix}setherians lobo macho`)
   // ✨ Formato bonito
   animal = animal.charAt(0).toUpperCase() + animal.slice(1)
 
+  // 📌 Verificar si ya tenía uno
+  let anterior = user.terianx
+
   // 💾 Guardar
   user.terianx = animal
   user.terianxGenero = genero
 
-  // ✅ Confirmación
-  m.reply(`✅ Therian creado correctamente
+  // ✅ Mensaje dinámico
+  if (anterior) {
+    return m.reply(`🔁 Therian actualizado
+
+📌 Antes » ${anterior}
+🧠 Ahora » ${animal}
+⚧ Tipo » ${genero.charAt(0).toUpperCase() + genero.slice(1)}
+
+🔥 Se actualizó en tu perfil`)
+  } else {
+    return m.reply(`✅ Therian creado
 
 🧠 Therians » ${animal}
 ⚧ Tipo » ${genero.charAt(0).toUpperCase() + genero.slice(1)}
 
-🔥 Ahora aparece en tu perfil`)
+🔥 Ya aparece en tu perfil`)
+  }
 }
 
 handler.help = ['setherians <animal> <macho/hembra>']
