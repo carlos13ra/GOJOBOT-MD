@@ -7,7 +7,6 @@ import chalk from "chalk"
 import fetch from "node-fetch"
 import ws from "ws"
 
-const { proto } = (await import("@whiskeysockets/baileys")).default
 const isNumber = x => typeof x === "number" && !isNaN(x)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
 clearTimeout(this)
@@ -21,14 +20,17 @@ if (!chatUpdate) return
 this.pushMessage(chatUpdate.messages).catch(console.error)
 let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m) return
-if (global.db.data == null) await global.loadDatabase()
+if (global.db.data == null)
+await global.loadDatabase()
 try {
 m = smsg(this, m) || m
 if (!m) return
 m.exp = 0
 try {
-let user = global.db.data.users[m.sender]
-if (typeof user !== "object") global.db.data.users[m.sender] = {}
+const user = global.db.data.users[m.sender]
+if (typeof user !== "object") {
+global.db.data.users[m.sender] = {}
+}
 if (user) {
 if (!("name" in user)) user.name = m.name
 if (!("exp" in user) || !isNumber(user.exp)) user.exp = 0
@@ -70,12 +72,14 @@ afk: -1,
 afkReason: "",
 warn: 0
 }
-let chat = global.db.data.chats[m.chat]
-if (typeof chat !== "object") global.db.data.chats[m.chat] = {}
+const chat = global.db.data.chats[m.chat]
+if (typeof chat !== "object") {
+global.db.data.chats[m.chat] = {}
+}
 if (chat) {
 if (!("isBanned" in chat)) chat.isBanned = false
 if (!("isMute" in chat)) chat.isMute = false;
-if (!("welcome" in chat)) chat.welcome = false
+if (!("welcome" in chat)) chat.welcome = true
 if (!("sWelcome" in chat)) chat.sWelcome = ""
 if (!("sBye" in chat)) chat.sBye = ""
 if (!("detect" in chat)) chat.detect = true
@@ -88,7 +92,7 @@ if (!("gacha" in chat)) chat.gacha = true
 } else global.db.data.chats[m.chat] = {
 isBanned: false,
 isMute: false,
-welcome: false,
+welcome: true,
 sWelcome: "",
 sBye: "",
 detect: true,
@@ -99,14 +103,22 @@ nsfw: false,
 economy: true,
 gacha: true
 }
-let settings = global.db.data.settings[this.user.jid]
-if (typeof settings !== "object") global.db.data.settings[this.user.jid] = {}
+const settings = global.db.data.settings[this.user.jid]
+if (typeof settings !== "object") {
+global.db.data.settings[this.user.jid] = {}
+}
 if (settings) {
 if (!("self" in settings)) settings.self = false
+if (!("restrict" in settings)) settings.restrict = true
 if (!("jadibotmd" in settings)) settings.jadibotmd = true
+if (!("antiPrivate" in settings)) settings.antiPrivate = false
+if (!("gponly" in settings)) settings.gponly = false
 } else global.db.data.settings[this.user.jid] = {
 self: false,
-jadibotmd: true
+restrict: true,
+jadibotmd: true,
+antiPrivate: false,
+gponly: false
 }} catch (e) {
 console.error(e)
 }
@@ -124,6 +136,8 @@ const isROwner = [...global.owner.map((number) => number)].map(v => v.replace(/[
 const isOwner = isROwner || m.fromMe
 const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender) || user.premium == true
 const isOwners = [this.user.jid, ...global.owner.map((number) => number + "@s.whatsapp.net")].includes(m.sender)
+if (settings.self && !isOwners) return
+if (settings.gponly && !isOwners && !m.chat.endsWith('g.us') && !/code|p|ping|qr|estado|status|infobot|botinfo|report|reportar|invite|join|logout|suggest|help|menu/gim.test(m.text)) return
 if (opts["queque"] && m.text && !(isPrems)) {
 const queque = this.msgqueque, time = 1000 * 5
 const previousID = queque[queque.length - 1]
@@ -133,7 +147,7 @@ if (queque.indexOf(previousID) === -1) clearInterval(this)
 await delay(time)
 }, time)
 }
-
+ 
 if (m.isBaileys) return
 m.exp += Math.ceil(Math.random() * 10)
 let usedPrefix
@@ -200,9 +214,9 @@ __filename,
 user,
 chat,
 settings
-}))
+})) {
 continue
-}
+}}
 if (typeof plugin !== "function") {
 continue
 }
@@ -222,10 +236,10 @@ cmd.test(command) : cmd === command) :
 typeof plugin.command === "string" ?
 plugin.command === command : false
 global.comando = command
-
-if (!isOwners && settings.self) return
+                        
 if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
-
+  
+// Primary by: Alex 🐼
 if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
 const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
 const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
@@ -239,7 +253,7 @@ global.db.data.chats[m.chat].primaryBot = null
 
 if (!isAccept) continue
 m.plugin = name
-global.db.data.users[m.sender].commands++
+if (isAccept) { global.db.data.users[m.sender].commands = (global.db.data.users[m.sender].commands || 0) + 1 }
 if (chat) {
 const botId = this.user.jid
 const primaryBotId = chat.primaryBot
@@ -255,7 +269,6 @@ if (!primaryBotId || primaryBotId === botId) {
 m.reply(mensaje)
 return
 }}}
-if (!isOwners && !m.chat.endsWith('g.us') && !/code|p|ping|qr|estado|status|infobot|botinfo|report|reportar|invite|join|logout|suggest|help|menu/gim.test(m.text)) return
 const adminMode = chat.modoadmin || false
 const wa = plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || pluginPrefix || m.text.slice(0, 1) === pluginPrefix || plugin.command
 if (adminMode && !isOwner && m.isGroup && !isAdmin && wa) return
@@ -278,13 +291,15 @@ continue
 if (plugin.group && !m.isGroup) {
 fail("group", m, this)
 continue
-} 
-if (plugin.botAdmin && !isBotAdmin) {
+} else if (plugin.botAdmin && !isBotAdmin) {
 fail("botAdmin", m, this)
 continue
-} 
-if (plugin.admin && !isAdmin) {
+} else if (plugin.admin && !isAdmin) {
 fail("admin", m, this)
+continue
+}
+if (plugin.private && m.isGroup) {
+fail("private", m, this)
 continue
 }
 m.isCommand = true
@@ -334,9 +349,9 @@ const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
 if (quequeIndex !== -1)
 this.msgqueque.splice(quequeIndex, 1)
 }
-let user = global.db.data.users[m.sender]
+let user, stats = global.db.data.stats
 if (m) {
-if (m.sender && user) {
+if (m.sender && (user = global.db.data.users[m.sender])) {
 user.exp += m.exp
 }}
 try {
@@ -347,13 +362,25 @@ console.log(m.message)
 }}}
 
 global.dfail = (type, m, conn) => {
-const msg = {
-rowner: `《✧》El comando *${comando}* solo puede ser usado por los creadores del bot.`,
-premium: `《✧》El comando *${comando}* solo puede ser usado por los usuarios premium.`,
-group: `《✧》 El comando *${comando}* solo puede ser usado en grupos.`,
-admin: `《✧》El comando *${comando}* solo puede ser usado por los administradores del grupo.`,
-botAdmin: `《✧》Para ejecutar el comando *${comando}* debo ser administrador del grupo.`
-}[type]
+ const msg = {
+   rowner: ` ׄ 🍃 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+
+   owner: ` ׄ 🌾 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙙𝙚𝙨𝙖𝙧𝙧𝙤𝙡𝙡𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+
+   mods: ` ׄ 🍉 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙢𝙤𝙙𝙚𝙧𝙖𝙙𝙤𝙧𝙚𝙨 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+
+   premium: ` ׄ 🍋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙪𝙨𝙪𝙖𝙧𝙞𝙤𝙨 𝙥𝙧𝙚𝙢𝙞𝙪𝙢.`,
+
+   group: ` ׄ 🌿 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙚𝙣 𝙜𝙧𝙪𝙥𝙤𝙨.`,
+
+   private: ` ׄ 🌀 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙖𝙡 𝙘𝙝𝙖𝙩 𝙥𝙧𝙞𝙫𝙖𝙙𝙤 𝙙𝙚𝙡 𝙗𝙤𝙩.`,
+
+   admin: ` ׄ 🎋 ׅ  𝙀𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙨𝙤𝙡𝙤 𝙥𝙪𝙚𝙙𝙚 𝙨𝙚𝙧 𝙪𝙨𝙖𝙙𝙤 𝙥𝙤𝙧 𝙡𝙤𝙨 𝙖𝙙𝙢𝙞𝙣𝙨 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥𝙤.`,
+
+   botAdmin: ` ׄ 🚀 ׅ  𝙋𝙖𝙧𝙖 𝙚𝙟𝙚𝙘𝙪𝙩𝙖𝙧 𝙚𝙡 𝙘𝙤𝙢𝙖𝙣𝙙𝙤 *${comando}* 𝙙𝙚𝙗𝙤 𝙨𝙚𝙧 𝙖𝙙𝙢𝙞𝙣𝙞𝙨𝙩𝙧𝙖𝙙𝙤𝙧 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥𝙤.`,
+
+   restrict: `*_ ׄ ☁️ ׅ  Esta caracteristica está desactivada._*`
+ }[type]
 if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))
 }
 let file = global.__filename(import.meta.url, true)
@@ -362,3 +389,4 @@ unwatchFile(file)
 console.log(chalk.magenta("Se actualizo 'handler.js'"))
 if (global.reloadHandler) console.log(await global.reloadHandler())
 })
+  
