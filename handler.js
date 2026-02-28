@@ -239,16 +239,33 @@ global.comando = command
                         
 if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
   
-// Primary by: Alex 🐼
-if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
-const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
-const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
-const primaryBotInGroup = participants.some(p => p.jid === global.db.data.chats[m.chat].primaryBot)
-if (primaryBotConn && primaryBotInGroup || global.db.data.chats[m.chat].primaryBot === global.conn.user.jid) {
-throw !1
-} else {
-global.db.data.chats[m.chat].primaryBot = null
-}} else {
+// Primary by: Alex 🐼 (FIXED)
+if (m.isGroup) {
+const chatData = global.db.data.chats[m.chat]
+const primaryId = chatData.primaryBot
+
+if (primaryId && primaryId !== this.user.jid) {
+
+const primaryBotConn = global.conns.find(conn =>
+conn.user?.jid === primaryId &&
+conn.ws?.socket &&
+conn.ws.socket.readyState !== ws.CLOSED
+)
+
+const metadata = await this.groupMetadata(m.chat).catch(() => null)
+const participants = metadata?.participants || []
+const primaryBotInGroup = participants.some(p => p.jid === primaryId)
+
+// Si el primary está activo y en el grupo → este bot no responde
+if (primaryBotConn && primaryBotInGroup) {
+continue
+}
+
+// Si no está activo o salió del grupo → limpiar
+if (!primaryBotConn || !primaryBotInGroup) {
+chatData.primaryBot = null
+}
+}
 }
 
 if (!isAccept) continue
@@ -389,4 +406,4 @@ unwatchFile(file)
 console.log(chalk.magenta("Se actualizo 'handler.js'"))
 if (global.reloadHandler) console.log(await global.reloadHandler())
 })
-  
+                                                                                            
