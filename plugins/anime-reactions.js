@@ -206,34 +206,13 @@ break
 }
 if (m.isGroup) {
 try {
-const res = await fetch(`https://tenor.googleapis.com/v2/search?q=anime+${encodeURIComponent(command)}&key=AIzaSyCY8VRFGjKZ2wpAoRTQ3faV_XcwTrYL5DA&limit=20`)
-
+const res = await fetch(`${global.APIs.delirius.url}/search/tenor?q=${query}`)
 const json = await res.json()
-
-if (!json.results || json.results.length === 0) {
-  return m.reply('ꕥ No se encontraron resultados.')
-}
-
-const random = json.results[Math.floor(Math.random() * json.results.length)]
-
-const randomGif =
-  random.media_formats?.mp4?.url ||
-  random.media_formats?.gif?.url
-
-if (!randomGif) {
-  return m.reply('ꕥ No se encontraron resultados válidos.')
-}
-
-conn.sendMessage(
-  m.chat,
-  {
-    video: { url: randomGif },
-    gifPlayback: true,
-    caption: str,
-    mentions: [userId]
-  },
-  { quoted: m }
-)
+const gifs = json.data
+if (!gifs || gifs.length === 0) return m.reply('ꕥ No se encontraron resultados.')
+const randomGif = gifs[Math.floor(Math.random() * gifs.length)].mp4
+conn.sendMessage(m.chat, { video: { url: randomGif }, gifPlayback: true, caption: str, mentions: [who] }, { quoted: m })
+} catch (e) {
 return m.reply(`⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`)
 }}}
 
