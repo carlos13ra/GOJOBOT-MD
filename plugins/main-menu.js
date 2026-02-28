@@ -99,7 +99,7 @@ GOJO BOT • SISTEMA ACTIVO
 ${secciones}
 `.trim()
 
-await m.react('🍂')
+await m.react('🐀')
 
 await conn.sendMessage(
   m.chat,
