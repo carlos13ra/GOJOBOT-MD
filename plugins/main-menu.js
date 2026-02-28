@@ -53,11 +53,12 @@ for (let tag in grupos) {
   grupos[tag].sort((a, b) => a.localeCompare(b))
 }
 
-const secciones = Object.entries(grupos).map(([tag, cmds]) => {  
-      cmds.sort((a,b) => a.localeCompare(b))  
-      return `⪩ ::  ᮫　⌗⌗ *${tag.toUpperCase()}* ᮫　⿻\n` +  
-             cmds.map(c => ` ׄ✿ִㅤ${c}`).join('\n')  
-    }).join('\n\n')
+const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+const emoji = emojis[tag] || '⭐'
+return ╭━━🍃 ${tag.toUpperCase()} 🍂━⬣\n
++ cmds.map(cmd => ┃ ➩ ${cmd}).join('\n')
++ \n╰━🍂〔 🥭 〕🍃━⬣
+}).join('\n\n')
 
 let menuText = `
 ╔══════════════╗
