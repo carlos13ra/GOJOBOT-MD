@@ -22,11 +22,12 @@ let handler = async (m, { conn, usedPrefix }) => {
     let dia = fechaObj.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
     
     let videos = [
-        'https://files.catbox.moe/phisgm.mp4',
-        'https://files.catbox.moe/6o9e6r.mp4',
-        'https://files.catbox.moe/b0toh8.mp4',
-        'https://files.catbox.moe/74jueo.mp4',
-        'https://files.catbox.moe/lyh2ro.mp4'
+        'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/a1cns.mp4',
+        'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/pkupa.mp4',
+        'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/vu9xq.mp4',
+        'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/q5ndy.mp4',
+        'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/uypmz.mp4',
+        'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/6ah3m.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
 const emojis = {
@@ -98,7 +99,7 @@ GOJO BOT • SISTEMA ACTIVO
 ${secciones}
 `.trim()
 
-await m.react('🍂')
+await m.react('🍃')
 
 await conn.sendMessage(
   m.chat,
