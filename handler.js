@@ -125,45 +125,137 @@ const isOwner = isROwner || m.fromMe
 const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender) || user.premium == true
 const isOwners = [this.user.jid, ...global.owner.map((number) => number + "@s.whatsapp.net")].includes(m.sender)
 if (opts["queque"] && m.text && !(isPrems)) {
-const queque = this.msgqueque, time = 1000 * 5
-const previousID = queque[queque.length - 1]
-queque.push(m.id || m.key.id)
-setInterval(async function () {
-if (queque.indexOf(previousID) === -1) clearInterval(this)
-await delay(time)
-}, time)
+export async function handler(chatUpdate) {
+this.msgqueque = this.msgqueque || []
+this.uptime = this.uptime || Date.now()
+if (!chatUpdate) return
+this.pushMessage(chatUpdate.messages).catch(console.error)
+let m = chatUpdate.messages[chatUpdate.messages.length - 1]
+if (!m) return
+if (global.db.data == null) await global.loadDatabase()
+
+try {
+m = smsg(this, m) || m
+if (!m) return
+m.exp = 0
+
+// ===== SISTEMA BOT PRIMARIO AUTO =====
+if (m.isGroup) {
+  const chatData = global.db.data.chats[m.chat] || (global.db.data.chats[m.chat] = {})
+
+  if (chatData.primaryBot) {
+
+    // 🔍 Verificar si el primario sigue conectado
+    const isAlive = global.conns.some(v =>
+      v?.user?.jid === chatData.primaryBot &&
+      v?.ws?.socket?.readyState !== ws.CLOSED
+    )
+
+    // 🔄 Si se desconectó, reasignar automáticamente
+    if (!isAlive) {
+      const available = global.conns
+        .filter(v => v?.user?.jid && v?.ws?.socket?.readyState !== ws.CLOSED)
+        .map(v => v.user.jid)
+
+      chatData.primaryBot = available.length
+        ? available[Math.floor(Math.random() * available.length)]
+        : null
+    }
+
+    // 🧠 Solo el primario procesa comandos
+    if (chatData.primaryBot && this.user.jid !== chatData.primaryBot) return
+  }
+}
+// ===== FIN SISTEMA BOT PRIMARIO =====
+
+try {
+let user = global.db.data.users[m.sender]
+if (typeof user !== "object") global.db.data.users[m.sender] = {}
+if (user) {
+if (!("name" in user)) user.name = m.name
+if (!("exp" in user) || !isNumber(user.exp)) user.exp = 0
+if (!("coin" in user) || !isNumber(user.coin)) user.coin = 0
+if (!("bank" in user) || !isNumber(user.bank)) user.bank = 0
+if (!("level" in user) || !isNumber(user.level)) user.level = 0
+if (!("health" in user) || !isNumber(user.health)) user.health = 100
+if (!("genre" in user)) user.genre = ""
+if (!("birth" in user)) user.birth = ""
+if (!("marry" in user)) user.marry = ""
+if (!("description" in user)) user.description = ""
+if (!("packstickers" in user)) user.packstickers = null
+if (!("premium" in user)) user.premium = false
+if (!("premiumTime" in user)) user.premiumTime = 0
+if (!("banned" in user)) user.banned = false
+if (!("bannedReason" in user)) user.bannedReason = ""
+if (!("commands" in user) || !isNumber(user.commands)) user.commands = 0
+if (!("afk" in user) || !isNumber(user.afk)) user.afk = -1
+if (!("afkReason" in user)) user.afkReason = ""
+if (!("warn" in user) || !isNumber(user.warn)) user.warn = 0
+} else global.db.data.users[m.sender] = {
+name: m.name,
+exp: 0,
+coin: 0,
+bank: 0,
+level: 0,
+health: 100,
+genre: "",
+birth: "",
+marry: "",
+description: "",
+packstickers: null,
+premium: false,
+premiumTime: 0,
+banned: false,
+bannedReason: "",
+commands: 0,
+afk: -1,
+afkReason: "",
+warn: 0
 }
 
-if (m.isBaileys) return
-m.exp += Math.ceil(Math.random() * 10)
-let usedPrefix
-const groupMetadata = m.isGroup ? { ...(conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}), ...(((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({ ...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
-const participants = ((m.isGroup ? groupMetadata.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
-const userGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) === m.sender) : {}) || {}
-const botGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) == this.user.jid) : {}) || {}
-const isRAdmin = userGroup?.admin == "superadmin" || false
-const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
-const isBotAdmin = botGroup?.admin || false
+let chat = global.db.data.chats[m.chat]
+if (typeof chat !== "object") global.db.data.chats[m.chat] = {}
+if (chat) {
+if (!("isBanned" in chat)) chat.isBanned = false
+if (!("isMute" in chat)) chat.isMute = false
+if (!("welcome" in chat)) chat.welcome = false
+if (!("sWelcome" in chat)) chat.sWelcome = ""
+if (!("sBye" in chat)) chat.sBye = ""
+if (!("detect" in chat)) chat.detect = true
+if (!("primaryBot" in chat)) chat.primaryBot = null
+if (!("modoadmin" in chat)) chat.modoadmin = false
+if (!("antiLink" in chat)) chat.antiLink = true
+if (!("nsfw" in chat)) chat.nsfw = false
+if (!("economy" in chat)) chat.economy = true
+if (!("gacha" in chat)) chat.gacha = true
+} else global.db.data.chats[m.chat] = {
+isBanned: false,
+isMute: false,
+welcome: false,
+sWelcome: "",
+sBye: "",
+detect: true,
+primaryBot: null,
+modoadmin: false,
+antiLink: true,
+nsfw: false,
+economy: true,
+gacha: true
+}
 
-const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "./plugins")
-for (const name in global.plugins) {
-const plugin = global.plugins[name]
-if (!plugin) continue
-if (plugin.disabled) continue
-const __filename = join(___dirname, name)
-if (typeof plugin.all === "function") {
-try {
-await plugin.all.call(this, m, {
-chatUpdate,
-__dirname: ___dirname,
-__filename,
-user,
-chat,
-settings
-})
-} catch (err) {
-console.error(err)
-}}
+let settings = global.db.data.settings[this.user.jid]
+if (typeof settings !== "object") global.db.data.settings[this.user.jid] = {}
+if (settings) {
+if (!("self" in settings)) settings.self = false
+if (!("jadibotmd" in settings)) settings.jadibotmd = true
+} else global.db.data.settings[this.user.jid] = {
+self: false,
+jadibotmd: true
+}
+
+} catch (e) {
+console.error(e)
+}
 if (!opts["restrict"])
 if (plugin.tags && plugin.tags.includes("admin")) {
 continue
