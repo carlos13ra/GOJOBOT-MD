@@ -29,37 +29,28 @@ let handler = async (m, { conn, usedPrefix }) => {
         'https://files.catbox.moe/lyh2ro.mp4'
     ]
     let video = videos[Math.floor(Math.random() * videos.length)]
-const emojis = {
-  'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
-  'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
-  'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
-}
 
-let grupos = {}
-for (let plugin of Object.values(global.plugins || {})) {
-  if (!plugin.help || !plugin.tags) continue
-  for (let tag of plugin.tags) {
-    if (!grupos[tag]) grupos[tag] = []
-    for (let help of plugin.help) {
-      if (/^\$|^=>|^>/.test(help)) continue
-      grupos[tag].push(`${usedPrefix}${help}`)
+    // ----- SECCIONES DE COMANDOS (ESTILO BONITO) -----
+    const grupos = {}
+    for (let plugin of Object.values(global.plugins || {})) {
+      if (!plugin.help || !plugin.tags) continue
+      for (let tag of plugin.tags) {
+        if (!grupos[tag]) grupos[tag] = []
+        for (let help of plugin.help) {
+          if (/^\$|^=>|^>/.test(help)) continue
+          grupos[tag].push(`${usedPrefix}${help}`)
+        }
+      }
     }
-  }
-}
 
-for (let tag in grupos) {
-  grupos[tag].sort((a, b) => a.localeCompare(b))
-}
-
-const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-  const emoji = emojis[tag] || '⭐'
-      return `╭━━🍃 ${tag.toUpperCase()} 🍂━⬣\n`
-     + cmds.map(cmd => `┃ ➩ ${cmd}`).join('\n') 
-     + `\n╰━🍂〔 🥭 〕🍃━⬣`
+    const secciones = Object.entries(grupos).map(([tag, cmds]) => {
+      cmds.sort((a,b) => a.localeCompare(b))
+      return `⪩ ::  ᮫　⌗⌗ *${tag.toUpperCase()}* ᮫　⿻\n` +
+             cmds.map(c => ` ׄ✿ִㅤ${c}`).join('\n')
     }).join('\n\n')
 
-let menuText = `
+    // ----- MENÚ COMPLETO (CÓDIGO ORIGINAL) -----
+    let menuText = `
 ╔══════════════╗
   🍃 GOJOBOT - MD 🍂
 ╚══════════════╝
@@ -72,7 +63,7 @@ ${ucapan()} @${userId.split('@')[0]}
 👤 𝐔𝐒𝐄𝐑: ${name}
 💎 𝐍𝐈𝐕𝐄𝐋: ${level}
 🗿 𝐄𝐗𝐏𝐄𝐑𝐈𝐄𝐍𝐂𝐈𝐀: ${exp}
-🥵 𝐑𝐀𝐍𝐆𝐎: Cachud@
+🥵 𝐑𝐀𝐍𝐆𝐎: ${role}
 
 ────────────────
 🤖 🄸🄽🄵🄾 🄳🄴🄻 🄱🄾🅃
@@ -98,35 +89,35 @@ GOJO BOT • SISTEMA ACTIVO
 ${secciones}
 `.trim()
 
-await m.react('🍂')
+    await m.react('🍂')
 
-await conn.sendMessage(
-  m.chat,
-  {
-    video: { url: video },
-    caption: menuText,
-    gifPlayback: true,
-    gifAttribution: 0,
-    contextInfo: {
-      mentionedJid: [m.sender],
-      isForwarded: true,
-      forwardingScore: 999,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        serverMessageId: 100,
-        newsletterName: channelRD.name
+    await conn.sendMessage(
+      m.chat,
+      {
+        video: { url: video },
+        caption: menuText,
+        gifPlayback: true,
+        gifAttribution: 0,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          isForwarded: true,
+          forwardingScore: 999,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: channelRD.id,
+            serverMessageId: 100,
+            newsletterName: channelRD.name
+          },
+          externalAdReply: {
+            title: botname,
+            body: dev,
+            thumbnailUrl: banner,
+            mediaType: 1,
+            renderLargerThumbnail: true
+          }
+        }
       },
-      externalAdReply: {
-        title: botname,
-        body: dev,
-        thumbnailUrl: banner,
-        mediaType: 1,
-        renderLargerThumbnail: true
-      }
-    }
-  },
-  { quoted: m }
-)
+      { quoted: m }
+    )
 
   } catch (e) {
     console.error(e)
