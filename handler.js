@@ -120,10 +120,18 @@ user.name = nuevo
 }} catch {}
 const chat = global.db.data.chats[m.chat]
 const settings = global.db.data.settings[this.user.jid]  
-const isROwner = [...global.owner.map((number) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender)
-const isOwner = isROwner || m.fromMe
-const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender) || user.premium == true
-const isOwners = [this.user.jid, ...global.owner.map((number) => number + "@s.whatsapp.net")].includes(m.sender)
+const normalizeNumber = (jid = "") =>
+  jid.split("@")[0].replace(/[^0-9]/g, "")
+const sender = normalizeNumber(m.sender)
+const botNumber = normalizeNumber(this.user.jid)
+const isROwner = global.owner.some(v =>
+  normalizeNumber(v) === sender
+)
+const isOwner = isROwner || sender === botNumber
+const isPrems = isOwner || global.prems.some(v =>
+  normalizeNumber(v) === sender
+) || user.premium === true
+const isOwners = isOwner
 if (opts["queque"] && m.text && !(isPrems)) {
 const queque = this.msgqueque, time = 1000 * 5
 const previousID = queque[queque.length - 1]
