@@ -178,23 +178,23 @@ npm start
 > Copia y pega dentro de termux
   
 ```bash
- grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/OmarGranda/MiyukiBot-MD-Bot/main/update.sh | bash
+ grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/carlos13ra/GOJOBOT-MD-Bot/main/update.sh | bash
 ```
 </details>
 
 ### ☁️ ACTIVAR GOJOBOT-MD 24/7 EN X-HOST
 
-<a><img src="https://qu.ax/AUQhM.jpg" height="200"></a>
+<a><img src="https://files.clonix.cam/images/ca0ce098fb96.jpg" height="200"></a>
 
 ### Información sobre X-Host
-- **Pagina Oficial:** [`Aqui`](https://dash.x-host.cloud)
+- **Pagina Oficial:** [`Aqui`](https://x-host.cloud)
 - **Canal de WhatsApp:** [`Aquí`](https://whatsapp.com/channel/0029Vb5Vczr7j6g3foFrXM2x)
 - **Grupo de WhatsApp:** [`Aquí`](https://chat.whatsapp.com/FlX08sfKD6c21PPa5EPbuQ)
   
 ### DUEÑO Y EDITOR DEL BOT 👑
 [![Manguito](https://files.clonix.cam/images/b80a4e39ff77.jpg)]()
 
-> Copyright (c) 2025 **[manguito](https://github.com/carlos13ra/GOJOBOT-MD/blob/main/LICENSE)**
+> Copyright (c) 2025 **[manguito](https://github.com/carlos13ra/GOJOBOT-MD)**
 
 ### COLABORADOR 🤝
 
