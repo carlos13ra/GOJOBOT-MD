@@ -1,99 +1,54 @@
 let handler = async (m, { conn }) => {
 
-let texto = `╭─〔 ☁️ SKY ULTRA PLUS 〕
-│ 🚀 Hosting rápido y estable
+let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
+│
+│ 🚀 *Sky Ultra Plus*
+│ ⚡ Hosting rápido y estable
 │ 🤖 Ideal para bots de WhatsApp
+│
+│ 👨‍💻 *Contactos*
+│ • Russell
+│ https://api.whatsapp.com/send/?phone=15167096032
+│
+│ • Gata Dios
+│ https://wa.me/message/B3KTM5XN2JMRD1
+│
+│ • elrebelde21
+│ https://facebook.com/elrebelde21
+│
+│ Presiona los botones para
+│ acceder a los enlaces 👇
 ╰──────────────`
+
+let buttons = [
+{
+buttonId: "https://skyultraplus.com",
+buttonText: { displayText: "🌐 Página Oficial" },
+type: 1
+},
+{
+buttonId: "https://dash.skyultraplus.com",
+buttonText: { displayText: "📊 Dashboard" },
+type: 1
+},
+{
+buttonId: "https://skyultraplus.com/status",
+buttonText: { displayText: "📡 Estado Servicios" },
+type: 1
+}
+]
 
 await conn.sendMessage(m.chat, {
 image: { url: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg" },
 caption: texto,
 footer: "Sky Ultra Plus • Hosting Oficial",
+buttons: buttons,
+headerType: 4
+}, { quoted: m })
 
-templateButtons: [
-
-{
-index: 1,
-urlButton: {
-displayText: "🌐 Página Oficial",
-url: "https://skyultraplus.com"
-}
-},
-
-{
-index: 2,
-urlButton: {
-displayText: "📊 Dashboard",
-url: "https://dash.skyultraplus.com"
-}
-},
-
-{
-index: 3,
-urlButton: {
-displayText: "🖥 Panel",
-url: "https://panel.skyultraplus.com"
-}
-},
-
-{
-index: 4,
-urlButton: {
-displayText: "📡 Estado Servicios",
-url: "https://skyultraplus.com/status"
-}
-},
-
-{
-index: 5,
-urlButton: {
-displayText: "📢 Canal WhatsApp",
-url: "https://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g"
-}
-},
-
-{
-index: 6,
-urlButton: {
-displayText: "💬 Comunidad",
-url: "https://chat.whatsapp.com/E6iWpvGuJ8zJNPbN3zOr0D"
-}
-},
-
-{
-index: 7,
-urlButton: {
-displayText: "👤 Russell",
-url: "https://api.whatsapp.com/send/?phone=15167096032"
-}
-},
-
-{
-index: 8,
-urlButton: {
-displayText: "👤 Gata Dios",
-url: "https://wa.me/message/B3KTM5XN2JMRD1"
-}
-},
-
-{
-index: 9,
-urlButton: {
-displayText: "👤 elrebelde21",
-url: "https://facebook.com/elrebelde21"
-}
-},
-
-{
-index: 10,
-urlButton: {
-displayText: "🎮 Discord",
-url: "https://discord.gg/socialky"
-}
-}
-
-]
-
+// CANAL CON PREVIEW
+await conn.sendMessage(m.chat, {
+text: "📢 *Canal Oficial Sky Ultra Plus*\nhttps://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g"
 }, { quoted: m })
 
 }
