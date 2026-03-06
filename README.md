@@ -182,14 +182,23 @@ npm start
 ```
 </details>
 
-### ☁️ ACTIVAR GOJOBOT-MD 24/7 EN X-HOST
+### 🍃 ACTIVA A GOJOBOT-MD EN LOS HOST OFICIALES
+
+### ☁️ ACTIVAR GOJOBOT-MD 24/7 EN SKY ULTRA PLUS 
+
+<a><img src="https://files.clonix.cam/images/e6dc8e0f4d65.jpg" height="200"></a>
+
+### Información sobre X-Host
+- **Pagina Oficial:** [`Aqui`](https://dash.skyultraplus.com)
+- **Canal de WhatsApp:** [`Aquí`](https://whatsapp.com/channel/0029Vb5Vczr7j6g3foFrXM2x)
+
+### 🍂 ACTIVAR GOJOBOT-MD 24/7 EN X-HOST
 
 <a><img src="https://files.clonix.cam/images/ca0ce098fb96.jpg" height="200"></a>
 
 ### Información sobre X-Host
 - **Pagina Oficial:** [`Aqui`](https://x-host.cloud)
 - **Canal de WhatsApp:** [`Aquí`](https://whatsapp.com/channel/0029Vb5Vczr7j6g3foFrXM2x)
-- **Grupo de WhatsApp:** [`Aquí`](https://chat.whatsapp.com/FlX08sfKD6c21PPa5EPbuQ)
   
 ### DUEÑO Y EDITOR DEL BOT 👑
 [![Manguito](https://files.clonix.cam/images/b80a4e39ff77.jpg)]()
