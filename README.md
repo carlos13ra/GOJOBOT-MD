@@ -5,7 +5,7 @@
   <a href="https://github.com/carlos13ra"><img src="https://readme-typing-svg.herokuapp.com?font=Boldonse&size=20&duration=3000&pause=1000&color=FFC0CB&center=true&width=435&lines=GOJOBOT-MD;%C2%A1El+mejor+bot+de+WhatsApp!" height="500px"></a> 
 <img src="https://files.clonix.cam/images/42a88a668062.jpg" width="500" height="500" />
 
-<a href="https://wa.me/51963325293">
+<a href="https://wa.me/51963315293">
     <img 
       title="WhatsApp" 
       src="https://img.shields.io/badge/WhatsApp-Creador-25D366?style=for-the-badge&logo=whatsapp&logoColor=white">
