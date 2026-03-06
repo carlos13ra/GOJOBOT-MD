@@ -1,10 +1,42 @@
 let handler = async (m, { conn }) => {
 
+// TARJETA DEL CANAL (VER CANAL)
+await conn.sendMessage(m.chat, {
+text: "📢 SKY ULTRA PLUS OFICIAL",
+contextInfo: {
+forwardedNewsletterMessageInfo: {
+newsletterJid: "120363301598733462@newsletter",
+newsletterName: "SKY ULTRA PLUS OFICIAL",
+serverMessageId: 1
+}
+}
+}, { quoted: m })
+
 let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │
 │ 🚀 *Sky Ultra Plus*
 │ ⚡ Hosting rápido y estable
 │ 🤖 Ideal para bots de WhatsApp
+│
+│ 🌐 *Links Oficiales*
+│
+│ • Página Oficial
+│ https://skyultraplus.com
+│
+│ • Dashboard
+│ https://dash.skyultraplus.com
+│
+│ • Panel
+│ https://panel.skyultraplus.com
+│
+│ • Estado de Servicios
+│ https://skyultraplus.com/status
+│
+│ • Comunidad
+│ https://chat.whatsapp.com/E6iWpvGuJ8zJNPbN3zOr0D
+│
+│ • Discord
+│ https://discord.gg/socialky
 │
 │ 👨‍💻 *Contactos*
 │
@@ -16,45 +48,12 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │
 │ • elrebelde21
 │ https://facebook.com/elrebelde21
-│
-│ Presiona los botones para abrir
-│ los enlaces oficiales 👇
 ╰──────────────`
 
 await conn.sendMessage(m.chat, {
 image: { url: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg" },
 caption: texto,
-footer: "Sky Ultra Plus • Hosting Oficial",
-buttons: [
-{
-buttonText: { displayText: "🌐 Página Oficial" },
-type: 1,
-url: "https://skyultraplus.com"
-},
-{
-buttonText: { displayText: "📊 Dashboard" },
-type: 1,
-url: "https://dash.skyultraplus.com"
-},
-{
-buttonText: { displayText: "📡 Estado Servicios" },
-type: 1,
-url: "https://skyultraplus.com/status"
-}
-],
-headerType: 4
-}, { quoted: m })
-
-// TARJETA DEL CANAL (VER CANAL)
-await conn.sendMessage(m.chat, {
-text: " ",
-contextInfo: {
-forwardedNewsletterMessageInfo: {
-newsletterJid: "120363301598733462@newsletter",
-newsletterName: "SKY ULTRA PLUS OFICIAL",
-serverMessageId: 1
-}
-}
+footer: "Sky Ultra Plus • Hosting Oficial"
 }, { quoted: m })
 
 }
