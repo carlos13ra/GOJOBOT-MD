@@ -86,7 +86,7 @@
 ### DESCARGAR TERMUX AQUÍ 👇
 Haz clic en la imagen para descargar
 
-<a href="https://www.mediafire.com/file/0m2y32wxccia8o1/com.termux_1022.apk/file"><img src="https://qu.ax/finc.jpg" height="200px"></a> 
+<a href="https://www.mediafire.com/file/0m2y32wxccia8o1/com.termux_1022.apk/file"><img src="https://files.clonix.cam/images/ad5bf9ed969d.png" height="200px"></a> 
 
 ### 📱INSTALACIÓN MANUAL - TERMUX
 
