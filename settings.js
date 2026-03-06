@@ -3,15 +3,10 @@ import chalk from "chalk"
 import { fileURLToPath } from "url"
 import fs from "fs"
 
-//*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
-
-//BETA: Si quiere evitar escribir el número que será bot en la consola, agregué desde aquí entonces:
-//Sólo aplica para opción 2 (ser bot con código de texto de 8 digitos)
-global.botNumber = "" //Ejemplo: 573218138672
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.owner = ["51963315293", "523541145561"]
+global.owner = ["51963315293", "523541145561", "51934 053286"]
 global.suittag = ["51963315293"]
 global.prems = ["51963315293", "523541145561"]
 
@@ -22,13 +17,14 @@ global.vs = "^1.8.2 • Latest"
 global.nameqr = "ɢᴏᴊᴏ-ʙᴏᴛ ᴍᴅ"
 global.sessions = "Sessions/Principal"
 global.jadi = "Sessions/SubBot"
+global.botNumber = "" //Ejemplo: 573218138672
 global.kanekiAIJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.botname = "𖹭  ׄ  ְ 🌱 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 ✩"
+global.botname = "𖹭  ׄ  ְ ✰ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 ✩"
 global.textbot = "gσᴊσ вσт ν3 • мα∂є ву ¢αяℓσѕ.яν"
-global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝙲𝙰𝚁𝙻𝙾𝚂.𝚁𝚅"
+global.dev = "© ᴘᴏᴡᴇʀᴇᴅ ʙʏ 𝙲𝙰𝚁𝙻𝙾𝚂.𝚁𝚅"
 global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ ƈαɾʅσʂ.ɾʋ"
 global.etiqueta = "✫ᴄᴀʀʟᴏs ʀᴀᴍɪʀᴇᴢ❄️ ⊹꙰ "
 global.currency = "g᥆𝗍іᥴᥲs"
@@ -57,8 +53,7 @@ delirius: { url: "https://api.delirius.store", key: null },
 zenzxz: { url: "https://api.zenzxz.my.id", key: null },
 siputzx: { url: "https://api.siputzx.my.id", key: null },
 adonix: { url: "https://api-adonix.ultraplus.click", key: 'shadow.xyz' },
-stellar: { url: "https://api.stellarwa.xyz", key: "this-xyz"},
-light: { url: "https://nexus-light-beryl.vercel.app", key: null }
+light: { url: "https://api-light.vercel.app", key: null }
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -66,6 +61,6 @@ light: { url: "https://nexus-light-beryl.vercel.app", key: null }
 let file = fileURLToPath(import.meta.url)
 watchFile(file, () => {
 unwatchFile(file)
-console.log(chalk.redBright("Update 'configXD.js'"))
+console.log(chalk.redBright("Update 'settings.js'"))
 import(`${file}?update=${Date.now()}`)
 })
