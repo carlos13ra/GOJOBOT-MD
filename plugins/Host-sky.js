@@ -17,51 +17,50 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │ • elrebelde21
 │ https://facebook.com/elrebelde21
 │
-│ Presiona los botones para acceder
-│ a los enlaces oficiales 👇
+│ Presiona los botones para abrir
+│ los enlaces oficiales 👇
 ╰──────────────`
-
-let buttons = [
-{
-buttonId: "https://skyultraplus.com",
-buttonText: { displayText: "🌐 Página Oficial" },
-type: 1
-},
-{
-buttonId: "https://dash.skyultraplus.com",
-buttonText: { displayText: "📊 Dashboard" },
-type: 1
-},
-{
-buttonId: "https://skyultraplus.com/status",
-buttonText: { displayText: "📡 Estado Servicios" },
-type: 1
-}
-]
 
 await conn.sendMessage(m.chat, {
 image: { url: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg" },
 caption: texto,
 footer: "Sky Ultra Plus • Hosting Oficial",
-buttons: buttons,
+buttons: [
+{
+buttonText: { displayText: "🌐 Página Oficial" },
+type: 1,
+url: "https://skyultraplus.com"
+},
+{
+buttonText: { displayText: "📊 Dashboard" },
+type: 1,
+url: "https://dash.skyultraplus.com"
+},
+{
+buttonText: { displayText: "📡 Estado Servicios" },
+type: 1,
+url: "https://skyultraplus.com/status"
+}
+],
 headerType: 4
 }, { quoted: m })
 
-// ENVÍO DEL CANAL (con botón VER CANAL)
+// TARJETA DEL CANAL (VER CANAL)
 await conn.sendMessage(m.chat, {
-forward: {
-newsletterMessageInfo: {
+text: " ",
+contextInfo: {
+forwardedNewsletterMessageInfo: {
 newsletterJid: "120363301598733462@newsletter",
-serverMessageId: 1,
-newsletterName: "SKY ULTRA PLUS OFICIAL"
+newsletterName: "SKY ULTRA PLUS OFICIAL",
+serverMessageId: 1
 }
 }
 }, { quoted: m })
 
 }
 
-handler.help = ['sky','skyultraplus']
+handler.help = ['sky','skyultraplus','hawks']
 handler.tags = ['hostings']
-handler.command = ['sky','skyultraplus']
+handler.command = ['sky','skyultraplus','hawks']
 
 export default handler
