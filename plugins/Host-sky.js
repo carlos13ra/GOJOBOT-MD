@@ -7,6 +7,7 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │ 🤖 Ideal para bots de WhatsApp
 │
 │ 👨‍💻 *Contactos*
+│
 │ • Russell
 │ https://api.whatsapp.com/send/?phone=15167096032
 │
@@ -16,8 +17,8 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │ • elrebelde21
 │ https://facebook.com/elrebelde21
 │
-│ Presiona los botones para
-│ acceder a los enlaces 👇
+│ Presiona los botones para acceder
+│ a los enlaces oficiales 👇
 ╰──────────────`
 
 let buttons = [
@@ -46,9 +47,15 @@ buttons: buttons,
 headerType: 4
 }, { quoted: m })
 
-// CANAL CON PREVIEW
+// ENVÍO DEL CANAL (con botón VER CANAL)
 await conn.sendMessage(m.chat, {
-text: "📢 *Canal Oficial Sky Ultra Plus*\nhttps://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g"
+forward: {
+newsletterMessageInfo: {
+newsletterJid: "120363301598733462@newsletter",
+serverMessageId: 1,
+newsletterName: "SKY ULTRA PLUS OFICIAL"
+}
+}
 }, { quoted: m })
 
 }
