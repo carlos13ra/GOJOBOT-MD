@@ -2,7 +2,7 @@
 > **Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y para estar al tanto de todas las novedades.**
 
 <p align="center"> 
-  <a href="https://github.com/carlos13ra"><img src="https://readme-typing-svg.herokuapp.com?font=Boldonse&size=20&duration=3000&pause=1000&color=FFC0CB&center=true&width=435&lines=MiyukiBot-MD;%C2%A1El+mejor+bot+de+WhatsApp!" height="500px"></a> 
+  <a href="https://github.com/carlos13ra"><img src="https://readme-typing-svg.herokuapp.com?font=Boldonse&size=20&duration=3000&pause=1000&color=FFC0CB&center=true&width=435&lines=GOJOBOT-MD;%C2%A1El+mejor+bot+de+WhatsApp!" height="500px"></a> 
 <img src="https://files.clonix.cam/images/42a88a668062.jpg" width="500" height="500" />
 
 <a href="https://wa.me/51927303598">
