@@ -38,8 +38,10 @@ contextInfo: {
 forwardedNewsletterMessageInfo: {
 newsletterJid: "120363301598733462@newsletter",
 newsletterName: "SKY ULTRA PLUS OFICIAL",
-serverMessageId: 1
-}
+serverMessageId: 100
+},
+forwardingScore: 999,
+isForwarded: true
 }
 }, { quoted: m })
 
