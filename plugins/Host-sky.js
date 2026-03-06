@@ -1,32 +1,12 @@
 let handler = async (m, { conn }) => {
 
-// TARJETA DEL CANAL (CON VER CANAL)
-await conn.sendMessage(m.chat, {
-text: " ",
-contextInfo: {
-forwardedNewsletterMessageInfo: {
-newsletterJid: "120363301598733462@newsletter",
-newsletterName: "SKY ULTRA PLUS OFICIAL",
-serverMessageId: 1
-},
-externalAdReply: {
-title: "SKY ULTRA PLUS OFICIAL",
-body: "Canal oficial de Sky Ultra Plus",
-thumbnailUrl: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg",
-sourceUrl: "https://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g",
-mediaType: 1,
-renderLargerThumbnail: true
-}
-}
-}, { quoted: m })
-
 let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │
 │ 🚀 *Sky Ultra Plus*
 │ ⚡ Hosting rápido y estable
 │ 🤖 Ideal para bots de WhatsApp
 │
-│ 🌐 *Links Oficiales*
+│ 🌐 *LINKS OFICIALES*
 │
 │ • Página Oficial
 │ https://skyultraplus.com
@@ -34,19 +14,10 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │ • Dashboard
 │ https://dash.skyultraplus.com
 │
-│ • Panel
-│ https://panel.skyultraplus.com
-│
 │ • Estado de Servicios
 │ https://skyultraplus.com/status
 │
-│ • Comunidad
-│ https://chat.whatsapp.com/E6iWpvGuJ8zJNPbN3zOr0D
-│
-│ • Discord
-│ https://discord.gg/socialky
-│
-│ 👨‍💻 *Contactos*
+│ 👨‍💻 *CONTACTOS*
 │
 │ • Russell
 │ https://api.whatsapp.com/send/?phone=15167096032
@@ -56,12 +27,20 @@ let texto = `╭─〔 ☁️ SKY ULTRA PLUS HOST 〕
 │
 │ • elrebelde21
 │ https://facebook.com/elrebelde21
+│
+│ Presiona cualquier link para abrirlo 👆
 ╰──────────────`
 
 await conn.sendMessage(m.chat, {
 image: { url: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg" },
 caption: texto,
-footer: "Sky Ultra Plus • Hosting Oficial"
+contextInfo: {
+forwardedNewsletterMessageInfo: {
+newsletterJid: "120363301598733462@newsletter",
+newsletterName: "SKY ULTRA PLUS OFICIAL",
+serverMessageId: 1
+}
+}
 }, { quoted: m })
 
 }
