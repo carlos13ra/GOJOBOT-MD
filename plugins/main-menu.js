@@ -33,7 +33,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 const emojis = {
   'main': '🎄', 'tools': '🧰', 'audio': '🎶', 'group': '🎁',
   'owner': '👑', 'fun': '🎮', 'info': '📘', 'internet': '🌐',
-  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'nsfw': '🚫',
+  'downloads': '⬇️', 'admin': '🧦', 'anime': '✨', 'hostings': '🍂', 'nsfw': '🚫',
   'search': '🔍', 'sticker': '🖼️', 'game': '🕹️', 'premium': '💎', 'bot': '🤖'
 }
 
