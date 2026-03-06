@@ -187,14 +187,22 @@ npm start
 
 SKY ULTRA PLUS & X-HOST 
 
-### ☁️ ACTIVAR GOJOBOT-MD 24/7 EN SKY ULTRA PLUS 
+### ☁️ ACTIVA A GOJOBOT-MD EN SKYULTRAPLUS 24/7
+[![YouTube](https://img.shields.io/badge/SkyUltraPlus-Host-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/fZbcCLpSH6Y?si=1sDen7Bzmb7jVpAI)
 
-<a><img src="https://files.clonix.cam/images/e6dc8e0f4d65.jpg" height="200"></a>
+<a href="https://skyultraplus.com"><img src="https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg" height="125px"></a>
 
-### Información sobre X-Host
-- **Pagina Oficial:** [`Aqui`](https://dash.skyultraplus.com)
-- **Canal de WhatsApp:** [`Aquí`](https://whatsapp.com/channel/0029Vb5Vczr7j6g3foFrXM2x)
+### Información del Host
+- **Pagina Oficial:** [`Aqui`](https://skyultraplus.com)
+- **Dashboard:** [`Aquí`](https://dash.skyultraplus.com)
+- **Panel:** [`Aquí`](https://panel.skyultraplus.com)
+- **Estado de servicios:** [`Aquí`](https://skyultraplus.com/status)
+- **Canal de WhatsApp:** [`Aquí`](https://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g)
+- **Comunidad:** [`Aquí`](https://chat.whatsapp.com/E6iWpvGuJ8zJNPbN3zOr0D)
+- **Contacto(s):** [`Russell`](https://api.whatsapp.com/send/?phone=15167096032&text&type=phone_number&app_absent=0) / [`Gata Dios`](https://wa.me/message/B3KTM5XN2JMRD1) / [`elrebelde21`](https://facebook.com/elrebelde21)
+- **Discord:** [`aqui`](https://discord.gg/socialky)
 
+  
 ### 🍂 ACTIVAR GOJOBOT-MD 24/7 EN X-HOST
 
 <a><img src="https://files.clonix.cam/images/ca0ce098fb96.jpg" height="200"></a>
