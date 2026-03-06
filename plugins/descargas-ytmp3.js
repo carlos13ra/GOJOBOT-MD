@@ -32,17 +32,14 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       { quoted: m }
     )
 
-    const apiUrl = `${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(url)}`
-    const res = await fetch(apiUrl)
+    const res = await fetch(`${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(url)}`)
     const json = await res.json()
 
-    if (!json.status || !json.result?.dl_url)
+    if (!json.status || !json.data?.url)
       return conn.reply(m.chat, '❌ No se pudo descargar el audio.', m)
 
-    const audioUrl = json.result.dl_url
+    const audioUrl = json.result.url
     const titulo = json.result.title
-    const bitrate = json.result.bitrate
-
     await conn.sendMessage(
       m.chat,
       {
@@ -52,7 +49,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         contextInfo: {
           externalAdReply: {
             title: `🎧 ${titulo}`,
-            body: `Calidad: ${bitrate}`,
+            body: dev,
             thumbnailUrl: thumbnail,
             sourceUrl: url,
             mediaType: 1,
