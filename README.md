@@ -194,7 +194,7 @@ npm start
 ### DUEÑO Y EDITOR DEL BOT 👑
 [![Manguito](https://files.clonix.cam/images/b80a4e39ff77.jpg)]()
 
-> Copyright (c) 2025 **[Omara](https://github.com/carlos13ra/GOJOBOT-MD/blob/main/LICENSE)**
+> Copyright (c) 2025 **[manguito](https://github.com/carlos13ra/GOJOBOT-MD/blob/main/LICENSE)**
 
 ### COLABORADOR 🤝
 
