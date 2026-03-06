@@ -1,13 +1,21 @@
 let handler = async (m, { conn }) => {
 
-// TARJETA DEL CANAL (VER CANAL)
+// TARJETA DEL CANAL (CON VER CANAL)
 await conn.sendMessage(m.chat, {
-text: "📢 SKY ULTRA PLUS OFICIAL",
+text: " ",
 contextInfo: {
 forwardedNewsletterMessageInfo: {
 newsletterJid: "120363301598733462@newsletter",
 newsletterName: "SKY ULTRA PLUS OFICIAL",
 serverMessageId: 1
+},
+externalAdReply: {
+title: "SKY ULTRA PLUS OFICIAL",
+body: "Canal oficial de Sky Ultra Plus",
+thumbnailUrl: "https://cdn.skyultraplus.com/uploads/u4/3ee6fc7f2a0d2478.jpg",
+sourceUrl: "https://whatsapp.com/channel/0029VakUvreFHWpyWUr4Jr0g",
+mediaType: 1,
+renderLargerThumbnail: true
 }
 }
 }, { quoted: m })
