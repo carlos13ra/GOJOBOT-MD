@@ -31,7 +31,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
           text: `[ ▶️ ]◦ *Título:* ${video.title}\n> [☃️]◦ *Autor:* ${video.author.name}\n> [🎄]◦ *Duración:* ${video.timestamp}\n> [❄️]◦ *Vistas:* ${video.views.toLocaleString()}`
         }),
         footer: proto.Message.InteractiveMessage.Footer.fromObject({
-          text: '❄️ sᴀɴᴛᴀғʟᴏᴡ ʙᴏᴛ | © ᴄᴀʀʟᴏs.ʀᴠ🥭'
+          text: '❄️ ɢᴏᴊᴏʙᴏᴛ-ᴍᴅ| © ᴄᴀʀʟᴏs.ʀᴠ🥭'
         }),
         header: proto.Message.InteractiveMessage.Header.fromObject({
           title: '',
