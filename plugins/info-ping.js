@@ -1,29 +1,34 @@
 import speed from 'performance-now'
 import os from 'os'
-import { exec } from 'child_process'
 
 let handler = async (m, { conn }) => {
   const start = speed()
+  await new Promise(res => setTimeout(res, 1))
 
-  exec('neofetch --stdout', async (error, stdout) => {
-    let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
-    let ramLibre = (os.freemem() / 1024 / 1024).toFixed(0)
-    let ramUso = ramTotal - ramLibre
-    let uptime = process.uptime()
+  const latensi = speed() - start
 
-    const latensi = speed() - start
+  let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
+  let ramLibre = (os.freemem() / 1024 / 1024).toFixed(0)
+  let ramUso = ramTotal - ramLibre
 
-    let teks = `*'ׄ𐚁ִㅤS T A T U S - PINGׄ ₍ ᐢ..ᐢ ₎'*
+  let uptime = process.uptime()
 
-*🍄 Bot      : ›* ${botname}
-*🌳 Latency : ›* ${latensi.toFixed(3)} ms
-*🌱 Uptime  : ›* ${formatTime(uptime)}
-*🪷 Sistema  : ›* ${os.platform()} (${os.arch()}) 
-*🍙 Node  : ›* ${process.version}
-*🌿 Ram usage  : ›* ${ramUso} MB / ${ramTotal} MB`
+  let pingEmoji =
+    latensi < 50 ? '🟢 Excelente' :
+    latensi < 120 ? '🟡 Bueno' :
+    latensi < 200 ? '🟠 Medio' :
+    '🔴 Lento'
 
-    conn.reply(m.chat, teks, m, rcanal)
-  })
+  let teks = `*'ׄ𐚁ִㅤS T A T U S - P I N Gׄ ₍ ᐢ..ᐢ ₎'*
+
+*🍄 Bot       : ›* ${botname}
+*🌳 Latency   : ›* ${latensi.toFixed(2)} ms (${pingEmoji})
+*🌱 Uptime    : ›* ${formatTime(uptime)}
+*🪷 Sistema   : ›* ${os.platform()} (${os.arch()})
+*🍙 Node      : ›* ${process.version}
+*🌿 RAM       : ›* ${ramUso} MB / ${ramTotal} MB`
+
+  await conn.reply(m.chat, teks, m, rcanal)
 }
 
 handler.help = ['ping']
