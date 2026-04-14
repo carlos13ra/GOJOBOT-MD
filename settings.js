@@ -58,7 +58,7 @@ zenzxz: { url: "https://api.zenzxz.my.id", key: null },
 siputzx: { url: "https://api.siputzx.my.id", key: null },
 adonix: { url: "https://api-adonix.ultraplus.click", key: 'shadow.xyz' },
 stellar: { url: "https://api.stellarwa.xyz", key: "this-xyz"},
-light: { url: "https://nexus-light-beryl.vercel.app", key: null }
+light: { url: "https://api--shadowcorexyz.replit.app", key: null }
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
