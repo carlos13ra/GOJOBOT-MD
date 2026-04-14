@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 let handler = async (m, { conn, text, command }) => {
-  if (!text) return m.reply('🍜 Envía link o nombre\nEj: yta https://youtu.be/...')
+  if (!text) return m.reply('🍜 Envía link o nombre\nEj: yta https://youtu.be/... - yta -doc xd')
 
   await m.react('⏳')
 
