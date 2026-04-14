@@ -1,82 +1,84 @@
+import axios from 'axios'
 import fetch from 'node-fetch'
 
-const handler = async (m, { conn, text }) => {
+let handler = async (m, { conn, text }) => {
   if (!text)
-    return m.reply('🎵 *Escribe el nombre de la canción a buscar en SoundCloud.*')
+    return conn.reply(
+      m.chat,
+      `🎧 *Ingresa el nombre de la canción (SoundCloud).*`,
+      m
+    )
 
   try {
-    const searchRes = await fetch(`${global.APIs.light.url}/search/soundcloud?q=${encodeURIComponent(text)}`)
-    const searchJson = await searchRes.json()
+    const api = `${global.APIs.light.url}/api/play/soundcloud?q=${encodeURIComponent(text)}`
+    const res = await axios.get(api, { timeout: 20000 })
 
-    if (!searchJson.status || !searchJson.results?.length)
-      return m.reply('❌ No se encontraron resultados.')
+    if (!res.data.status || !res.data.result)
+      throw 'No se encontró la canción.'
 
-    const first = searchJson.results[0]
+    const data = res.data.result
+    const {
+      title,
+      artist,
+      duration,
+      created,
+      plays,
+      likes,
+      comments,
+      genre,
+      description,
+      image,
+      link,
+      url
+    } = data
 
-    const caption = `
-╭━━━⬣ 🎧 *SoundCloud Result*
-┃ *Título:* ${first.title}
-┃ *Artista:* ${first.artist}
-┃ *Duración:* ${first.duration}
-┃ *Likes:* ${first.likes}
-┃ *Reproducciones:* ${first.plays}
-┃ *Comentarios:* ${first.comments}
-┃ *Publicado:* ${first.created}
-┃ *Enlace:* ${first.link || 'No disponible'}
-╰━━━⬣
+    const caption =
+      `🎧 *${title}*\n\n` +
+      `👤 Artista: ${artist}\n` +
+      `⏱ Duración: ${duration}\n` +
+      `📅 Creado: ${created}\n` +
+      `🎶 Género: ${genre}\n` +
+      `▶️ Plays: ${plays}\n` +
+      `❤️ Likes: ${likes}\n` +
+      `💬 Comentarios: ${comments}\n` +
+      `🔗 Link: ${link}`
 
-⬇️ Descargando audio...
-`.trim()
+    await conn.sendMessage(m.chat, {
+      image: { url: image },
+      caption
+    }, { quoted: m })
 
-    await conn.sendMessage(
-      m.chat,
-      { image: { url: first.image }, caption },
-      { quoted: m }
-    )
+    const audioRes = await fetch(url)
 
-    if (!first.link)
-      return m.reply('❌ Este resultado no tiene enlace válido para descargar.')
+    if (!audioRes.ok) throw 'Error al descargar el audio.'
 
-    const downloadRes = await fetch(`${global.APIs.light.url}/download/soundcloud?url=${encodeURIComponent(first.link)}`)
-    const downloadJson = await downloadRes.json()
+    const buffer = await audioRes.buffer()
 
-    if (!downloadJson.status || !downloadJson.result?.download_url)
-      return m.reply('❌ No se pudo descargar el audio.')
-
-    const track = downloadJson.result
-    const totalSec = Math.floor(track.duration / 1000)
-    const duration = `${Math.floor(totalSec / 60)}:${(totalSec % 60)
-      .toString()
-      .padStart(2, '0')}`
-
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: { url: track.download_url },
-        mimetype: 'audio/mpeg',
-        fileName: `${track.title}.mp3`,
-        contextInfo: {
-          externalAdReply: {
-            title: track.title,
-            body: null,
-            thumbnailUrl: track.artwork,
-            sourceUrl: track.permalink,
-            mediaType: 1,
-            renderLargerThumbnail: false
-          }
+    await conn.sendMessage(m.chat, {
+      audio: buffer,
+      mimetype: 'audio/mpeg',
+      fileName: `${title}.mp3`,
+      ptt: false,
+      contextInfo: {
+        externalAdReply: {
+          title: title,
+          body: artist,
+          thumbnailUrl: image,
+          sourceUrl: link,
+          mediaType: 1,
+          renderLargerThumbnail: true
         }
-      },
-      { quoted: m }
-    )
+      }
+    }, { quoted: m })
 
-  } catch (err) {
-    console.error(err)
-    m.reply('⚠️ Error al procesar la solicitud.')
+  } catch (e) {
+    console.error(e)
+    conn.reply(m.chat, `❌ Error al buscar o descargar en SoundCloud.`, m)
   }
 }
 
-handler.command = ['sound', 'soundcloud']
-handler.help = ['sound <nombre>']
+handler.help = ['soundcloud']
 handler.tags = ['download']
+handler.command = ['soundcloud', 'scplay']
 
 export default handler
