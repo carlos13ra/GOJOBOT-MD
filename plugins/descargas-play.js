@@ -28,7 +28,7 @@ const handler = async (m, { conn, text, command }) => {
 
   if (command === 'playaudio') {
     try {
-      const api = `https://api--shadowcorexyz.replit.app/download/ytmp3?url=${encodeURIComponent(video.url)}`
+      const api = `${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(video.url)}`
       const { data } = await axios.get(api)
 
       if (!data.status) throw 'Error al obtener audio'
@@ -54,7 +54,7 @@ const handler = async (m, { conn, text, command }) => {
 
   if (command === 'playvideo') {
     try {
-      const api = `https://api--shadowcorexyz.replit.app/download/ytvideo?url=${encodeURIComponent(video.url)}`
+      const api = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(video.url)}`
       const { data } = await axios.get(api)
 
       if (!data.status) throw 'Error al obtener video'
