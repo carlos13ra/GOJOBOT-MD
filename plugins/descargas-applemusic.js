@@ -1,56 +1,59 @@
-import fetch from 'node-fetch';
+import axios from 'axios'
+import fetch from 'node-fetch'
 
-let handler = async (m, { conn, args }) => {
-  if (!args[0]) return conn.reply(m.chat, "▶️ Ingresa un enlace válido de Apple Music.", m);
+let handler = async (m, { conn, text }) => {
+  if (!text)
+    return conn.reply(m.chat, `🍎 Ingresa el nombre de una canción`, m)
 
   try {
-    let url = `https://api.siputzx.my.id/api/d/musicapple?url=${encodeURIComponent(args[0])}`;
-    let res = await fetch(url);
-    let json = await res.json();
+    const searchApi =
+      `https://api--shadowcorexyz.replit.app/search/applemusic?q=${encodeURIComponent(text)}&limit=1`
 
-    if (!json.status) return conn.reply(m.chat, "No se pudo obtener la información.", m);
+    const search = await axios.get(searchApi, { timeout: 20000 })
 
-    let data = json.data || {};
-    let {
-      url: musicUrl = "",
-      songTitle = "",
-      artist = "",
-      artworkUrl = "",
-      mp3DownloadLink = "",
-      coverDownloadLink = ""
-    } = data;
+    if (!search.data.status || !search.data.data)
+      throw 'No encontrado'
 
-    let info = `
-╭━━━〔 ▶️ 𝗔𝗣𝗣𝗟𝗘 𝗠𝗨𝗦𝗜𝗖 〕━━⬣
-┃🎵 *Título:* ${songTitle || "Desconocido"}
-┃🎤 *Artista:* ${artist || "Desconocido"}
-┃🌐 *URL:* ${musicUrl}
-╰━━━━━━━━━━━━━━━━⬣
-    `.trim();
+    const data = search.data.data
+    const info =
+      `🍎 ${data.title}\n` +
+      `👤 ${data.artist}\n` +
+      `💿 ${data.album}\n` +
+      `⏱ ${data.duration}\n` +
+      `🔞 ${data.explicit ? 'Sí' : 'No'}`
 
-    await conn.sendFile(m.chat, artworkUrl || coverDownloadLink, 'cover.jpg', info, m);
- 
-    if (mp3DownloadLink) {
-      await conn.sendFile(
-        m.chat,
-        mp3DownloadLink,
-        `${songTitle || "audio"}.mp3`,
-        `🎶 Aquí tienes tu canción: *${songTitle || "Desconocido"}* - ${artist || ""}`,
-        m,
-        null,
-        { mimetype: 'audio/mpeg' }
-      );
-    } else {
-      conn.reply(m.chat, "⚠️ No se encontró un enlace de descarga para esta canción.", m);
-    }
+    await conn.reply(m.chat, info, m)
+
+    const dlApi =
+      `https://api--shadowcorexyz.replit.app/download/applemusic?url=${encodeURIComponent(data.apple_url)}`
+
+    const dl = await axios.get(dlApi, { timeout: 20000 })
+
+    if (!dl.data.status || !dl.data.data?.dl_url)
+      throw 'No se pudo obtener audio'
+
+    const audioUrl = dl.data.data.dl_url
+
+    const audioRes = await fetch(audioUrl)
+    if (!audioRes.ok) throw 'Error al descargar audio'
+
+    const buffer = await audioRes.buffer()
+
+    await conn.sendMessage(m.chat, {
+      audio: buffer,
+      mimetype: 'audio/mpeg',
+      fileName: `${data.title}.mp3`,
+      ptt: false
+    }, { quoted: m })
 
   } catch (e) {
-    console.error(e);
-    conn.reply(m.chat, "⚠️ Ocurrió un error al procesar la solicitud.", m);
+    console.error(e)
+    conn.reply(m.chat, `❌ Error al reproducir Apple Music`, m)
   }
-};
+}
 
-handler.command = ['applemusic']
 handler.help = ['applemusic']
 handler.tags = ['download']
-export default handler;
+handler.command = ['applemusic', 'amplay']
+
+export default handler
