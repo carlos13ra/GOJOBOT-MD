@@ -28,25 +28,33 @@ const handler = async (m, { conn, text, command }) => {
 
   if (command === 'playaudio') {
     try {
-      const api = `${global.APIs.adonix.url}/download/ytaudio?apikey=shadow-xyz&url=${encodeURIComponent(video.url)}`
+      const api = `https://api--shadowcorexyz.replit.app/download/ytmp3?url=${encodeURIComponent(video.url)}`
       const { data } = await axios.get(api)
 
       if (!data.status) throw 'Error al obtener audio'
 
+      const medias = data.result.medias || []
+      const bestAudio = medias
+        .filter(m => m.type === 'audio')
+        .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0]
+
+      if (!bestAudio?.url) throw 'No se encontró audio válido'
+
       await conn.sendMessage(m.chat, {
-        audio: { url: data.data.url },
+        audio: { url: bestAudio.url },
         mimetype: 'audio/mpeg',
-        fileName: `${data.data.title}.mp3`
+        fileName: `${data.result.title || 'audio'}.mp3`
       }, { quoted: m })
 
     } catch (e) {
+      console.log(e)
       m.reply('❌ Error al descargar el audio')
     }
   }
 
   if (command === 'playvideo') {
     try {
-      const api = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(video.url)}`
+      const api = `https://api--shadowcorexyz.replit.app/download/ytvideo?url=${encodeURIComponent(video.url)}`
       const { data } = await axios.get(api)
 
       if (!data.status) throw 'Error al obtener video'
@@ -57,6 +65,7 @@ const handler = async (m, { conn, text, command }) => {
       }, { quoted: m })
 
     } catch (e) {
+      console.log(e)
       m.reply('❌ Error al descargar el video')
     }
   }
