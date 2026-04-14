@@ -79,6 +79,6 @@ let handler = async (m, { conn, text }) => {
 
 handler.help = ['soundcloud']
 handler.tags = ['download']
-handler.command = ['soundcloud', 'scplay']
+handler.command = ['soundcloud', 'scplay', 'scdl']
 
 export default handler
