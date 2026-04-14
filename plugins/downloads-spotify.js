@@ -37,25 +37,20 @@ let handler = async (m, { conn, text }) => {
       (publish ? `> 🌿 Publicado » *${publish}*\n` : '') +
       `> ☕ Enlace » ${spotifyUrl}`
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        text: caption,
-        contextInfo: {
-          externalAdReply: {
-            title: '🎇 ✧ Spotify • Music ✧ 🎇',
-            body: artist,
-            thumbnailUrl: image,
-            sourceUrl: spotifyUrl,
-            mediaType: 1,
-            renderLargerThumbnail: true
-          }
+    await conn.sendMessage(m.chat, {
+      text: caption,
+      contextInfo: {
+        externalAdReply: {
+          title: '🎇 ✧ Spotify • Music ✧ 🎇',
+          body: artist,
+          thumbnailUrl: image,
+          sourceUrl: spotifyUrl,
+          mediaType: 1,
+          renderLargerThumbnail: true
         }
-      },
-      { quoted: m }
-    )
-
-    const apiDownload = `${global.APIs.light.url}/download/spotify?url=${encodeURIComponent(spotifyUrl)}`
+      }
+    }, { quoted: m })
+    const apiDownload = `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`
     const dlRes = await axios.get(apiDownload, { timeout: 20000 })
 
     if (!dlRes.data.status || !dlRes.data.result?.download_url)
@@ -68,26 +63,22 @@ let handler = async (m, { conn, text }) => {
 
     const buffer = await audioRes.buffer()
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: buffer,
-        mimetype: 'audio/mpeg',
-        fileName: `${title}.mp3`,
-        ptt: false,
-        contextInfo: {
-          externalAdReply: {
-            title: title,
-            body: '✿ Servidor: Nexus Light',
-            thumbnailUrl: image,
-            sourceUrl: spotifyUrl,
-            mediaType: 1,
-            renderLargerThumbnail: false
-          }
+    await conn.sendMessage(m.chat, {
+      audio: buffer,
+      mimetype: 'audio/mpeg',
+      fileName: `${title}.mp3`,
+      ptt: false,
+      contextInfo: {
+        externalAdReply: {
+          title: title,
+          body: '✿ Spotify Downloader',
+          thumbnailUrl: image,
+          sourceUrl: spotifyUrl,
+          mediaType: 1,
+          renderLargerThumbnail: false
         }
-      },
-      { quoted: m }
-    )
+      }
+    }, { quoted: m })
 
   } catch (e) {
     console.error(e)
