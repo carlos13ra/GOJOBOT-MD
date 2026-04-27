@@ -19,7 +19,7 @@
 > **GOJOBOT-MD está hosteado oficialmente en Sky Ultra Plus** 🦋
 > Mismo hosting premium que usa **La Suki Bot - La Reyna de WhatsApp**
 > 
-> **Deploy 1 Click:** https://skyultraplus.com/deploy/gojobot-md
+> **Deploy 1 Click:** https://skyultraplus.com/deploy/GOJOBOT-MD
 
 ---
 
