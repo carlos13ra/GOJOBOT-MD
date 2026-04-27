@@ -1,6 +1,5 @@
-# GOJOBOT-MD
 
-   # GOJOBOT-MD OFICIAL ✅
+  # GOJOBOT-MD OFICIAL ✅
    ### Bot Original de WhatsApp Multi-Device | Creado en Agosto 2025
 
 **Bot multifuncional de WhatsApp creado por Carlos Ramírez - Manguito Programs**
