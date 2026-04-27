@@ -48,7 +48,6 @@
 
 **Proyectos oficiales creados por Manguito Programs:**
 1. **GOJOBOT-MD** - WhatsApp Multi-Device Bot Oficial
-2. **Yoyoboc** - Soluciones de automatización para negocios y empresas
 
 **Misión:** Crear los bots de WhatsApp más estables, rápidos y seguros del mercado.
 
@@ -65,13 +64,3 @@
 
 ---
 
-## 📦 **Instalación en Sky Ultra Plus**
-
-[[Deploy Sky](https://img.shields.io/badge/Deploy_en_Sky_Ultra_Plus-Ahora-00BFFF?style=for-the-badge&logo=rocket)](https://skyultraplus.com)
-
-```bash
-# Termux / Linux
-git clone https://github.com/carlos13ra/GOJOBOT-MD
-cd GOJOBOT-MD
-npm install
-npm start
