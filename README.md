@@ -5,10 +5,10 @@
 
 # GOJOBOT-MD ✅ OFFICIAL
 ### Created by Carlos Ramirez (@carlos13ra)
-### A project by **Manguito Programs** | Trujillo, Peru
+### A project by **Manguito Programs™** | Trujillo, Peru
 
 > **The original GOJOBOT-MD WhatsApp Multi-Device Bot**  
-> Developed and maintained by Manguito Programs.
+> Developed and maintained by Manguito Programs™.
 
 ---
 
@@ -16,9 +16,9 @@
 
 ---
    
-   > The original GOJOBOT-MD. Not affiliated with Manguito Studios.
+   > The original GOJOBOT-MD. Not affiliated with Manguito Studios™.
 
-### **Original Bot creado por Carlos Ramírez - Manguito Programs**
+### **Original Bot creado por Carlos Ramírez - Manguito Programs™**
 
 [[Sky Ultra Plus](https://img.shields.io/badge/☁️_Host_Oficial-Sky_Ultra_Plus-00BFFF?style=for-the-badge&logo=whatsapp)](https://skyultraplus.com)
 [[Version](https://img.shields.io/github/v/release/carlos13ra/GOJOBOT-MD?color=red&label=Version&style=for-the-badge)](https://github.com/carlos13ra/GOJOBOT-MD/releases)
