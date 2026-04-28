@@ -16,7 +16,7 @@
 
 ---
    
-   > The original GOJOBOT-MD. Not affiliated with Manguito Studios™.
+   > The original GOJOBOT-MD. Not affiliated with Manguito Studios.
 
 ### **Original Bot creado por Carlos Ramírez - Manguito Programs™**
 
