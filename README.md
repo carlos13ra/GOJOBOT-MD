@@ -4,7 +4,7 @@
 <meta name="google-site-verification" content="wkvvKPBiswvuoFF9XeQIEvZzuhX45NReO2hokTZYfmI" />
 
    # GOJOBOT-MD ✅ OFFICIAL 
-   **Created by Carlos Ramirez | @carlos13ra**
+   **Created by Carlos Ramirez | carlos13ra | MANGUITO PROGRAMS**
    
    > The original GOJOBOT-MD. Not affiliated with Manguito Studios.
 
