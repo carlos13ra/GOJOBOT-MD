@@ -1,6 +1,7 @@
 <div align="center">
 
 # 🦋 GOJOBOT-MD OFICIAL ✅ | WhatsApp Bot Multi-Device
+<meta name="google-site-verification" content="wkvvKPBiswvuoFF9XeQIEvZzuhX45NReO2hokTZYfmI" />
 ### **Original Bot creado por Carlos Ramírez - Manguito Programs**
 
 [[Sky Ultra Plus](https://img.shields.io/badge/☁️_Host_Oficial-Sky_Ultra_Plus-00BFFF?style=for-the-badge&logo=whatsapp)](https://skyultraplus.com)
