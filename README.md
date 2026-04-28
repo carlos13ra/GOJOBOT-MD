@@ -1,8 +1,8 @@
 <div align="center">
 
 # 🦋 GOJOBOT-MD OFICIAL ✅ | WhatsApp Bot Multi-Device
-
 <meta name="google-site-verification" content="wkvvKPBiswvuoFF9XeQIEvZzuhX45NReO2hokTZYfmI" />
+
 
 ### **Original Bot creado por Carlos Ramírez - Manguito Programs**
 
