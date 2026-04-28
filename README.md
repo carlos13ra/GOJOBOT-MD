@@ -3,8 +3,18 @@
 # 🦋 GOJOBOT-MD OFICIAL ✅ | WhatsApp Bot Multi-Device
 <meta name="google-site-verification" content="wkvvKPBiswvuoFF9XeQIEvZzuhX45NReO2hokTZYfmI" />
 
-   # GOJOBOT-MD ✅ OFFICIAL 
-   **Created by Carlos Ramirez | carlos13ra | MANGUITO PROGRAMS**
+# GOJOBOT-MD ✅ OFFICIAL
+### Created by Carlos Ramirez (@carlos13ra)
+### A project by **Manguito Programs** | Trujillo, Peru
+
+> **The original GOJOBOT-MD WhatsApp Multi-Device Bot**  
+> Developed and maintained by Manguito Programs.
+
+---
+
+**Disclaimer**: This project is not affiliated with Manguito Studios or any other similarly named projects.
+
+---
    
    > The original GOJOBOT-MD. Not affiliated with Manguito Studios.
 
