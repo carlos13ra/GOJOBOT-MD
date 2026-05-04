@@ -238,19 +238,6 @@ plugin.command === command : false
 global.comando = command
                         
 if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
-  
-// Primary by: Alex 🐼
-if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
-const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
-const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
-const primaryBotInGroup = participants.some(p => p.jid === global.db.data.chats[m.chat].primaryBot)
-if (primaryBotConn && primaryBotInGroup || global.db.data.chats[m.chat].primaryBot === global.conn.user.jid) {
-throw !1
-} else {
-global.db.data.chats[m.chat].primaryBot = null
-}} else {
-}
-
 if (!isAccept) continue
 m.plugin = name
 if (isAccept) { global.db.data.users[m.sender].commands = (global.db.data.users[m.sender].commands || 0) + 1 }
