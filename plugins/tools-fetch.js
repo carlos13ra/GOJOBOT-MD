@@ -24,3 +24,5 @@ await m.react('✔️')
 handler.help = ['get']
 handler.tags = ['tools']
 handler.command = ['fetch', 'get']
+
+export default handler
