@@ -28,30 +28,29 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 👁️ *Vistas:* ${data.views}
 📅 *Subido:* ${data.uploaded}
 
-🔗 ${data.url}`
+🔗 *link:* ${data.url}`
 
     await conn.sendMessage(m.chat, {
       image: { url: data.thumbnail },
       caption
     }, { quoted: m })
 
-    const api2 = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(data.url)}`
+    const api2 = `https://nexus-light.onrender.com/download/ytmp3?url=${encodeURIComponent(data.url)}`
     const res2 = await fetch(api2)
     const json2 = await res2.json()
 
-    if (!json2.status || !json2.result?.download) {
-      throw 'Error al obtener el video'
+    if (!json2.status || !json2.data?.download) {
+      throw 'Error al obtener el audio'
     }
 
-    const fileName = `${(json2.result.title || 'video')
-      .replace(/[\\/:*?"<>|]/g, '')}.mp4`
+    const fileName = `${(json2.data.title || 'audio')
+      .replace(/[\\/:*?"<>|]/g, '')}.mp3`
 
     await conn.sendMessage(m.chat, {
-      document: { url: json2.result.download },
-      mimetype: 'video/mp4',
+      document: { url: json2.data.download },
+      mimetype: 'audio/mpeg',
       fileName,
-      caption:
-`🫒 Descarga completa`
+      caption: `🫒 Descarga completa`
     }, { quoted: m })
 
     await m.react('✅')
@@ -63,8 +62,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['mp3doc', 'ytmp4doc']
+handler.help = ['ytmp3doc']
 handler.tags = ['download']
-handler.command = ['mp3doc', 'ytmp4doc']
+handler.command = ['ytmp3doc']
 
 export default handler
