@@ -4,50 +4,57 @@ let handler = async (m, { conn, text }) => {
   try {
     if (!text) return m.reply('✰ Ingresa un link de Instagram')
 
-    const isIG = /(?:instagram\.com)/i.test(text)
-    if (!isIG) return m.reply('✘ Link inválido de Instagram')
+    if (!/instagram\.com/i.test(text)) {
+      return m.reply('✘ Link inválido de Instagram')
+    }
 
-    await m.reply('🍜 Descargando video...')
+    await m.react('🕒')
+    const infoApi = `${global.APIs.light.url}/download/igdl/v2?url=${encodeURIComponent(text)}`
+    const infoRes = await fetch(infoApi)
+    const info = await infoRes.json()
 
-    const api = `${global.APIs.light.url}/download/igdl?url=${encodeURIComponent(text)}`
-    const res = await fetch(api)
-    const json = await res.json()
+    if (!info.status) throw 'Error en la API de info'
 
-    if (!json.status) throw 'Error en la API'
+    const meta = info.metadata || {}
+    const author = info.author || {}
+    const media = info.media || {}
 
-    const caption = `🍜 Instagram Downloader
+    const caption =
+`🍜 *Instagram Downloader*
 
-✰ Usuario: ${json.username}
-☁︎ Tipo: ${json.type}`.trim()
+✰ *Autor:* ${author.fullName || author.username || '-'} (@${author.username || '-'})
+🔗 *Link:* https://www.instagram.com/${author.username || ''}
 
-    if (json.type === 'video' && json.videos?.length) {
-      let video = json.videos[0]
-      try {
-        await conn.sendMessage(m.chat, {
-          video: { url: video },
-          caption: caption + '🫒 calidad: 720(HD)'
-        }, { quoted: m })
-      } catch {
-        await conn.sendFile(
-          m.chat,
-          video,
-          'ig.mp4',
-          caption + `\n🎬 Calidad: 720p`,
-          m
-        )
-      }
+✎ *Caption:*
+${meta.caption || '-'}
 
-    } 
+❤ *Likes:* ${meta.likes || '0'}
+💬 *Comentarios:* ${meta.comments || '0'}
+📅 *Fecha:* ${meta.created_at || '-'}
+🎬 *Tipo:* ${info.type || '-'}
+`.trim()
 
-    else if (json.thumb) {
-      await conn.sendMessage(m.chat, {
-        image: { url: json.thumb },
+    const videoApi = `${global.APIs.light.url}/download/igdl?url=${encodeURIComponent(text)}`
+    const videoRes = await fetch(videoApi)
+    const videoJson = await videoRes.json()
+
+    if (videoJson.status && videoJson.videos?.length) {
+      let video = videoJson.videos[0]
+
+      return await conn.sendMessage(m.chat, {
+        video: { url: video },
         caption
       }, { quoted: m })
-    } 
-    else {
-      throw 'No hay contenido disponible'
     }
+
+    if (author.profilePic) {
+      return await conn.sendMessage(m.chat, {
+        image: { url: author.profilePic },
+        caption
+      }, { quoted: m })
+    }
+
+    throw 'No hay contenido disponible'
 
   } catch (e) {
     console.error(e)
