@@ -35,10 +35,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       caption
     }, { quoted: m })
 
-    await conn.sendMessage(m.chat, {
-      text: data.url
-    }, { quoted: m })
-
     const api2 = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(data.url)}`
     const res2 = await fetch(api2)
     const json2 = await res2.json()
