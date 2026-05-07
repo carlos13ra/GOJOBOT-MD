@@ -23,15 +23,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       let v = videos[i]
 
       caption +=
-`${i + 1}. ${v.title}
+`*[ ${i + 1}. ${v.title} ]*
 
-👤 Autor: ${v.author.name}
-⏱️ Duración : ${v.timestamp}
-👁️ Vistas : ${v.views.toLocaleString()}
-📅 Subido : ${v.ago}
-🔗 Link : ${v.url}
-
-`
+*👤 Autor :* ${v.author.name}
+*⏱️ Duración :* ${v.timestamp}
+*👁️ Vistas :* ${v.views.toLocaleString()}
+*📅 Subido :* ${v.ago}
+*🔗 Link :* ${v.url}\n\n\n`
     }
 
     await conn.sendMessage(m.chat, {
