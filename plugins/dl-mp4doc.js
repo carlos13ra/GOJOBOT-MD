@@ -3,16 +3,17 @@ import fetch from 'node-fetch'
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   if (!text) {
-    return m.reply(`❀ Ingresa lo que quieres buscar\n\n> Ejemplo:\n${usedPrefix + command} Hola`)
+    return m.reply(`❀ Ingresa lo que quieres buscar\n\n> Ejemplo:\n${usedPrefix + command} stellar`)
   }
 
   try {
     await m.react('🕒')
+
     const api = `${global.APIs.light.url}/search/yts?q=${encodeURIComponent(text)}`
     const res = await fetch(api)
     const json = await res.json()
 
-    if (!json.status || !json.result?.length) {
+    if (!json.status || !Array.isArray(json.result) || !json.result.length) {
       throw 'No se encontraron resultados'
     }
 
@@ -34,20 +35,28 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       caption
     }, { quoted: m })
 
+    await conn.sendMessage(m.chat, {
+      text: data.url
+    }, { quoted: m })
+
     const api2 = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(data.url)}`
     const res2 = await fetch(api2)
     const json2 = await res2.json()
 
-    if (json2.status && json2.result?.download) {
-
-      await conn.sendMessage(m.chat, {
-        document: { url: json2.result.download },
-        mimetype: 'video/mp4',
-        fileName: `${json2.result.title}.mp4`,
-        caption: '🫒 Descarga completa'
-      }, { quoted: m })
-
+    if (!json2.status || !json2.result?.download) {
+      throw 'Error al obtener el video'
     }
+
+    const fileName = `${(json2.result.title || 'video')
+      .replace(/[\\/:*?"<>|]/g, '')}.mp4`
+
+    await conn.sendMessage(m.chat, {
+      document: { url: json2.result.download },
+      mimetype: 'video/mp4',
+      fileName,
+      caption:
+`🫒 Descarga completa`
+    }, { quoted: m })
 
     await m.react('✅')
 
@@ -58,7 +67,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['yts']
+handler.help = ['mp3doc', 'ytmp4doc']
 handler.tags = ['download']
 handler.command = ['mp3doc', 'ytmp4doc']
 
