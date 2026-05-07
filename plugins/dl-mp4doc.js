@@ -44,7 +44,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         document: { url: json2.result.download },
         mimetype: 'video/mp4',
         fileName: `${json2.result.title}.mp4`,
-        caption: 🫒 Descarga completa'
+        caption: '🫒 Descarga completa'
       }, { quoted: m })
 
     }
