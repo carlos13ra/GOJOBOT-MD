@@ -1,77 +1,56 @@
-import axios from 'axios'
-import FormData from 'form-data'
-
-const cache = new Map()
-const TTL = 60 * 1000
+import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+
+  if (!text) {
+    return m.reply(`❀ Ingresa lo que quieres buscar\n\n> Ejemplo:\n${usedPrefix + command} stellar`)
+  }
+
   try {
-
-    if (!text) {
-      return m.reply(`❀ Ingresa un link de YouTube\n\n> Ejemplo:\n${usedPrefix + command} https://youtu.be/xxxx`)
-    }
-
-    if (!/youtu\.?be/.test(text)) {
-      return m.reply('✘ Link inválido de YouTube')
-    }
-
     await m.react('🕒')
 
-    let result
+    const api = `${global.APIs.light.url}/search/yts?q=${encodeURIComponent(text)}`
+    const res = await fetch(api)
+    const json = await res.json()
 
-    const c = cache.get(text)
-    if (c && c.exp > Date.now()) {
-      result = c.data
-    } else {
-
-      let data = new FormData()
-      data.append('url', text)
-
-      const res = await axios({
-        method: 'post',
-        url: 'https://tools.xrespond.com/api/youtube/video/downloader',
-        headers: {
-          origin: 'https://downsocial.io',
-          referer: 'https://downsocial.io/',
-          ...data.getHeaders()
-        },
-        data
-      })
-
-      const info = res.data?.data?.data
-      const audio = info?.links?.find(v => v.type === 'audio')
-
-      if (!audio) throw 'No se encontró audio'
-
-      result = {
-        title: info?.title,
-        uploader: info?.uploader,
-        thumbnail: info?.thumbnail,
-        duration: info?.duration,
-        download: audio.download_url
-      }
-
-      cache.set(text, {
-        data: result,
-        exp: Date.now() + TTL
-      })
+    if (!json.status || !Array.isArray(json.result) || !json.result.length) {
+      throw 'No se encontraron resultados'
     }
 
+    const data = json.result[0]
+
     let caption =
-`🎧 *YTMP3 Document*
+`🎧 *YouTube Downloader*
 
-✰ *Título:* ${result.title || '-'}
-👤 *Uploader:* ${result.uploader || '-'}
-⏱️ *Duración:* ${result.duration || '-'}
+🧊 *Título:* ${data.title}
+👤 *Autor:* ${data.author}
+⏱️ *Duración:* ${data.duration}
+👁️ *Vistas:* ${data.views}
+📅 *Subido:* ${data.uploaded}
 
-> Enviando audio en documento...`
+🔗 *link:* ${data.url}`
 
     await conn.sendMessage(m.chat, {
-      document: { url: result.download },
-      mimetype: 'audio/mpeg',
-      fileName: `${result.title || 'audio'}.mp3`,
-      jpegThumbnail: await (await fetch(result.thumbnail)).buffer(),
+      image: { url: data.thumbnail },
       caption
+    }, { quoted: m })
+
+    const api2 = `https://nexus-light.onrender.com/download/ytmp3?url=${encodeURIComponent(data.url)}`
+    const res2 = await fetch(api2)
+    const json2 = await res2.json()
+
+    if (!json2.status || !json2.data?.download) {
+      throw 'Error al obtener el audio'
+    }
+
+    const fileName = `${(json2.data.title || 'audio')
+      .replace(/[\\/:*?"<>|]/g, '')}.mp3`
+
+    await conn.sendMessage(m.chat, {
+      document: { url: json2.data.download },
+      mimetype: 'audio/mpeg',
+      fileName,
+      caption: `🫒 Descarga completa`
     }, { quoted: m })
 
     await m.react('✅')
@@ -83,7 +62,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['ytmp3doc < url >']
+handler.help = ['ytmp3doc']
 handler.tags = ['download']
 handler.command = ['ytmp3doc']
 
