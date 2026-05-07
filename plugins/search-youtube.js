@@ -13,15 +13,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!videos.length) {
       throw 'No se encontraron resultados'
     }
-
     let caption = `🫒 *YouTube Search*\n`
     caption += `🍜 *Búsqueda:* ${text}\n`
     caption += `🌳 *Resultados:* ${videos.length}\n\n`
 
     for (let i = 0; i < videos.length; i++) {
-
       let v = videos[i]
-
       caption +=
 `*[ ${i + 1}. ${v.title} ]*
 
