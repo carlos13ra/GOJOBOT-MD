@@ -1,84 +1,53 @@
-import axios from 'axios'
-import FormData from 'form-data'
-
-const cache = new Map()
-const TTL = 60 * 1000
+import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+
+  if (!text) {
+    return m.reply(`❀ Ingresa lo que quieres buscar\n\n> Ejemplo:\n${usedPrefix + command} Hola`)
+  }
+
   try {
-
-    if (!text) {
-      return m.reply(`❀ Ingresa un link de YouTube\n\n> Ejemplo:\n${usedPrefix + command} https://youtu.be/xxxx`)
-    }
-
-    if (!/youtu\.?be/.test(text)) {
-      return m.reply('✘ Link inválido de YouTube')
-    }
-
     await m.react('🕒')
+    const api = `${global.APIs.light.url}/search/yts?q=${encodeURIComponent(text)}`
+    const res = await fetch(api)
+    const json = await res.json()
 
-    let result
-
-    const c = cache.get(text)
-    if (c && c.exp > Date.now()) {
-      result = c.data
-    } else {
-
-      let data = new FormData()
-      data.append('url', text)
-
-      const res = await axios({
-        method: 'post',
-        url: 'https://tools.xrespond.com/api/youtube/video/downloader',
-        headers: {
-          origin: 'https://downsocial.io',
-          referer: 'https://downsocial.io/',
-          ...data.getHeaders()
-        },
-        data
-      })
-
-      const info = res.data?.data?.data
-
-      const video = info?.links?.find(v =>
-        v.type === 'video' &&
-        /mp4/i.test(v.format || '')
-      ) || info?.links?.find(v => v.type === 'video')
-
-      if (!video) throw 'No se encontró video'
-
-      result = {
-        title: info?.title,
-        uploader: info?.uploader,
-        thumbnail: info?.thumbnail,
-        duration: info?.duration,
-        quality: video?.quality || 'Unknown',
-        download: video.download_url
-      }
-
-      cache.set(text, {
-        data: result,
-        exp: Date.now() + TTL
-      })
+    if (!json.status || !json.result?.length) {
+      throw 'No se encontraron resultados'
     }
+
+    const data = json.result[0]
 
     let caption =
-`🎬 *YTMP4 Document*
+`🎧 *YouTube Downloader*
 
-✰ *Título:* ${result.title || '-'}
-👤 *Uploader:* ${result.uploader || '-'}
-⏱️ *Duración:* ${result.duration || '-'}
-📺 *Calidad:* ${result.quality || '-'}
+🧊 *Título:* ${data.title}
+👤 *Autor:* ${data.author}
+⏱️ *Duración:* ${data.duration}
+👁️ *Vistas:* ${data.views}
+📅 *Subido:* ${data.uploaded}
 
-> Enviando video en documento...`
+🔗 ${data.url}`
 
     await conn.sendMessage(m.chat, {
-      document: { url: result.download },
-      mimetype: 'video/mp4',
-      fileName: `${result.title || 'video'}.mp4`,
-      jpegThumbnail: await (await fetch(result.thumbnail)).buffer(),
+      image: { url: data.thumbnail },
       caption
     }, { quoted: m })
+
+    const api2 = `${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(data.url)}`
+    const res2 = await fetch(api2)
+    const json2 = await res2.json()
+
+    if (json2.status && json2.result?.download) {
+
+      await conn.sendMessage(m.chat, {
+        document: { url: json2.result.download },
+        mimetype: 'video/mp4',
+        fileName: `${json2.result.title}.mp4`,
+        caption: 🫒 Descarga completa'
+      }, { quoted: m })
+
+    }
 
     await m.react('✅')
 
@@ -89,8 +58,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['ytmp4doc']
-handler.tags = ['download']
-handler.command = ['ytmp4doc', 'mp4doc']
+handler.help = ['yts']
+handler.tags = [' ']
+handler.command = ['mp3doc', ,ytmp4doc']
 
 export default handler
