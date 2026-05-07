@@ -47,7 +47,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let menu = `
  𔗨𔗨  お GOJOBOT - ${(conn.user.jid == global.conn.user.jid ? 'OFICIAL' : 'SUB BOT')} 🍜ᩨ :: 
 
-- ﹟ *ᴅᴇᴠᴇʟᴏᴘᴇʀ ›* wa.me/noayxd
+- ﹟ *ᴅᴇᴠᴇʟᴏᴘᴇʀ ›* wa.me/51963315293
 - ﹟ *ᴜsᴇʀs ›* ${totalreg}
 - ﹟ *ɢʀᴜᴘᴏs ›* ${groupsCount}
 - ﹟ *ᴄᴏᴍᴀɴᴅᴏs ›* ${totalCommands}
