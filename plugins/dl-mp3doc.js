@@ -8,7 +8,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     await m.react('🕒')
-
     const api = `${global.APIs.light.url}/search/yts?q=${encodeURIComponent(text)}`
     const res = await fetch(api)
     const json = await res.json()
@@ -35,19 +34,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       caption
     }, { quoted: m })
 
-    const api2 = `https://nexus-light.onrender.com/download/ytmp3?url=${encodeURIComponent(data.url)}`
+    const api2 = `https://nexus-light.onrender.com/download/ytdl/v2?url=${encodeURIComponent(data.url)}&format=mp3&quality=mp3`
+
     const res2 = await fetch(api2)
     const json2 = await res2.json()
 
-    if (!json2.status || !json2.data?.download) {
+    if (!json2.status || !json2.result?.download) {
       throw 'Error al obtener el audio'
     }
 
-    const fileName = `${(json2.data.title || 'audio')
+    const fileName = `${(json2.result.title || 'audio')
       .replace(/[\\/:*?"<>|]/g, '')}.mp3`
 
     await conn.sendMessage(m.chat, {
-      document: { url: json2.data.download },
+      document: { url: json2.result.download },
       mimetype: 'audio/mpeg',
       fileName,
       caption: `🫒 Descarga completa`
@@ -57,13 +57,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   } catch (e) {
     console.log(e)
-    await m.react('✖️')
     m.reply(`✘ Error:\n${e.message || e}`)
   }
 }
 
-handler.help = ['ytmp3doc']
+handler.help = ['ytmp3doc *« ǫᴜᴇʀʏ»*']
 handler.tags = ['download']
-handler.command = ['ytmp3doc']
+handler.command = ['ytmp3doc', 'mp3doc']
 
 export default handler
