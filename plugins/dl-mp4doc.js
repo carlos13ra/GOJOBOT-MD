@@ -57,7 +57,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['mp4doc', 'ytmp4doc']
+handler.help = ['mp4doc *« ᴜʀʟ »*']
 handler.tags = ['download']
 handler.command = ['mp4doc', 'ytmp4doc']
 
