@@ -4,6 +4,7 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 
 const execPromise = promisify(exec)
+
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   if (!text) {
@@ -17,8 +18,11 @@ ${usedPrefix + command} worry`)
   const tmpOgg = `./tmp/${Date.now()}.ogg`
 
   try {
+
+    await m.react('🕒')
+
     const api = `${global.APIs.light.url}/search/yt-search?q=${encodeURIComponent(text)}`
-    
+
     const res = await fetch(api)
     const json = await res.json()
 
@@ -56,7 +60,9 @@ ${usedPrefix + command} worry`)
 
       fs.writeFileSync(tmpMp3, buffer)
 
-      await execPromise(`ffmpeg -i "${tmpMp3}" -c:a libopus -b:a 128k "${tmpOgg}" -y`)
+      await execPromise(
+        `ffmpeg -i "${tmpMp3}" -c:a libopus -b:a 128k "${tmpOgg}" -y`
+      )
 
       await conn.sendMessage(m.chat, {
         audio: fs.readFileSync(tmpOgg),
@@ -67,7 +73,9 @@ ${usedPrefix + command} worry`)
       if (fs.existsSync(tmpMp3)) fs.unlinkSync(tmpMp3)
       if (fs.existsSync(tmpOgg)) fs.unlinkSync(tmpOgg)
     }
+
     if (command === 'playvideo') {
+
       const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.url)}&format=mp4&quality=480`
 
       const res2 = await fetch(api2)
@@ -77,20 +85,25 @@ ${usedPrefix + command} worry`)
         throw 'Error al obtener el video'
       }
 
-      await client.sendFile(m.chat, json2.result.dl_url, 'media.mp4', `> 🍜 ${json2.result.title}.`, m)
-      /*
-      await conn.sendMessage(m.chat, {
-        video: { url:  },
-        mimetype: 'video/mp4',
-        fileName: `${json2.result.title}.mp4`,
-        caption: `🎞️ ${json2.result.title}`
-      }, { quoted: m })
+      await conn.sendFile(
+        m.chat,
+        json2.result.dl_url,
+        `${json2.result.title}.mp4`,
+        `🎞️ ${json2.result.title}`,
+        m
+      )
     }
-*/
+
+    await m.react('✅')
+
   } catch (e) {
     console.log(e)
+
     if (fs.existsSync(tmpMp3)) fs.unlinkSync(tmpMp3)
     if (fs.existsSync(tmpOgg)) fs.unlinkSync(tmpOgg)
+
+    await m.react('✖️')
+
     m.reply(`✘ Error:\n${e.message || e}`)
   }
 }
