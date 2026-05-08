@@ -1,96 +1,93 @@
-import fetch from "node-fetch"
-import { spawn } from "child_process"
-import fs from "fs"
+import fetch from 'node-fetch'
+import fs from 'fs'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 
-const shadow = async (m, { conn, text, command }) => {
+const execPromise = promisify(exec)
+
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+
+  if (!text) {
+    return m.reply(`❀ Ingresa lo que quieres buscar\n\n> Ejemplo:\n${usedPrefix + command} worry`)
+  }
+
+  const tmpMp3 = `./tmp/${Date.now()}.mp3`
+  const tmpOgg = `./tmp/${Date.now()}.ogg`
+
   try {
-    if (!text) return m.reply('✰ Ingrese un *nombre* o *link* de YouTube.')
+    await m.react('🕒')
 
-    const isAudio = ['playaudio', 'play-a', 'ytaudio'].includes(command)
+    const api = `https://api--shadowcorexyz.replit.app/search/yt-search?q=${encodeURIComponent(text)}`
+    
+    const res = await fetch(api)
+    const json = await res.json()
 
-    let url = text
-    if (!text.includes('youtu')) {
-      const search = await fetch(`https://api--shadowcorexyz.replit.app/search/yts?q=${encodeURIComponent(text)}`)
-      const json = await search.json()
-
-      if (!json.status || !json.result?.length) throw 'No se encontró nada'
-      url = json.result[0].url
+    if (!json.status || !json.result) {
+      throw 'No se encontraron resultados'
     }
 
-    const bitrates = [128, 192, 256, 320]
-    const randomBitrate = bitrates[Math.floor(Math.random() * bitrates.length)]
+    const data = json.result
 
-    const format = isAudio ? 'mp3' : 'mp4'
-    const quality = isAudio ? randomBitrate : 480
+    let caption =
+`🎧 *Play Audio*
 
-    const api = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(url)}&format=${format}&quality=${quality}`
-    const res = await fetch(api)
-    const data = await res.json()
+🧊 *Título:* ${data.title}
+👤 *Autor:* ${data.author}
+⏱️ *Duración:* ${data.duration}
+👁️ *Vistas:* ${data.views}
 
-    if (!data.status) throw 'Error al convertir'
-
-    const { title, author, duration, thumbnail, dl_url } = data.result
+🔗 *Link:* ${data.url}`
 
     await conn.sendMessage(m.chat, {
-      image: { url: thumbnail },
-      caption: `
- *[ ${title} ]*
-
-» ✰ *Canal :* ${author}
-» ꕥ *Duración :* ${duration}
-» ✿ *Calidad :* ${isAudio ? randomBitrate + 'k' : '480p'}
-» ☁︎ *Formato :* ${isAudio ? 'OGG' : 'MP4'}
-`
+      image: { url: data.thumbnail },
+      caption
     }, { quoted: m })
 
-    await m.reply('🍜 Procesando...')
+    // API AUDIO
+    const api2 = `https://nexus-light.onrender.com/download/ytdl?q=${encodeURIComponent(data.url)}&format=mp3&quality=128`
 
-    const file = await fetch(dl_url)
-    const buffer = Buffer.from(await file.arrayBuffer())
+    const res2 = await fetch(api2)
+    const json2 = await res2.json()
 
-    if (isAudio) {
-      const input = `./in_${Date.now()}.mp3`
-      const output = `./out_${Date.now()}.ogg`
-      fs.writeFileSync(input, buffer)
-
-      await new Promise((resolve, reject) => {
-        spawn('ffmpeg', [
-          '-y',
-          '-i', input,
-          '-vn',
-          '-c:a', 'libopus',
-          '-b:a', '128k',
-          output
-        ])
-        .on('close', code => code === 0 ? resolve() : reject('ffmpeg error'))
-      })
-
-      const ogg = fs.readFileSync(output)
-      fs.unlinkSync(input)
-      fs.unlinkSync(output)
-
-      await conn.sendMessage(m.chat, {
-        audio: ogg,
-        mimetype: 'audio/ogg; codecs=opus',
-        ptt: true
-      }, { quoted: m })
-
-    } else {
-      await conn.sendMessage(m.chat, {
-        video: buffer,
-        mimetype: 'video/mp4',
-        fileName: `${title}.mp4`
-      }, { quoted: m })
+    if (!json2.status || !json2.result?.dl_url) {
+      throw 'Error al obtener el audio'
     }
 
+    // DESCARGAR MP3
+    const audioRes = await fetch(json2.result.dl_url)
+    const buffer = Buffer.from(await audioRes.arrayBuffer())
+
+    fs.writeFileSync(tmpMp3, buffer)
+
+    // CONVERTIR A OGG OPUS
+    await execPromise(`ffmpeg -i "${tmpMp3}" -c:a libopus -b:a 128k "${tmpOgg}" -y`)
+
+    // ENVIAR PPT / AUDIO
+    await conn.sendMessage(m.chat, {
+      audio: fs.readFileSync(tmpOgg),
+      mimetype: 'audio/ogg; codecs=opus',
+      ptt: true
+    }, { quoted: m })
+
+    // BORRAR TMP
+    fs.unlinkSync(tmpMp3)
+    fs.unlinkSync(tmpOgg)
+
+    await m.react('✅')
+
   } catch (e) {
-    console.error(e)
-    m.reply('> 🍜 error:\n' + e)
+    console.log(e)
+
+    if (fs.existsSync(tmpMp3)) fs.unlinkSync(tmpMp3)
+    if (fs.existsSync(tmpOgg)) fs.unlinkSync(tmpOgg)
+
+    await m.react('✖️')
+    m.reply(`✘ Error:\n${e.message || e}`)
   }
 }
 
-shadow.command = ['playaudio', 'play-a', 'ytaudio', 'playvideo', 'play-v', 'ytvideo']
-shadow.help = shadow.command
-shadow.tags = ['download']
+handler.help = ['playaudio']
+handler.tags = ['download']
+handler.command = ['playaudio']
 
-export default shadow
+export default handler
