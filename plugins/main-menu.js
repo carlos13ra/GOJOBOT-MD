@@ -21,7 +21,7 @@ let handler = async (m, { conn, usedPrefix }) => {
       'https://files.catbox.moe/5hnwgw.mp4', 
       'https://files.catbox.moe/b0toh8.mp4',
       'https://files.catbox.moe/qacumt.mp4', 
-      'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/upfig.jpeg'
+      'https://files.catbox.moe/wm3an6.mp4'
     ]
 
     let banner = mediaList[Math.floor(Math.random() * mediaList.length)]
