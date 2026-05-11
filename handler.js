@@ -174,21 +174,30 @@ console.error(err)
 }
 }
 
-// FIX PRIMARY BOT
+// FIX PRIMARY BOT (NO BLOQUEA TODO)
 if (chat.primaryBot && chat.primaryBot !== this.user.jid) {
 const alive = global.conns.find(c => c.user?.jid === chat.primaryBot && c.ws?.socket?.readyState !== ws.CLOSED)
-if (alive) return
+
+if (alive) continue // 🔥 antes tenías return (eso rompía todo)
 else chat.primaryBot = null
 }
 
+// PREFIX COMPATIBLE (string, array, regex)
 const strRegex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&")
 const pluginPrefix = plugin.customPrefix || this.prefix || global.prefix
-const match = new RegExp(strRegex(pluginPrefix)).exec(m.text)
+
+const match = (
+pluginPrefix instanceof RegExp ?
+pluginPrefix.exec(m.text) :
+Array.isArray(pluginPrefix) ?
+pluginPrefix.map(p => new RegExp(strRegex(p)).exec(m.text)).find(v => v) :
+new RegExp(strRegex(pluginPrefix)).exec(m.text)
+)
 
 if (!match) continue
 
 usedPrefix = match[0]
-const noPrefix = m.text.replace(usedPrefix, "")
+const noPrefix = m.text.slice(usedPrefix.length)
 let [command, ...args] = noPrefix.trim().split(" ")
 command = (command || "").toLowerCase()
 
@@ -200,7 +209,7 @@ plugin.command === command
 
 if (!isAccept) continue
 
-// FIX BOT OFF (admins funcionan)
+// BOT OFF (BIEN)
 if (chat.isBanned && !isROwner && !isAdmin && command !== "bot") {
 m.reply(`ꕥ El bot *${botname}* está desactivado en este grupo\n\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`)
 return
@@ -211,6 +220,7 @@ await plugin.call(this, m, {
 conn: this,
 args,
 command,
+usedPrefix, // 🔥 esto faltaba (clave para setprimary)
 isAdmin,
 isOwner,
 groupMetadata,
@@ -219,8 +229,7 @@ chat
 } catch (err) {
 console.error(err)
 m.reply("Error")
-}
-}
+ }
 
 } catch (err) {
 console.error(err)
