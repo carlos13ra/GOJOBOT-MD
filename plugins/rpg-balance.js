@@ -17,7 +17,7 @@ const texto = `ᥫ᭡ Informacion -  Balance ❀
 ⚿ Banco » *¥${bank.toLocaleString()} ${currency}*
 ⛁ Total » *¥${total.toLocaleString()} ${currency}*
 
-> *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
+> *Para proteger tu dinero👻, ¡depósitalo en el banco usando #deposit!💥*`
 await conn.sendMessage(m.chat, {
       image: { url: 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/v0bmi.jpeg' },
       caption: texto,
