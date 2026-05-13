@@ -51,6 +51,14 @@ const rcanal = {
       newsletterJid: '120363421367237421@newsletter',
       newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ',
       serverMessageId: -1
+    },
+    externalAdReply: {
+      title: 'Gojobot-md🌱',
+      body: 'Síguenos en redes | Canal Oficial',
+      thumbnailUrl: 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/v0bmi.jpeg',
+      sourceUrl: 'https://whatsapp.com/channel/120363421367237421@newsletter',
+      mediaType: 1,
+      renderLargerThumbnail: true
     }
   }
 }
