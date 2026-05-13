@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export async function before(m, { conn }) {
-  if (!m.text || !global.prefix.test(m.text)) return;
+  if (!m.text ||!global.prefix.test(m.text)) return;
 
   const usedPrefix = global.prefix.exec(m.text)[0];
   const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
@@ -10,7 +10,7 @@ export async function before(m, { conn }) {
 
   const isValidCommand = (command, plugins) => {
     for (let plugin of Object.values(plugins)) {
-      const cmd = Array.isArray(plugin.command) ? plugin.command : [plugin.command];
+      const cmd = Array.isArray(plugin.command)? plugin.command : [plugin.command];
       if (cmd.includes(command)) return true;
     }
     return false;
@@ -29,9 +29,9 @@ export async function before(m, { conn }) {
     contextInfo: {
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
+        newsletterJid: '120363421367237421@newsletter',
         serverMessageId: '',
-        newsletterName: channelRD.name
+        newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ'
       },
       externalAdReply: {
         title: botname,
