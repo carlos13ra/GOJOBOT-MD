@@ -69,3 +69,16 @@ const trabajo = [
 "Vendiste sándwiches de pescado y obtuviste",
 "Reparas las máquinas recreativas y recibes"
 ]
+
+// Canal bonito - solo agrega esto al final
+const rcanal = {
+  contextInfo: {
+    forwardingScore: 999,
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: '120363421367237421@newsletter',
+      newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ',
+      serverMessageId: -1
+    }
+  }
+}
