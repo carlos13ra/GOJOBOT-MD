@@ -17,29 +17,42 @@ export async function before(m, { conn }) {
   };
 
   if (isValidCommand(command, global.plugins)) {
-    let user = global.db.data.users[m.sender];
-    user.commands = (user.commands || 0) + 1;
+    if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
+    global.db.data.users[m.sender].commands = (global.db.data.users[m.sender].commands || 0) + 1
     return;
   }
 
-  await conn.sendMessage(m.chat, {
-    text: `🍛 ᴇʟ ᴄᴏᴍᴀɴᴅᴏ *${command}* ɴᴏ ᴇxɪsᴛᴇ.
+  // Evita el crash si no definiste estas variables
+  const newsletterJid = '120363421367237421@newsletter'
+  const newsletterName = 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ'
+  const botname = global.botname || 'GOJOBOT-MD'
+  const banner = global.banner || ''
+
+  try {
+    await conn.sendMessage(m.chat, {
+      text: `🍛 ᴇʟ ᴄᴏᴍᴀɴᴅᴏ *${command}* ɴᴏ ᴇxɪsᴛᴇ.
 > 🍜 ᴜsᴀ *${usedPrefix}ʜᴇʟᴘ* ᴘᴀʀᴀ ᴠᴇʀ ʟᴀ ʟɪsᴛᴀ ᴅᴇ ᴄᴏᴍᴀɴᴅᴏs.`,
-    mentions: [m.sender],
-    contextInfo: {
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363421367237421@newsletter',
-        serverMessageId: '',
-        newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ'
-      },
-      externalAdReply: {
-        title: botname,
-        body: 'Sistema de comandos',
-        thumbnailUrl: banner,
-        mediaType: 1,
-        renderLargerThumbnail: true
+      mentions: [m.sender],
+      contextInfo: {
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: newsletterJid,
+          serverMessageId: '',
+          newsletterName: newsletterName
+        },
+        externalAdReply: banner? {
+          title: botname,
+          body: 'Sistema de comandos',
+          thumbnailUrl: banner,
+          mediaType: 1,
+          renderLargerThumbnail: true
+        } : undefined
       }
-    }
-  }, { quoted: m });
-}
+    }, { quoted: m })
+  } catch (e) {
+    // Si falla el mensaje con newsletter, manda uno simple
+    await conn.sendMessage(m.chat, {
+      text: `🍛 ᴇʟ ᴄᴏᴍᴀɴᴅᴏ *${command}* ɴᴏ ᴇxɪsᴛᴇ.\n> 🍜 ᴜsᴀ *${usedPrefix}ʜᴇʟᴘ* ᴘᴀʀᴀ ᴠᴇʀ ʟᴀ ʟɪsᴛᴀ ᴅᴇ ᴄᴏᴍᴀɴᴅᴏs.`
+    }, { quoted: m })
+  }
+          }
