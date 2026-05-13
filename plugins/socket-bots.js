@@ -25,7 +25,7 @@ const rcanal = {
     forwardingScore: 999,
     isForwarded: true,
     forwardedNewsletterMessageInfo: {
-      newsletterJid: '120363123456789@g.us', // Cambia por el ID de tu canal
+      newsletterJid: '120363421367237421@newsletter',
       newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ .ᐟ',
       serverMessageId: -1
     }
