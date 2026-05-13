@@ -69,26 +69,3 @@ const trabajo = [
 "Vendiste sándwiches de pescado y obtuviste",
 "Reparas las máquinas recreativas y recibes"
 ]
-
-}
-
-const banner = 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/v0bmi.jpeg'
-
-const rcanal = {
-  contextInfo: {
-    forwardingScore: 999,
-    isForwarded: true,
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: '120363421367237421@newsletter',
-      newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ',
-      serverMessageId: -1
-    },
-    externalAdReply: {
-      title: 'GojoBot-MD',
-      body: 'Canal oficial',
-      thumbnailUrl: banner,
-      mediaType: 1,
-      renderLargerThumbnail: true
-    }
-  }
-}
