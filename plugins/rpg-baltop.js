@@ -53,10 +53,9 @@ const rcanal = {
       serverMessageId: -1
     },
     externalAdReply: {
-      title: 'Gojobot-md🌱',
-      body: 'Síguenos en redes | Canal Oficial',
+      title: 'GojoBot-MD🌱',
+      body: 'Canal Oficial',
       thumbnailUrl: 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/v0bmi.jpeg',
-      sourceUrl: 'https://whatsapp.com/channel/120363421367237421@newsletter',
       mediaType: 1,
       renderLargerThumbnail: true
     }
