@@ -2,16 +2,30 @@ import fetch from 'node-fetch'
 
 const handler = async (m, { conn }) => {
   try {
-    const res = await fetch('https://api.waifu.pics/nsfw/waifu')
-    if (!res.ok) throw new Error('No se pudo obtener el pack, intenta de nuevo...')
+    const res = await fetch('https://nekobot.xyz/api/image?type=waifu')
+
+    if (!res.ok) {
+      throw new Error('No se pudo obtener la imagen')
+    }
 
     const json = await res.json()
-    if (!json.url) throw new Error('La API no devolvi¨® una URL v¨¢lida')
 
-    await conn.sendFile(m.chat, json.url, 'pack.jpg', '\`Aqu¨ª tienes tu pack\`', m)
+    if (!json.message) {
+      throw new Error('La API no devolviÃ³ imagen')
+    }
+
+    await conn.sendFile(
+      m.chat,
+      json.message,
+      'pack.jpg',
+      '`AquÃ­ tienes tu pack`',
+      m
+    )
+
   } catch (error) {
     console.error(error)
-    m.reply('? Ocurri¨® un error al obtener el pack, intenta m¨¢s tarde.')
+
+    m.reply('âœ˜ OcurriÃ³ un error al obtener el pack.')
   }
 }
 
