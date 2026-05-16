@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import axios from 'axios'
 import FormData from 'form-data'
 import crypto from 'crypto'
 
@@ -26,30 +26,30 @@ const handler = async (m, { conn }) => {
 
     form.append(
       'fileToUpload',
-      Buffer.from(media),
+      media,
       fileName
     )
 
-    const res = await fetch('https://catbox.moe/user/api.php', {
-      method: 'POST',
-      body: form,
-      headers: {
-        ...form.getHeaders(),
-        'User-Agent': 'Mozilla/5.0'
+    const { data } = await axios.post(
+      'https://catbox.moe/user/api.php',
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          'User-Agent': 'Mozilla/5.0'
+        }
       }
-    })
+    )
 
-    const link = await res.text()
-
-    if (!link.startsWith('https://')) {
-      throw link
+    if (!String(data).startsWith('https://')) {
+      throw new Error(data)
     }
 
     await conn.reply(
       m.chat,
 `🫒 *Catbox Upload*
 
-🌳 *Link:* ${link}
+🌳 *Link:* ${data}
 🍃 *Tipo:* ${mime}
 🍜 *Peso:* ${sizeMb} MB`,
       m
