@@ -12,7 +12,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     await m.react('🕒')
-    const api = `https://nexus-light.onrender.com/download/ytdl/v2?url=${encodeURIComponent(text)}&format=mp4&quality=sd`
+    const api = `https://nexus-light.onrender.com/download/ytdl/v2?url=${encodeURIComponent(text)}&format=mp4&quality=sd&key=Dev_shadow`
     const res = await fetch(api)
     const json = await res.json()
 
