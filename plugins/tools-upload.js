@@ -28,38 +28,39 @@ const handler = async (m, { conn }) => {
 
     form.append('reqtype', 'fileupload')
 
+    // importante
+    form.append('userhash', '')
+
     form.append(
       'fileToUpload',
       Buffer.from(media),
       fileName
     )
 
-    const res = await axios({
-      method: 'POST',
-      url: 'https://catbox.moe/user/api.php',
-      data: form,
-      headers: {
-        ...form.getHeaders(),
-        origin: 'https://catbox.moe',
-        referer: 'https://catbox.moe/',
-        'user-agent':
-          'Mozilla/5.0'
-      },
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity
-    })
+    const { data } = await axios.post(
+      'https://catbox.moe/user/api.php',
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          origin: 'https://catbox.moe',
+          referer: 'https://catbox.moe/',
+          'user-agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        },
+        maxBodyLength: Infinity
+      }
+    )
 
-    const link = res.data
-
-    if (!String(link).startsWith('https://')) {
-      throw new Error(link)
+    if (!String(data).startsWith('https://')) {
+      throw new Error(data)
     }
 
     await conn.reply(
       m.chat,
 `🫒 *Catbox Upload*
 
-🌳 *Link:* ${link}
+🌳 *Link:* ${data}
 🍃 *Tipo:* ${mime}
 🍜 *Peso:* ${sizeMb} MB`,
       m
