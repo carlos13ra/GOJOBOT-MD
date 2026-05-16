@@ -18,7 +18,11 @@ const handler = async (m, { conn }) => {
     const sizeMb = (media.length / 1024 / 1024).toFixed(2)
 
     const ext = mime.split('/')[1] || 'bin'
-    const fileName = `${crypto.randomBytes(5).toString('hex')}.${ext}`
+
+    const fileName =
+      crypto.randomBytes(5).toString('hex') +
+      '.' +
+      ext
 
     const form = new FormData()
 
@@ -26,30 +30,36 @@ const handler = async (m, { conn }) => {
 
     form.append(
       'fileToUpload',
-      media,
+      Buffer.from(media),
       fileName
     )
 
-    const { data } = await axios.post(
-      'https://catbox.moe/user/api.php',
-      form,
-      {
-        headers: {
-          ...form.getHeaders(),
-          'User-Agent': 'Mozilla/5.0'
-        }
-      }
-    )
+    const res = await axios({
+      method: 'POST',
+      url: 'https://catbox.moe/user/api.php',
+      data: form,
+      headers: {
+        ...form.getHeaders(),
+        origin: 'https://catbox.moe',
+        referer: 'https://catbox.moe/',
+        'user-agent':
+          'Mozilla/5.0'
+      },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity
+    })
 
-    if (!String(data).startsWith('https://')) {
-      throw new Error(data)
+    const link = res.data
+
+    if (!String(link).startsWith('https://')) {
+      throw new Error(link)
     }
 
     await conn.reply(
       m.chat,
 `🫒 *Catbox Upload*
 
-🌳 *Link:* ${data}
+🌳 *Link:* ${link}
 🍃 *Tipo:* ${mime}
 🍜 *Peso:* ${sizeMb} MB`,
       m
@@ -58,9 +68,15 @@ const handler = async (m, { conn }) => {
     await m.react('✅')
 
   } catch (e) {
-    console.log(e)
+    console.log(e.response?.data || e)
+
     await m.react('✖️')
-    m.reply(`✘ Error:\n${e.message || e}`)
+
+    m.reply(
+`✘ Error:
+
+${e.response?.data || e.message || e}`
+    )
   }
 }
 
