@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 import FormData from 'form-data'
+import crypto from 'crypto'
 
 const handler = async (m, { conn }) => {
   try {
@@ -7,29 +8,36 @@ const handler = async (m, { conn }) => {
     let mime = (q.msg || q).mimetype || ''
 
     if (!mime) {
-      return m.reply('❀ Responde a un archivo, imagen, video o audio.')
+      return m.reply('❀ Responde a un archivo.')
     }
 
     await m.react('🕒')
+
     const media = await q.download()
+
     const sizeMb = (media.length / 1024 / 1024).toFixed(2)
+
     const ext = mime.split('/')[1] || 'bin'
+    const fileName = `${crypto.randomBytes(5).toString('hex')}.${ext}`
+
     const form = new FormData()
+
     form.append('reqtype', 'fileupload')
+
     form.append(
       'fileToUpload',
-      media,
-      `file.${ext}`
+      Buffer.from(media),
+      fileName
     )
 
-    const res = await fetch(
-      'https://catbox.moe/user/api.php',
-      {
-        method: 'POST',
-        body: form,
-        headers: form.getHeaders()
+    const res = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: form,
+      headers: {
+        ...form.getHeaders(),
+        'User-Agent': 'Mozilla/5.0'
       }
-    )
+    })
 
     const link = await res.text()
 
@@ -50,6 +58,8 @@ const handler = async (m, { conn }) => {
     await m.react('✅')
 
   } catch (e) {
+    console.log(e)
+    await m.react('✖️')
     m.reply(`✘ Error:\n${e.message || e}`)
   }
 }
