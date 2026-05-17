@@ -157,27 +157,28 @@ if (m.isBaileys) return
 m.exp += Math.ceil(Math.random() * 10)
 let usedPrefix
 
-// CHEQUEO DE PRIMARY BOT - Va aquí arriba, antes de groupMetadata
+// CHEQUEO DE PRIMARY BOT
 if (chat?.primaryBot && chat.primaryBot!== this.user.jid) {
     const primaryBotConn = global.conns.find(c => c.user?.jid === chat.primaryBot && c.ws?.socket?.readyState === ws.OPEN)
     const participants = m.isGroup? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
     const primaryBotInGroup = participants.some(p => p.jid === chat.primaryBot)
 
     if (primaryBotConn && primaryBotInGroup) {
-        return // otro bot es el primario, ignora
+        return
     } else {
-        chat.primaryBot = null // limpia si el bot se desconectó
+        chat.primaryBot = null
         global.db.data.chats[m.chat] = chat
     }
 }
 
-const groupMetadata = m.isGroup? {...(this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}),...(((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
-const participants = ((m.isGroup? groupMetadata.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
-const userGroup = (m.isGroup? participants.find((u) => this.decodeJid(u.jid) === m.sender) : {}) || {}
-const botGroup = (m.isGroup? participants.find((u) => this.decodeJid(u.jid) == this.user.jid) : {}) || {}
-const isRAdmin = userGroup?.admin == "superadmin" || false
-const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
-const isBotAdmin = botGroup?.admin || false
+const groupMetadata = m.isGroup? await this.groupMetadata(m.chat).catch(() => ({ participants: [] })) : { participants: [] }
+const participants = groupMetadata.participants || []
+const userGroup = participants.find(u => u.id === m.sender || u.jid === m.sender) || {}
+const botGroup = participants.find(u => u.id === this.user.jid || u.jid === this.user.jid) || {}
+
+const isRAdmin = userGroup.admin === 'superadmin'
+const isAdmin = isRAdmin || userGroup.admin === 'admin'
+const isBotAdmin = botGroup.admin === 'admin' || botGroup.admin === 'superadmin'
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "./plugins")
 for (const name in global.plugins) {
@@ -267,12 +268,12 @@ const botId = this.user.jid
 const primaryBotId = chat.primaryBot
 if (name!== "group/bot.js" && chat?.isBanned &&!isROwner) {
 if (!primaryBotId || primaryBotId === botId) {
-const aviso = `ꕥ El bot *${global.botname}* está desactivado en este grupo\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`.trim()
+const aviso = `ꕥ El bot *${global.botname || 'Bot'}* está desactivado en este grupo\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`.trim()
 await m.reply(aviso)
 return
 }}
 if (m.text && user.banned &&!isROwner) {
-const mensaje = `ꕥ Estas baneado/a, no puedes usar comandos en este bot!\n\n> ● *Razón ›* ${user.bannedReason}\n\n> ● Si este Bot es cuenta oficial y tienes evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`.trim()
+const mensaje = `ꕥ Estas baneado/a, no puedes usar comandos en este bot!\n\n> ● *Razón ›* ${user.bannedReason}`.trim()
 if (!primaryBotId || primaryBotId === botId) {
 m.reply(mensaje)
 return
