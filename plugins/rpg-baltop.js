@@ -24,7 +24,13 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   for (let i = 0; i < slice.length; i++) {
     const { jid, coin, bank } = slice[i]
     const total = (coin || 0) + (bank || 0)
-    let name = global.db.data.users[jid]? global.db.data.users[jid].name : await conn.getName(jid).catch(() => jid.split('@')[0])
+
+    let name = global.db.data.users[jid]?.name
+    if (!name || name === 'undefined') {
+      name = await conn.getName(jid).catch(() => null)
+    }
+    if (!name) name = jid.split('@')[0]
+
     text.push(`│ ✰ ${startIndex + i + 1}. *${name}*`)
     text.push(`│ Total ⤷ ¥${total.toLocaleString()} ${currency}`)
     text.push(`│`)
