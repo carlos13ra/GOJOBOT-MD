@@ -8,21 +8,38 @@ let handler = async (m, { conn, text }) => {
 
     if (isLink) {
       await m.reply('🍜 Enviando audio...')
-
       const api = `${global.APIs.light.url}/download/applemusic?url=${encodeURIComponent(text)}`
       const res = await fetch(api)
       const json = await res.json()
+      let dl = json?.data?.dl_url
 
-      if (!json.status || !json.data?.dl_url) {
-        throw 'No se pudo obtener el audio'
+      if (!json.status || !dl) {
+
+        const api2 = `${global.APIs.light.url}/download/aplemate?url=${encodeURIComponent(text)}`
+        const res2 = await fetch(api2)
+        const json2 = await res2.json()
+
+        if (
+          !json2.status ||
+          !json2.result?.success ||
+          !json2.result?.download_link
+        ) {
+          throw 'No se pudo obtener el audio'
+        }
+
+        dl = json2.result.download_link
+
+        return await conn.sendMessage(m.chat, {
+          audio: { url: dl },
+          mimetype: 'audio/mp4',
+          fileName: `${json2.result.title}.m4a`
+        }, { quoted: m })
       }
 
-      const audio = json.data
-
       return await conn.sendMessage(m.chat, {
-        audio: { url: audio.dl_url },
+        audio: { url: dl },
         mimetype: 'audio/mp4',
-        fileName: `${audio.title}.m4a`
+        fileName: `${json.data.title}.m4a`
       }, { quoted: m })
     }
 
@@ -56,16 +73,31 @@ let handler = async (m, { conn, text }) => {
     const res2 = await fetch(dlApi)
     const json2 = await res2.json()
 
-    if (!json2.status || !json2.data?.dl_url) {
-      throw 'No se pudo obtener el audio'
+    let dl = json2?.data?.dl_url
+    let title = json2?.data?.title || d.title
+
+    if (!json2.status || !dl) {
+
+      const api3 = `${global.APIs.light.url}/download/aplemate?url=${encodeURIComponent(d.link)}`
+      const res3 = await fetch(api3)
+      const json3 = await res3.json()
+
+      if (
+        !json3.status ||
+        !json3.result?.success ||
+        !json3.result?.download_link
+      ) {
+        throw 'No se pudo obtener el audio'
+      }
+
+      dl = json3.result.download_link
+      title = json3.result.title
     }
 
-    const audio = json2.data
-
     await conn.sendMessage(m.chat, {
-      audio: { url: audio.dl_url },
+      audio: { url: dl },
       mimetype: 'audio/mp4',
-      fileName: `${audio.title}.m4a`
+      fileName: `${title}.m4a`
     }, { quoted: m })
 
   } catch (e) {
