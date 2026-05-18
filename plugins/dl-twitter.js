@@ -1,91 +1,79 @@
-let handler = async (m, { conn, args, text }) => {
+import fetch from 'node-fetch'
+
+let handler = async (m, { conn, text, usedPrefix }) => {
 if (!text) {
 return conn.reply(m.chat, `❀ Te faltó el link de una imagen/video de twitter.`, m)
 }
+
 try {
 await m.react('🕒')
-const result = await twitterScraper(text);
-if (!result.status) return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido de Twitter`, m)
-if (result.data.type === 'video') {
+const api = `${global.APIs.light.url}/download/twitter?url=${encodeURIComponent(text)}&type=info`
+const res = await fetch(api)
+const result = await res.json()
+
+if (!result.status || !result.result) {
+return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido de Twitter`, m)
+}
+const data = result.result
+
+const duration = data.videos?.[0]?.duracionMs
+? `${(data.videos[0].duracionMs / 1000).toFixed(0)}s`
+: '-'
 let caption = `❀ Twitter - Download ❀
 
-> ✦ Titulo » ${result.data.title}
-> ⴵ Duración » ${result.data.duration}
-> 🜸 URL » ${text}`
- conn.sendFile(m.chat, result.data.dl[0].url, "video.mp4", caption, m)
- await m.react('✔️')
-} else {
+> ✦ ID » ${data.id}
+> 🜸 Likes » ${data.likes}
+> ⴵ Retweets » ${data.retweets}
+> ✇ Replies » ${data.replies}
+> 👁️ Vistas » ${data.vistas}
+> ⏱️ Duración » ${duration}
+> 📅 Fecha » ${data.fecha}
+> 🜸 URL » ${text}
+
+📝 Texto:
+${data.texto || 'Sin texto'}`
+
+if (data.tieneVideo && data.videos?.length) {
+
 await conn.sendMessage(m.chat, {
-image: { url: result.data.imageUrl },
-caption: `❀ Twitter - Download ❀\n\n> 🜸 URL » ${text}`}, { quoted: m })
- await m.react('✔️')
-}} catch (e) {
+image: { url: data.videos[0].thumbnail },
+caption
+}, { quoted: m })
+
+await conn.sendFile(
+m.chat,
+data.videos[0].url,
+'video.mp4',
+`🍜 ${data.id}.mp4`,
+m
+)
+
+await m.react('✔️')
+} else {
+await conn.reply(
+m.chat,
+`⚠︎ No se encontró video en el tweet.`,
+m
+)
+
 await m.react('✖️')
-return conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`, m)
+}
+
+} catch (e) {
+await m.react('✖️')
+return conn.reply(
+m.chat,
+`⚠︎ Se ha producido un problema.
+> Usa *${usedPrefix}report* para informarlo.
+
+${e.message || e}`,
+m
+)
 }}
 
-handler.command = ["x", "twitter", "xdl"]
-handler.help = ["twitter"]
-handler.tags = ["download"]
+handler.command = ['x', 'twitter', 'xdl']
+handler.help = ['twitter']
+handler.tags = ['download']
 handler.group = true
 
 export default handler
-
-async function twitterScraper(url) {
-return new Promise(async (resolve, reject) => {
-try {
-const twitterUrlMatch = url.match(/(https:\/\/x.com\/[^?]+)/)
-const tMatch = url.match(/t=([^&]+)/)
-const twitterUrl = twitterUrlMatch ? twitterUrlMatch[1] : ''
-const t = tMatch ? tMatch[1] : ''
-const urlnya = encodeURIComponent(`${twitterUrl}?t=${t}&s=19`)
-const response = await axios.post("https://savetwitter.net/api/ajaxSearch",
-`q=${urlnya}&lang=en`)
-const $ = cheerio.load(response.data.data)
-const isVideo = $('.tw-video').length > 0
-const twitterId = $('#TwitterId').val()
-if (isVideo) {
-const videoThumbnail = $('.tw-video .thumbnail .image-tw img').attr('src')
-const data = []
-$('.dl-action a').each((i, elem) => {
-const quality = $(elem).text().trim()
-const url = $(elem).attr('href')
-if ($(elem).hasClass('action-convert')) {
-const audioUrl = $(elem).attr('data-audioUrl')
-data.push({
-quality: quality,
-url: audioUrl || 'URL not found',
-})
-} else {
-data.push({
-quality: quality,
-url: url
-})
-}})
-const title = $('.tw-middle h3').text().trim()
-const videoDuration = $('.tw-middle p').text().trim()
-resolve({
-status: true,
-data: {
-type: "video",
-title: title,
-duration: videoDuration,
-twitterId: twitterId,
-videoThumbnail: videoThumbnail,
-dl: data
-}})
-} else {
-const imageUrl = $('.photo-list .download-items__thumb img').attr('src')
-const downloadUrl = $('.photo-list .download-items__btn a').attr('href')
-resolve({
-status: true,
-data: {
-type: "image",
-twitterId: twitterId,
-imageUrl: imageUrl,
-dl: downloadUrl
-}})
-}} catch (error) {
-reject(error)
-}})
-}
