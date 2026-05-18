@@ -30,12 +30,10 @@ m.exp = 0
 
 try {
 if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
-
 let user = global.db.data.users[m.sender]
 
-// Inicializar usuario sin usar m.name
 if (!("name" in user) ||!user.name || user.name === 'undefined') {
-  user.name = m.pushName || await this.getName(m.sender).catch(() => m.sender.split('@')[0])
+  user.name = m.pushName || await this.getName(m.sender).catch(() => null)
 }
 if (!("exp" in user) ||!isNumber(user.exp)) user.exp = 0
 if (!("coin" in user) ||!isNumber(user.coin)) user.coin = 0
@@ -91,9 +89,8 @@ self: false, restrict: true, jadibotmd: true, antiPrivate: false, gponly: false
 if (typeof m.text!== "string") m.text = ""
 const user = global.db.data.users[m.sender]
 try {
-const actual = user.name || ""
-const nuevo = m.pushName || await this.getName(m.sender)
-if (typeof nuevo === "string" && nuevo.trim() && nuevo!== actual) user.name = nuevo
+const nuevo = m.pushName || await this.getName(m.sender).catch(() => null)
+if (nuevo && typeof nuevo === "string" && nuevo.trim()) user.name = nuevo
 } catch {}
 
 const chat = global.db.data.chats[m.chat]
@@ -120,7 +117,6 @@ if (m.isBaileys) return
 m.exp += Math.ceil(Math.random() * 10)
 let usedPrefix
 
-// PRIMARY BOT CHECK - Arreglado
 if (chat.primaryBot && chat.primaryBot!== this.user.jid) {
 const primaryBotConn = global.conns.find(c => c.user?.jid === chat.primaryBot && c.ws?.socket?.readyState === ws.OPEN)
 const participants = m.isGroup? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
@@ -134,7 +130,6 @@ const participants = groupMetadata.participants || []
 const userGroup = participants.find(u => u.jid === m.sender) || {}
 const botGroup = participants.find(u => u.jid === this.user.jid) || {}
 
-// FIX ADMIN DETECTION
 const isRAdmin = userGroup.admin === 'superadmin'
 const isAdmin = isRAdmin || userGroup.admin === 'admin'
 const isBotAdmin = botGroup.admin === 'admin' || botGroup.admin === 'superadmin'
@@ -283,4 +278,4 @@ watchFile(file, async () => {
 unwatchFile(file)
 console.log(chalk.magenta("Se actualizo 'handler.js'"))
 if (global.reloadHandler) console.log(await global.reloadHandler())
-})
+}) 
