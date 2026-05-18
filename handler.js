@@ -29,10 +29,14 @@ if (!m) return
 m.exp = 0
 
 try {
-const user = global.db.data.users[m.sender]
-if (typeof user!== "object") global.db.data.users[m.sender] = {}
-if (user) {
-if (!("name" in user)) user.name = m.name
+if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
+
+let user = global.db.data.users[m.sender]
+
+// Inicializar usuario sin usar m.name
+if (!("name" in user) ||!user.name || user.name === 'undefined') {
+  user.name = m.pushName || await this.getName(m.sender).catch(() => m.sender.split('@')[0])
+}
 if (!("exp" in user) ||!isNumber(user.exp)) user.exp = 0
 if (!("coin" in user) ||!isNumber(user.coin)) user.coin = 0
 if (!("bank" in user) ||!isNumber(user.bank)) user.bank = 0
@@ -51,11 +55,6 @@ if (!("commands" in user) ||!isNumber(user.commands)) user.commands = 0
 if (!("afk" in user) ||!isNumber(user.afk)) user.afk = -1
 if (!("afkReason" in user)) user.afkReason = ""
 if (!("warn" in user) ||!isNumber(user.warn)) user.warn = 0
-} else global.db.data.users[m.sender] = {
-name: m.name, exp: 0, coin: 0, bank: 0, level: 0, health: 100, genre: "", birth: "",
-marry: "", description: "", packstickers: null, premium: false, premiumTime: 0,
-banned: false, bannedReason: "", commands: 0, afk: -1, afkReason: "", warn: 0
-}
 
 const chat = global.db.data.chats[m.chat]
 if (typeof chat!== "object") global.db.data.chats[m.chat] = {}
@@ -248,7 +247,7 @@ try { await plugin.after.call(this, m, extra) } catch (err) { console.error(err)
 }}}} catch (err) {
 console.error(err)
 } finally {
-if (opts["queque"] && m.text) {
+if (opts["que"] && m.text) {
 const quequeIndex = this.msgque.indexOf(m.id || m.key.id)
 if (queIndex!== -1) this.msgque.splice(queIndex, 1)
 }
@@ -284,4 +283,4 @@ watchFile(file, async () => {
 unwatchFile(file)
 console.log(chalk.magenta("Se actualizo 'handler.js'"))
 if (global.reloadHandler) console.log(await global.reloadHandler())
-}) 
+})
