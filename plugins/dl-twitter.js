@@ -44,7 +44,7 @@ await conn.sendFile(
 m.chat,
 data.videos[0].url,
 'video.mp4',
-`🍜 ${data.id}.mp4`,
+`🍜 Descarga completa`,
 m
 )
 
