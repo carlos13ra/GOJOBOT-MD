@@ -1,11 +1,14 @@
 import ws from 'ws'
 
 const handler = async (m, { conn, command, usedPrefix }) => {
-const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn.user.jid)])]
+const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws?.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn.user.jid)])]
 if (global.conn?.user?.jid && !subBots.includes(global.conn.user.jid)) {
 subBots.push(global.conn.user.jid)
 }
-const chat = global.db.data.chats[m.chat]
+
+// Inicializa el chat si no existe
+let chat = global.db.data.chats[m.chat] ||= {}
+if (!('primaryBot' in chat)) chat.primaryBot = null
 
 if (command === 'delprimary') {
 if (!chat.primaryBot) return conn.reply(m.chat, `ꕥ No hay ningún Bot primario establecido en este grupo.`, m)
@@ -14,10 +17,11 @@ delete chat.primaryBot
 return conn.reply(m.chat, `❀ Se ha eliminado el Bot primario del grupo.\n> @${old.split`@`[0]} ya no es Bot principal.`, m, { mentions: [old] })
 }
 
-const mentionedJid = await m.mentionedJid
-const who = mentionedJid[0] ? mentionedJid[0] : m.quoted ? await m.quoted.sender : false
+// Sin await. mentionedJid no es promesa
+const mentionedJid = m.mentionedJid
+const who = mentionedJid[0] ? mentionedJid[0] : m.quoted ? m.quoted.sender : false
 if (!who) return conn.reply(m.chat, `❀ Por favor, menciona a un Socket para hacerlo Bot principal del grupo.`, m)
-if (!subBots.includes(who)) return conn.reply(m.chat, `ꕥ El usuario mencionado no es un Socket de: *${botname}*.`, m)
+if (!subBots.includes(who)) return conn.reply(m.chat, `ꕥ El usuario mencionado no es un Socket de: *${global.botname || 'Bot'}*.`, m)
 if (chat.primaryBot === who) {
 return conn.reply(m.chat, `ꕥ @${who.split`@`[0]} ya esta como Bot primario en este grupo.`, m, { mentions: [who] });
 }
