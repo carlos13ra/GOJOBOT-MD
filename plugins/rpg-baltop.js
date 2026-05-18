@@ -14,28 +14,25 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   const startIndex = (page - 1) * 10
   const endIndex = startIndex + 10
 
+  const slice = sorted.slice(startIndex, endIndex)
+
+  // Obtener nombres correctamente
+  const list = await Promise.all(slice.map(async (user, i) => {
+    let name = user.name
+    if (!name || name === 'undefined' || name === '') {
+      name = await conn.getName(user.jid).catch(() => null)
+    }
+    if (!name) name = user.jid.split('@')[0]
+    const total = (user.coin || 0) + (user.bank || 0)
+    return `│ ✰ ${startIndex + i + 1}. *${name}*\n│ Total ⤷ ¥${total.toLocaleString()} ${currency}\n│`
+  }))
+
   let text = []
   text.push(`╭━━━〔 💰 *TOP ECONOMÍA* 💰 〕━━⬣`)
   text.push(`│`)
   text.push(`│「✿」Los usuarios con más *${currency}* son:`)
   text.push(`│`)
-
-  const slice = sorted.slice(startIndex, endIndex)
-  for (let i = 0; i < slice.length; i++) {
-    const { jid, coin, bank } = slice[i]
-    const total = (coin || 0) + (bank || 0)
-
-    let name = global.db.data.users[jid]?.name
-    if (!name || name === 'undefined') {
-      name = await conn.getName(jid).catch(() => null)
-    }
-    if (!name) name = jid.split('@')[0]
-
-    text.push(`│ ✰ ${startIndex + i + 1}. *${name}*`)
-    text.push(`│ Total ⤷ ¥${total.toLocaleString()} ${currency}`)
-    text.push(`│`)
-  }
-
+  text.push(...list)
   text.push(`│ • Página *${page}* de *${totalPages}*`)
   text.push(`╰━━━━━━━━━━⬣`)
 
