@@ -17,16 +17,21 @@ let handler = async (m, { conn, args, participants, usedPrefix }) => {
   let text = []
   text.push(`╭━━━〔 💰 *TOP ECONOMÍA* 💰 〕━━⬣`)
   text.push(`│`)
-  text.push(`│「✿」Los usuarios con más *${currency}* son:`)
+  text.push(`│「✿」Los usuarios con más *goticas* son:`)
   text.push(`│`)
 
   const slice = sorted.slice(startIndex, endIndex)
   for (let i = 0; i < slice.length; i++) {
     const { jid, coin, bank } = slice[i]
     const total = (coin || 0) + (bank || 0)
-    let name = global.db.data.users[jid]? global.db.data.users[jid].name : await conn.getName(jid).catch(() => jid.split('@')[0])
+
+    let name = global.db.data.users[jid]?.name
+    if (!name || name === 'undefined' || name === '') {
+      name = '+' + jid.split('@')[0]
+    }
+
     text.push(`│ ✰ ${startIndex + i + 1}. *${name}*`)
-    text.push(`│ Total ⤷ ¥${total.toLocaleString()} ${currency}`)
+    text.push(`│ Total ⤷ ¥${total.toLocaleString()} goticas`)
     text.push(`│`)
   }
 
