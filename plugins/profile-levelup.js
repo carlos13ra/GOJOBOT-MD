@@ -15,7 +15,7 @@ let before = user.level * 1
 while (canLevelUp(user.level, user.exp, global.multiplier)) user.level++
 if (before !== user.level) {
 let txt = `ᥫ᭡ Felicidades Has subido de nivel.\n\n*${before}* ➔ *${user.level}*\n\n• ✰ *Nivel anterior* : ${before}\n• ✧ *Nuevos niveles* : ${user.level}\n• ❖ *Fecha* : ${new Date().toLocaleString('id-ID')}\n\n> ➨ Nota: *Cuanto más interactúes con el Bot, mayor será tu nivel.*`
-await conn.sendMessage(m.chat, { text: txt, ...rcanal }, { quoted: m })
+await conn.sendMessage(m.chat, { text: txt }, { quoted: m })
 } else {
 let users = Object.entries(global.db.data.users).map(([key, value]) => {
 return { ...value, jid: key }
@@ -23,7 +23,7 @@ return { ...value, jid: key }
 let sortedLevel = users.sort((a, b) => (b.level || 0) - (a.level || 0))
 let rank = sortedLevel.findIndex(u => u.jid === who) + 1
 let txt = `*「✦」Usuario* ◢ ${name} ◤\n\n✧ Nivel » *${user.level}*\n✰ Experiencia » *${user.exp}*\n➨ Progreso » *${user.exp - min} => ${xp}* _(${Math.floor(((user.exp - min) / xp) * 100)}%)_\n# Puesto » *${rank}* de *${sortedLevel.length}*\n❒ Comandos totales » *${user.commands || 0}*`
-await conn.sendMessage(m.chat, { text: txt, ...rcanal }, { quoted: m })
+await conn.sendMessage(m.chat, { text: txt }, { quoted: m })
 }}
 
 handler.help = ['levelup']
