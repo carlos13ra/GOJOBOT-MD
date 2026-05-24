@@ -381,7 +381,7 @@ global.dfail = (type, m, conn) => {
 
    restrict: `*_ ׄ ☁️ ׅ  Esta caracteristica está desactivada._*`
  }[type]
-if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))
+if (msg) return conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'))
 }
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
