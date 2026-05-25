@@ -20,24 +20,13 @@ const texto = `ᥫ᭡ Informacion - Balance ❀
 
 > *Para proteger tu dinero, ¡depósitalo en el banco usando #deposit!*`
 
-const rcanal = {
-  contextInfo: {
-    forwardingScore: 999,
-    isForwarded: true,
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: '120363421367237421@newsletter',
-      newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ',
-      serverMessageId: -1
-    }
-  }
-}
 
 await conn.sendMessage(m.chat, {
       image: { url: 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/v0bmi.jpeg' },
       caption: texto,
       mentions: [who],
-     ...rcanal
- }, { quoted: fkontak })
+     ...fake
+ }, { quoted: m })
 }
 
 handler.help = ['bal']
