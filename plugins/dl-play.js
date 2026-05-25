@@ -30,7 +30,7 @@ const handler = async (m, { conn, text, command }) => {
     }, { quoted: m })*/
     
     
-    await client.reply(m.chat, `🌳 *Título:* ${title}
+    await conn.reply(m.chat, `🌳 *Título:* ${title}
 > 🍄 *Canal:* ${author.name || 'Desconocido'}
 > 🥦 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
