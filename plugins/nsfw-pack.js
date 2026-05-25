@@ -45,9 +45,9 @@ const handler = async (m, { conn }) => {
   }
 }
 
-handler.command = ['pack2']
+handler.command = ['pack']
 handler.tags = ['nsfw']
-handler.help = ['pack2']
+handler.help = ['pack']
 handler.level = 50
 handler.premium = true
 
