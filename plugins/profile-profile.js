@@ -137,7 +137,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
 
     await conn.sendMessage(
       m.chat,
-      { image: { url: pp }, caption: text, ...fake, mentions: [userId].filter(Boolean) },
+      { image: { url: pp }, caption: text, mentions: [userId].filter(Boolean) },
       { quoted: m }
     )
 
