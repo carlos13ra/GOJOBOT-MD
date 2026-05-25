@@ -1,5 +1,6 @@
 import axios from 'axios'
 import FormData from 'form-data'
+import * as cheerio from 'cheerio'
 
 const handler = async (m, { conn }) => {
   try {
@@ -13,18 +14,65 @@ const handler = async (m, { conn }) => {
     await m.react('🕒')
 
     const media = await q.download()
-
     const sizeMb = (media.length / 1024 / 1024).toFixed(2)
 
-    const link = await uploadToCatbox(media, mime)
+    let result = null
+    let server = null
+
+    // CATBOX
+    try {
+      result = await uploadCatbox(media, mime)
+
+      if (result) {
+        server = 'Catbox'
+      }
+    } catch {}
+
+    // LITTERBOX
+    if (!result) {
+      try {
+        result = await uploadLitterbox(media, mime)
+
+        if (result) {
+          server = 'Litterbox'
+        }
+      } catch {}
+    }
+
+    // TMPFILES
+    if (!result) {
+      try {
+        result = await uploadTmpfiles(media, mime)
+
+        if (result) {
+          server = 'TmpFiles'
+        }
+      } catch {}
+    }
+
+    // KRAKENFILES
+    if (!result) {
+      try {
+        result = await uploadKraken(media, mime)
+
+        if (result) {
+          server = 'KrakenFiles'
+        }
+      } catch {}
+    }
+
+    if (!result) {
+      throw new Error('Todos los servidores fallaron')
+    }
 
     await conn.reply(
       m.chat,
-`🫒 *Catbox Upload*
+`🫒 *Upload Completo*
 
-🌳 *Link:* ${link}
+🌳 *Link:* ${result}
 🍃 *Tipo:* ${mime}
-🍜 *Peso:* ${sizeMb} MB`,
+🍜 *Peso:* ${sizeMb} MB
+🛰️ *Servidor:* ${server}`,
       m
     )
 
@@ -43,54 +91,170 @@ ${e.response?.data || e.message || e}`
   }
 }
 
-handler.help = ['catbox']
+handler.help = ['upload']
 handler.tags = ['tools']
-handler.command = ['catbox']
+handler.command = ['catbox', 'upload']
 
 export default handler
 
-async function uploadToCatbox(buffer, mime) {
+function generateUniqueFilename(mime = 'application/octet-stream') {
+  const ext = mime.split('/')[1] || 'bin'
+  return `${Date.now()}.${ext}`
+}
+
+// CATBOX
+async function uploadCatbox(buffer, mime) {
   const form = new FormData()
 
   form.append('reqtype', 'fileupload')
 
-  form.append(
-    'fileToUpload',
-    buffer,
-    {
-      filename: generateUniqueFilename(mime),
-      contentType: mime
-    }
-  )
+  form.append('fileToUpload', buffer, {
+    filename: generateUniqueFilename(mime),
+    contentType: mime
+  })
 
   const res = await axios.post(
     'https://catbox.moe/user/api.php',
     form,
     {
+      timeout: 120000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      validateStatus: () => true,
       headers: {
         ...form.getHeaders(),
-        origin: 'https://catbox.moe',
-        referer: 'https://catbox.moe/',
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-      },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
+        accept: '*/*',
+        'user-agent': 'Mozilla/5.0'
+      }
     }
   )
 
   if (
-    !res.data ||
-    typeof res.data !== 'string' ||
-    !res.data.startsWith('https://')
+    typeof res.data === 'string' &&
+    res.data.startsWith('https://')
   ) {
-    throw new Error(res.data || 'Respuesta inválida de Catbox')
+    return res.data.trim()
   }
 
-  return res.data.trim()
+  return null
 }
 
-function generateUniqueFilename(mime = 'application/octet-stream') {
-  const ext = mime.split('/')[1] || 'bin'
-  return `${Date.now()}.${ext}`
+// LITTERBOX
+async function uploadLitterbox(buffer, mime) {
+  const form = new FormData()
+
+  form.append('reqtype', 'fileupload')
+  form.append('time', '1h')
+
+  form.append('fileToUpload', buffer, {
+    filename: generateUniqueFilename(mime),
+    contentType: mime
+  })
+
+  const res = await axios.post(
+    'https://litterbox.catbox.moe/resources/internals/api.php',
+    form,
+    {
+      timeout: 120000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      validateStatus: () => true,
+      headers: {
+        ...form.getHeaders(),
+        accept: '*/*',
+        'user-agent': 'Mozilla/5.0'
+      }
+    }
+  )
+
+  if (
+    typeof res.data === 'string' &&
+    res.data.startsWith('https://')
+  ) {
+    return res.data.trim()
+  }
+
+  return null
+}
+
+// TMPFILES
+async function uploadTmpfiles(buffer, mime) {
+  const form = new FormData()
+
+  form.append('file', buffer, {
+    filename: generateUniqueFilename(mime),
+    contentType: mime
+  })
+
+  form.append('expire', '21600')
+
+  const res = await axios.post(
+    'https://tmpfiles.org/api/v1/upload',
+    form,
+    {
+      timeout: 120000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      validateStatus: () => true,
+      headers: {
+        ...form.getHeaders(),
+        accept: 'application/json',
+        'user-agent': 'Mozilla/5.0'
+      }
+    }
+  )
+
+  return res.data?.data?.url || null
+}
+
+// KRAKENFILES
+async function uploadKraken(buffer, mime) {
+  const UA =
+    'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/147.0.0.0 Mobile Safari/537.36'
+
+  const form = new FormData()
+
+  form.append('files[]', buffer, {
+    filename: generateUniqueFilename(mime),
+    contentType: mime
+  })
+
+  const res = await axios.post(
+    'https://hs9.krakencloud.net/_uploader/gallery/upload',
+    form,
+    {
+      timeout: 120000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      validateStatus: () => true,
+      headers: {
+        ...form.getHeaders(),
+        accept: 'application/json, text/javascript, */*; q=0.01',
+        origin: 'https://krakenfiles.com',
+        referer: 'https://krakenfiles.com/',
+        'user-agent': UA
+      }
+    }
+  )
+
+  const viewUrl = res.data?.files?.[0]?.url || null
+
+  if (!viewUrl) {
+    return null
+  }
+
+  const page = await axios.get(viewUrl, {
+    headers: {
+      'user-agent': UA
+    }
+  })
+
+  const $ = cheerio.load(page.data || '')
+
+  return (
+    $('#link1').attr('value')?.trim() ||
+    $('meta[property="og:image"]').attr('content')?.trim() ||
+    $('.image-preview a[href]').attr('href')?.trim() ||
+    viewUrl
+  )
 }
