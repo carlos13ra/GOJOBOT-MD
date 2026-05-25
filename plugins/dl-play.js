@@ -5,7 +5,9 @@ import fs from "fs"
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text) return m.reply('🍜 Escribe el nombre o link del video', m)
+    if (!text) {
+      return m.reply('🍜 Escribe el nombre o link del video')
+    }
 
     await m.react('🎶')
 
