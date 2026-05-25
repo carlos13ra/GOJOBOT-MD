@@ -87,13 +87,10 @@ let handler = async (m, { conn, args, usedPrefix }) => {
       return acc + (Number(char.value) || 0)
     }, 0)
 
-    // Perfil picture
     const pp = await conn.profilePictureUrl(userId, 'image')
-      .catch(_ => 'https://i.imgur.com/2WZtOD6.jpeg')
+      .catch(_ => 'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/mdag7.jpeg')
 
     const currency = global.currency || 'Coins'
-
-    // ✨ Texto elegante
     const text = `
 ╔═════════════════════╗
         ✨ 𝗣𝗘𝗥𝗙𝗜𝗟  ✨        
@@ -138,10 +135,9 @@ let handler = async (m, { conn, args, usedPrefix }) => {
  𝐒𝐈𝐒𝐓𝐄𝐌𝐀
 📜 Comandos usados: ${user.commands || 0}`
 
-    // Enviar mensaje
     await conn.sendMessage(
       m.chat,
-      { image: { url: pp }, caption: text, mentions: [userId].filter(Boolean) },
+      { image: { url: pp }, caption: text, ...fake, mentions: [userId].filter(Boolean) },
       { quoted: m }
     )
 
@@ -157,7 +153,6 @@ handler.group = true
 
 export default handler
 
-// Función de tiempo formateado
 async function formatTime(ms) {
   let s = Math.floor(ms / 1000),
       m = Math.floor(s / 60),
