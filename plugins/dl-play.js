@@ -17,8 +17,9 @@ const handler = async (m, { conn, text, command }) => {
     if (!video) throw 'No se encontró nada'
 
     const { title, url, thumbnail, timestamp, views, ago, author } = video
-
-    await conn.sendMessage(m.chat, {
+    const thumbBuffer = await getBuffer(videoData.thumbnail)
+    
+    /*await conn.sendMessage(m.chat, {
       image: { url: thumbnail },
       caption: `🌳 *Título:* ${title}
 > 🍄 *Canal:* ${author.name || 'Desconocido'}
@@ -26,7 +27,27 @@ const handler = async (m, { conn, text, command }) => {
 > ⏳ *Duración:* ${timestamp}
 > 🌾 *Publicado:* ${ago}
 > 🍓 *Link:* ${url}`, ...fake
-    }, { quoted: m })
+    }, { quoted: m })*/
+    
+    
+    await client.reply(m.chat, `🌳 *Título:* ${title}
+> 🍄 *Canal:* ${author.name || 'Desconocido'}
+> 🥦 *Vistas:* ${formatViews(views)}
+> ⏳ *Duración:* ${timestamp}
+> 🌾 *Publicado:* ${ago}
+> 🍓 *Link:* ${url}`, m, {
+          externalAdReply: {
+            title: "ᰋ ᰋ    🪽   ݂   𝐘𝐨𝐮𝐓𝐮𝐛𝐞 ✿ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝    ݁      𖨆   ݂      ݁  ",
+            body: title,
+            mediaType: 1,
+            previewType: 0,
+            mediaUrl: url,
+            sourceUrl: url,
+            thumbnail: thumbBuffer,
+            renderLargerThumbnail: true
+          }
+        }
+      });
 
     const isAudio = ['play', 'audio'].includes(command)
     const formato = isAudio ? '128k' : '480p'
