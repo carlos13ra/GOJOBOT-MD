@@ -12,15 +12,6 @@ const qualities = [
   '320'
 ]
 
-const fandoms = [
-  '🌱 ძᥱsᥴᥲrgᥲᥒძ᥆ ᥲᥙძі᥆ ᥴᥲᥙsᥲ...',
-  '🍃 ᥱs⍴ᥱrᥲ ᥙᥒ m᥆mᥱᥒ𝗍᥆ ᥴᥲᥙsᥲ...',
-  '🎧 ᥴᥲrgᥲᥒძ᥆ 𝗍ᥙ ᥲᥙძі᥆...',
-  '🌴 ᥴ᥆ᥒsіgᥙіᥱᥒძ᥆ ᥣᥲ mᥙsіᥴᥲ...',
-  '🍄 ძᥱsᥴᥲrgᥲ ᥱᥒ ⍴r᥆ᥴᥱs᥆...',
-  '💿 ᥆ᑲ𝗍ᥱᥒіᥱᥒძ᥆ ᥱᥣ ᥲᥙძі᥆...'
-]
-
 const handler = async (m, { conn, text }) => {
   try {
     if (!text) {
@@ -32,15 +23,21 @@ const handler = async (m, { conn, text }) => {
     const regex =
       /^(https?:\/\/)?(www\.)?(soundcloud\.com)\/.+$/i
 
-    if (!regex.test(text)) {
+    const args = text.split(" ")
+
+    const url = args.find(v =>
+      regex.test(v)
+    )
+
+    if (!url) {
       return m.reply(
         "✘ Ingresa un link válido de SoundCloud"
       )
     }
 
     const quality =
-      qualities.find(v =>
-        text.includes(v)
+      args.find(v =>
+        qualities.includes(v)
       ) ||
       qualities[
         Math.floor(
@@ -51,18 +48,8 @@ const handler = async (m, { conn, text }) => {
 
     await m.react("🕒")
 
-    const fandom =
-      fandoms[
-        Math.floor(
-          Math.random() *
-          fandoms.length
-        )
-      ]
-
-    m.reply(`*${fandom}*`)
-
     const api =
-      `https://api--shadowcorexyz.replit.app/download/soundcloud/v2?url=${encodeURIComponent(text)}&quality=${quality}`
+      `https://api--shadowcorexyz.replit.app/download/soundcloud/v2?url=${encodeURIComponent(url)}&quality=${quality}`
 
     const res = await fetch(api)
 
@@ -119,15 +106,11 @@ const handler = async (m, { conn, text }) => {
         document: {
           url: data.download
         },
-
         mimetype: "audio/mpeg",
-
         fileName:
           data.filename ||
           `${data.title}.mp3`,
-
         caption,
-
         jpegThumbnail: thumbDoc
       },
       { quoted: m }
