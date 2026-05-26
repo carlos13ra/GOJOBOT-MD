@@ -12,7 +12,33 @@ let handler = async (m, { conn }) => {
   let ramUso = ramTotal - ramLibre
 
   let uptime = process.uptime()
-
+  const fakePaymentQuote = {
+    key: {
+      participant: m.sender,
+      remoteJid: m.chat,
+      fromMe: false,
+      id: 'PAYQUOTE'
+    },
+    message: {
+      requestPaymentMessage: {
+        currencyCodeIso4217: 'USD',
+        amount1000: 1000000000,
+        requestFrom: m.sender,
+        noteMessage: {
+          extendedTextMessage: {
+            text: global.botname || global.namechannel || 'Ryze MD'
+          }
+        },
+        expiryTimestamp: Math.floor(Date.now() / 1000) + 86400,
+        amount: {
+          value: 1000000000,
+          offset: 1000,
+          currencyCode: 'USD'
+        }
+      }
+    },
+    participant: m.sender
+  }
   let pingEmoji =
     latensi < 50 ? '🟢 Excelente' :
     latensi < 120 ? '🟡 Bueno' :
@@ -28,7 +54,7 @@ let handler = async (m, { conn }) => {
 *🍙 Node      : ›* ${process.version}
 *🌿 RAM       : ›* ${ramUso} MB / ${ramTotal} MB`
 
-  await conn.reply(m.chat, teks, fkontak, fake)
+  await conn.reply(m.chat, teks, fakePaymentQuote, fake)
 }
 
 handler.help = ['ping']
