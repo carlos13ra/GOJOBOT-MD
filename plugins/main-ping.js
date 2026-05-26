@@ -31,9 +31,6 @@ let handler = async (m, { conn }) => {
     },
     participant: m.sender
   }
-
-  await conn.reply(m.chat, '`🌱 ¡Pong!`', fakePaymentQuote, fake)
-
   const latensi = Date.now() - start
 
   let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
@@ -63,8 +60,6 @@ let handler = async (m, { conn }) => {
 handler.help = ['ping']
 handler.tags = ['info']
 handler.command = ['ping', 'p']
-handler.register = true
-
 export default handler
 
 function formatTime(seconds) {
