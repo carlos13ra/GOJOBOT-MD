@@ -31,6 +31,9 @@ let handler = async (m, { conn }) => {
     },
     participant: m.sender
   }
+
+  await conn.reply(m.chat, '`🌱 ¡Pong!`', m)
+
   const latensi = Date.now() - start
 
   let ramTotal = (os.totalmem() / 1024 / 1024).toFixed(0)
@@ -60,6 +63,7 @@ let handler = async (m, { conn }) => {
 handler.help = ['ping']
 handler.tags = ['info']
 handler.command = ['ping', 'p']
+
 export default handler
 
 function formatTime(seconds) {
