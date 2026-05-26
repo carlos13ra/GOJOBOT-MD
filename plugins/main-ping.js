@@ -26,7 +26,7 @@ let handler = async (m, { conn }) => {
         requestFrom: m.sender,
         noteMessage: {
           extendedTextMessage: {
-            text: global.botname || global.namechannel || 'Ryze MD'
+            text: global.botname || global.namechannel || ''
           }
         },
         expiryTimestamp: Math.floor(Date.now() / 1000) + 86400,
