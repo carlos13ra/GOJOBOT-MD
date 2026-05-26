@@ -28,7 +28,7 @@ let handler = async (m, { conn }) => {
 *🍙 Node      : ›* ${process.version}
 *🌿 RAM       : ›* ${ramUso} MB / ${ramTotal} MB`
 
-  await conn.reply(m.chat, teks, m, rcanal)
+  await conn.reply(m.chat, teks, fkontak, fake)
 }
 
 handler.help = ['ping']
