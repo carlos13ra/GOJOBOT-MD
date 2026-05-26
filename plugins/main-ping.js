@@ -12,6 +12,7 @@ let handler = async (m, { conn }) => {
   let ramUso = ramTotal - ramLibre
 
   let uptime = process.uptime()
+
   const fakePaymentQuote = {
     key: {
       participant: m.sender,
@@ -39,6 +40,7 @@ let handler = async (m, { conn }) => {
     },
     participant: m.sender
   }
+
   let pingEmoji =
     latensi < 50 ? '🟢 Excelente' :
     latensi < 120 ? '🟡 Bueno' :
@@ -47,12 +49,14 @@ let handler = async (m, { conn }) => {
 
   let teks = `*'ׄ𐚁ִㅤS T A T U S - P I N Gׄ ₍ ᐢ..ᐢ ₎'*
 
-*🍄 Bot       : ›* ${botname}
 *🌳 Latency   : ›* ${latensi.toFixed(2)} ms (${pingEmoji})
+*🍄 Bot       : ›* ${botname}
 *🌱 Uptime    : ›* ${formatTime(uptime)}
 *🪷 Sistema   : ›* ${os.platform()} (${os.arch()})
 *🍙 Node      : ›* ${process.version}
 *🌿 RAM       : ›* ${ramUso} MB / ${ramTotal} MB`
+
+  await conn.reply(m.chat, '`🌱 ¡Pong!`', fakePaymentQuote, fake)
 
   await conn.reply(m.chat, teks, fakePaymentQuote, fake)
 }
@@ -60,8 +64,6 @@ let handler = async (m, { conn }) => {
 handler.help = ['ping']
 handler.tags = ['info']
 handler.command = ['ping', 'p']
-handler.register = true
-
 export default handler
 
 function formatTime(seconds) {
