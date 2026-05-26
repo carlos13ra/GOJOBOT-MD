@@ -5,9 +5,7 @@ import fs from "fs"
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text) {
-      return m.reply('🍜 Escribe el nombre o link del video')
-    }
+    if (!text) return m.reply('🍜 Escribe el nombre o link del video', m)
 
     await m.react('🎶')
 
@@ -23,14 +21,13 @@ const handler = async (m, { conn, text, command }) => {
     await conn.sendMessage(m.chat, {
       image: { url: thumbnail },
       caption: `🌳 *Título:* ${title}
-      
 > 🍄 *Canal:* ${author.name || 'Desconocido'}
 > 🥦 *Vistas:* ${formatViews(views)}
 > ⏳ *Duración:* ${timestamp}
 > 🌾 *Publicado:* ${ago}
-> 🍓 *Link:* ${url}`,
+> 🍓 *Link:* ${url}`, ...fake
     }, { quoted: m })
-    
+
     const isAudio = ['play', 'audio'].includes(command)
     const formato = isAudio ? '128k' : '480p'
 
