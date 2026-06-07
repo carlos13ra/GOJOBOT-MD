@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`✰ Uso: ${usedPrefix + command} <búsqueda>\nEjemplo: ${usedPrefix + command} Alya`)
+    return m.reply(`✰ Uso: ${usedPrefix + command} <búsqueda>\nEjemplo: ${usedPrefix + command} Anime`)
   }
 
   let statusMsg = await m.reply('🔎 *Buscando grupos...*')
