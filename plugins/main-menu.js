@@ -15,11 +15,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     let date = `${fecha} ${hora}`
     let mediaList = [
       'https://files.catbox.moe/dd03ew.mp4',
-      'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/g68u4.jpeg', 
       'https://files.catbox.moe/6o9e6r.mp4',
       'https://files.catbox.moe/iu8d05.mp4',
-      'https://files.catbox.moe/5hnwgw.mp4', 
-      'https://raw.githubusercontent.com/Dev-lxyz/upload/main/uploads/g68u4.jpeg',
+      'https://files.catbox.moe/5hnwgw.mp4',
       'https://files.catbox.moe/qacumt.mp4', 
       'https://files.catbox.moe/wm3an6.mp4'
     ]
@@ -49,7 +47,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     }).join('\n\n')
 
     let menu = `
- 𔗨𔗨  お GOJOBOT - ${(conn.user.jid == global.conn.user.jid ? 'OFICIAL' : 'SUB BOT')} 🍜ᩨ :: 
+ 𔗨𔗨  お GOJOBOT - ${(conn.user.jid == global.conn.user.jid ? 'OFICIAL' : 'SUB BOT')} 🍜 :: 
 
 - ﹟ *ᴅᴇᴠᴇʟᴏᴘᴇʀ ›* wa.me/51963315293
 - ﹟ *ᴜsᴇʀs ›* ${totalreg}
