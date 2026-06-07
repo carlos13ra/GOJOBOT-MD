@@ -6,18 +6,18 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   let statusMsg = await m.reply('🧊 *Descargando audio... espera*')
 
   try {
-    const api = `https://api--shadowcorexyz.replit.app/download/ytdl/v2?url=${encodeURIComponent(text)}&format=mp3&quality=m4a`
+    const api = `https://api--shadowcorexyz.replit.app/download/ytconvert?url=${encodeURIComponent(text)}&format=mp3&quality=128`
     const res = await fetch(api, { timeout: 25000 })
     const json = await res.json()
 
-    if (!json.status || !json.result?.download) {
+    if (!json.status || !json.data?.download) {
       return conn.sendMessage(m.chat, {
         text: `✘ ${json.message || 'API falló o link inválido'}`,
         edit: statusMsg.key
       })
     }
 
-    const r = json.result
+    const r = json.data
 
     await conn.sendMessage(m.chat, {
       audio: { url: r.download },
@@ -29,12 +29,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, {
       text: `╭─❒ *YTMP3*
 │🎵 *Título:* ${r.title}
-│👤 *Canal:* ${r.uploader}
-│⏱️ *Duración:* ${r.duration}
-│👀 *Vistas:* ${r.views}
-│📦 *Tamaño:* ${r.size}
-│🎧 *Calidad:* ${r.quality} ${r.ext}
-╰─❒\n\n✅ *Descarga completa*`,
+│👤 *Canal:* ${r.author}
+│⏱️ *Duración:* ${r.duration}s
+│🎧 *Calidad:* ${r.requestedQuality}kbps
+│📦 *Formato:* ${r.format}
+╰─❒
+
+✅ *Descarga completa*`,
       edit: statusMsg.key
     })
 
