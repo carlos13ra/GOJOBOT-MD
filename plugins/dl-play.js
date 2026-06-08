@@ -8,14 +8,11 @@ const handler = async (m, { conn, text, command }) => {
     if (!text) return m.reply('🍜 Escribe el nombre o link del video', m)
 
     await m.react('🎶')
-
     const match = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/))([a-zA-Z0-9_-]{11})/)
     const query = match ? `https://youtu.be/${match[1]}` : text
-
     const search = await yts(query)
     const video = search.videos[0]
     if (!video) throw 'No se encontró nada'
-
     const { title, url, thumbnail, timestamp, views, ago, author } = video
 
     await conn.sendMessage(m.chat, {
@@ -30,12 +27,9 @@ const handler = async (m, { conn, text, command }) => {
 
     const isAudio = ['play', 'audio'].includes(command)
     const formato = isAudio ? '128k' : '480p'
-
     await m.react(isAudio ? '🎧' : '🎬')
-
     const data = await yt.convert(url, formato)
     const fileName = yt.sanitize(data.filename || title)
-
     const r = await fetch(data.url)
     const buffer = Buffer.from(await r.arrayBuffer())
 
