@@ -155,9 +155,9 @@ const handler = async (message, { conn, usedPrefix, command }) => {
     const messageText =
       `❀ Nombre » *${characterData.name}*\n⚥ Género » *${randomCharacter.gender || 'Desconocido'}*\n✰ Valor » *${characterData.value.toLocaleString()}*\n♡ Estado » *${
         characterData.user ? 'Reclamado por ' + userName : 'Libre'
-      }*\n❖ Fuente » *${seriesName}* ??`;
+      }*\n❖ Fuente » *${seriesName}*`;
 
-    const sentMessage = await conn.sendFile(message.chat, selectedImage, randomCharacter.name + '.jpg', messageText, message, fake);
+    const sentMessage = await conn.sendFile(message.chat, selectedImage, randomCharacter.name + '.jpg', messageText, message);
 
     chatData.lastRolledId = characterId;
     chatData.lastRolledMsgId = sentMessage.message?.id || null;
