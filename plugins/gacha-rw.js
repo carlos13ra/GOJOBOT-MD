@@ -2,11 +2,6 @@ import nodeFetch from 'node-fetch';
 import { promises as fs } from 'fs';
 
 const FILE_PATH = './lib/characters.json';
-
-// ==========================================
-// FUNCIONES AUXILIARES
-// ==========================================
-
 async function loadCharacters() {
   try {
     await fs.access(FILE_PATH);
@@ -90,39 +85,23 @@ const verifi = async () => {
   }
 };
 
-// ==========================================
-// MANEJADOR PRINCIPAL
-// ==========================================
 
 const handler = async (message, { conn, usedPrefix, command }) => {
-  // Verificación de origen del bot
-  if (!(await verifi())) {
-    return conn.reply(
-      message.chat,
-      `❀ El comando *${command}>* solo está disponible para Kaneki Bot.\n> https://github.com/Carlos13ra/GOJOBOT-MD`,
-      message
-    );
-  }
-
-  // Inicializar estructuras de datos
+  
   const chats = global.db.data.chats;
   if (!chats[message.chat]) chats[message.chat] = {};
   const chatData = chats[message.chat];
   if (!chatData.characters) chatData.characters = {};
 
-  // Verificar si está habilitado en grupo
   if (!chatData.gacha && message.isGroup) {
     return message.reply(
       `ꕥ Los comandos de *Gacha* están desactivados en este grupo.\n\nUn *administrador* puede activarlos con el comando:\n» *${usedPrefix}gacha on*`
     );
   }
 
-  // Obtener información del usuario
   const userData = global.db.data.users[message.sender];
   const currentTime = Date.now();
-  const COOLDOWN_TIME = 15 * 60 * 1000; // 15 minutos
-
-  // Verificar cooldown
+  const COOLDOWN_TIME = 15 * 60 * 1000;
   if (userData.reservedUntil && currentTime < userData.reservedUntil) {
     const remainingSeconds = Math.ceil((userData.reservedUntil - currentTime) / 1000);
     const minutes = Math.floor(remainingSeconds / 60);
@@ -138,15 +117,12 @@ const handler = async (message, { conn, usedPrefix, command }) => {
   }
 
   try {
-    // Cargar personajes
     const allCharacters = await loadCharacters();
     const flatCharacters = flattenCharacters(allCharacters);
     const randomCharacter = flatCharacters[Math.floor(Math.random() * flatCharacters.length)];
     const characterId = String(randomCharacter.id);
     const seriesName = getSeriesNameByCharacter(allCharacters, randomCharacter.id);
     const tag = formatTag(randomCharacter.tags?.[0] || '');
-
-    // Buscar imagen
     const imageUrls = await buscarImagenDelirius(tag);
     const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
@@ -154,14 +130,12 @@ const handler = async (message, { conn, usedPrefix, command }) => {
       return message.reply(`ꕥ No se encontró imágenes para el personaje *${randomCharacter.name}*.`);
     }
 
-    // Inicializar base de datos de personajes
     if (!global.db.data.characters) global.db.data.characters = {};
     if (!global.db.data.characters[characterId]) global.db.data.characters[characterId] = {};
 
     const characterData = global.db.data.characters[characterId];
     const existingData = global.db.data.characters?.[characterId] || {};
 
-    // Guardar información del personaje
     characterData.name = String(randomCharacter.name || 'Sin nombre');
     characterData.value = typeof existingData.value === 'number' ? existingData.value : Number(randomCharacter.value) || 100;
     characterData.votes = Number(characterData.votes || existingData.votes || 0);
@@ -169,7 +143,6 @@ const handler = async (message, { conn, usedPrefix, command }) => {
     characterData.reservedUntil = currentTime + 0x4e20; // 20 minutos
     characterData.expiresAt = currentTime + 0xea60; // 60 minutos
 
-    // Obtener nombre del usuario
     let userName = 'desconocido';
     if (typeof characterData.user === 'string' && characterData.user.trim()) {
       userName =
@@ -179,15 +152,13 @@ const handler = async (message, { conn, usedPrefix, command }) => {
           .catch(() => characterData.user.split('@')[0]));
     }
 
-    // Construir mensaje
     const messageText =
       `❀ Nombre » *${characterData.name}*\n⚥ Género » *${randomCharacter.gender || 'Desconocido'}*\n✰ Valor » *${characterData.value.toLocaleString()}*\n♡ Estado » *${
         characterData.user ? 'Reclamado por ' + userName : 'Libre'
       }*\n❖ Fuente » *${seriesName}* ??`;
 
-    const sentMessage = await conn.sendFile(message.chat, selectedImage, randomCharacter.name + '.jpg', messageText, message);
+    const sentMessage = await conn.sendFile(message.chat, selectedImage, randomCharacter.name + '.jpg', messageText, message, fake);
 
-    // Guardar información del último roll
     chatData.lastRolledId = characterId;
     chatData.lastRolledMsgId = sentMessage.message?.id || null;
     chatData.lastRolledCharacter = {
@@ -196,7 +167,6 @@ const handler = async (message, { conn, usedPrefix, command }) => {
       media: selectedImage,
     };
 
-    // Establecer cooldown
     userData.reservedUntil = currentTime + COOLDOWN_TIME;
   } catch (error) {
     await conn.reply(
@@ -206,10 +176,6 @@ const handler = async (message, { conn, usedPrefix, command }) => {
     );
   }
 };
-
-// ==========================================
-// CONFIGURACIÓN DEL HANDLER
-// ==========================================
 
 handler.tags = ['gacha', 'rw', 'rollwaifu'];
 handler.variants = ['gacha'];
