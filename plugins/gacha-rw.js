@@ -74,7 +74,7 @@ async function buscarImagenDelirius(tag) {
 
   return [];
 }
-
+/*
 const verifi = async () => {
   try {
     const packageContent = await fs.readFile('./package.json', 'utf-8');
@@ -85,7 +85,7 @@ const verifi = async () => {
   }
 };
 
-
+*/
 const handler = async (message, { conn, usedPrefix, command }) => {
   
   const chats = global.db.data.chats;
@@ -155,7 +155,7 @@ const handler = async (message, { conn, usedPrefix, command }) => {
     const messageText =
       `❀ Nombre » *${characterData.name}*\n⚥ Género » *${randomCharacter.gender || 'Desconocido'}*\n✰ Valor » *${characterData.value.toLocaleString()}*\n♡ Estado » *${
         characterData.user ? 'Reclamado por ' + userName : 'Libre'
-      }*\n❖ Fuente » *${seriesName}*`;
+      }*\n❖ Fuente » *${seriesName}* x`;
 
     const sentMessage = await conn.sendFile(message.chat, selectedImage, randomCharacter.name + '.jpg', messageText, message);
 
