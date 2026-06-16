@@ -17,7 +17,6 @@ let handler = async (m, { conn, usedPrefix }) => {
       'https://files.catbox.moe/dd03ew.mp4',
       'https://files.catbox.moe/6o9e6r.mp4',
       'https://files.catbox.moe/iu8d05.mp4',
-      'https://files.catbox.moe/5hnwgw.mp4',
       'https://files.catbox.moe/qacumt.mp4', 
       'https://files.catbox.moe/wm3an6.mp4'
     ]
