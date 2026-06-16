@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export async function before(m, { conn }) {
-  if (!m.text ||!global.prefix.test(m.text)) return;
+  if (!m.text || !global.prefix.test(m.text)) return;
 
   const usedPrefix = global.prefix.exec(m.text)[0];
   const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
@@ -10,7 +10,7 @@ export async function before(m, { conn }) {
 
   const isValidCommand = (command, plugins) => {
     for (let plugin of Object.values(plugins)) {
-      const cmd = Array.isArray(plugin.command)? plugin.command : [plugin.command];
+      const cmd = Array.isArray(plugin.command) ? plugin.command : [plugin.command];
       if (cmd.includes(command)) return true;
     }
     return false;
@@ -21,32 +21,28 @@ export async function before(m, { conn }) {
     global.db.data.users[m.sender].commands = (global.db.data.users[m.sender].commands || 0) + 1
     return;
   }
+  
+  const thumbBuf = await fetch('https://cdn.phototourl.com/free/2026-06-14-4ceecbcc-c73a-4b5a-b3de-df9123b4f586.jpg').then(r => r.buffer())
+  const b64 = Buffer.from(thumbBuf).toString('base64')
 
-  const texto = `🍛 ᴇʟ ᴄᴏᴍᴀɴᴅᴏ *${command}* ɴᴏ ᴇxɪsᴛᴇ.
-> 🍜 ᴜsᴀ *${usedPrefix}ʜᴇʟᴘ* ᴘᴀʀᴀ ᴠᴇʀ ʟᴀ ʟɪsᴛᴀ ᴅᴇ ᴄᴏᴍᴀɴᴅᴏs.`
-
-  try {
-    await conn.sendMessage(m.chat, {
-      text: texto,
-      mentions: [m.sender],
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363421367237421@newsletter',
-          serverMessageId: '',
-          newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ.ᐟ'
-        },
-        externalAdReply: {
-          title: global.botname || 'GOJOBOT-MD',
-          body: 'Sistema de comandos',
-          thumbnailUrl: global.banner || '',
-          mediaType: 1,
-          renderLargerThumbnail: true
+  await conn.relayMessage(
+    m.chat,
+    {
+      extendedTextMessage: {
+        text: `https://api.gojo.biz.id\nᥱᥣ ᥴ᥆mᥲᥒძ᥆ *${command}*🌵 ᥒ᥆ ᥱ᥊іs𝗍ᥱ <:3\n> 🍜 ᥙsᥲ *${usedPrefix}ʜᴇʟᴘ* ⍴ᥲrᥲ ᥎ᥱr ᥣᥲ ᥣіs𝗍ᥲ ძᥱ ᥴ᥆mᥲᥒძ᥆s.`,
+        matchedText: 'https://api.gojo.biz.id',
+        description: '🥢 Welcome, to Satoru Gojo.',
+        title: botname,
+        previewType: 'shadow',
+        jpegThumbnail: b64,
+        contextInfo: {
+          quotedMessage: m.message,
+          participant: m.sender,
+          stanzaId: m.id,
+          remoteJid: m.chat
         }
       }
-    }, { quoted: m })
-  } catch (e) {
-    // Fallback: mensaje simple sin newsletter
-    await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
-  }
-                           }
+    },
+    { quoted: m }
+  )
+}

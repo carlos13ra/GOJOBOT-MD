@@ -25,22 +25,22 @@ let handler = async (m, { conn, text, command }) => {
 › \`⍴ᥙᑲᥣіᥴᥲძ᥆ :\` ${video.ago || '```'}
 › \`ᥱᥒᥣᥲᥴᥱ :\` ${video.url}
      
-      _🥢 Descargando audio..._
+      _🥢 Descargando video..._
       `, ...fake
     }, { quoted: m })
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(video.url)}&type=audio&quality=128`)
+    const dlRes = await fetch(`${global.APIs.light.url}/download/ytconvert?url=${encodeURIComponent(video.url)}&type=mp4&quality=480p`)
     const dlJson = await dlRes.json()
 
-    if (!dlJson.status || !dlJson.data?.dl)
-      throw 'No se pudo obtener el audio.'
+    if (!dlJson.status || !dlJson.data?.download)
+      throw 'No se pudo obtener el video.'
 
-    const audioUrl = dlJson.data.dl
+    const videoUrl = dlJson.data.download
 
     await conn.sendMessage(m.chat, {
-      audio: { url: audioUrl },
-      mimetype: 'audio/mpeg',
-      fileName: `${video.title}.mp3`
+      video: { url: videoUrl },
+      mimetype: 'video/mp4',
+      fileName: `${video.title}.mp4`
     }, { quoted: m })
 
     await m.react('✔️')
@@ -50,8 +50,8 @@ let handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = ['play', 'audio']
+handler.command = ['play2', 'video']
 handler.tags = ['download']
-handler.help = ['play + <query/url>']
+handler.help = ['play2 + <query/url>']
 handler.group = true
 export default handler
