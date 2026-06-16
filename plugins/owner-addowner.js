@@ -1,15 +1,22 @@
 const handler = async (m, { conn, command, args }) => {
+
+  const senderNumber = m.sender.replace(/[^0-9]/g, "");
+  if (!global.owner.includes(senderNumber)) {
+    return conn.reply(
+      m.chat,
+      `🥢 *El comando solo puede ser ejecutado x un owner.*`,
+      m,
+      { quoted: m }
+    );
+  }
+
   let targetJid = null;
 
   if (m.mentionedJid?.length > 0) {
     targetJid = m.mentionedJid[0];
-  }
-
-  else if (m.quoted) {
+  } else if (m.quoted) {
     targetJid = m.quoted.sender;
-  }
-
-  else if (args[0]) {
+  } else if (args[0]) {
     const num = args[0].replace(/[^0-9]/g, "");
     if (num) targetJid = num + "@s.whatsapp.net";
   }
@@ -17,12 +24,12 @@ const handler = async (m, { conn, command, args }) => {
   if (!targetJid)
     return conn.reply(
       m.chat,
-      `🍜 *Por favo, menciona a un usuario pará agregar o quitar como owner.*`,
+      `🍜 *Por favor, menciona a un usuario para agregar o quitar como owner.*`,
       m,
       { quoted: m }
     );
 
-  const number = targetJid.replace(/[^0-9]/g, ""); 
+  const number = targetJid.replace(/[^0-9]/g, "");
   if (!number)
     return conn.reply(
       m.chat,
@@ -31,11 +38,10 @@ const handler = async (m, { conn, command, args }) => {
       { quoted: m }
     );
 
-
   const who = m.sender;
   const now = new Date().toLocaleString();
   const tagTarget = "@" + number;
-  const tagWho = "@" + who.replace(/[^0-9]/g, "");
+  const tagWho = "@" + senderNumber;
 
   if (command === "addowner") {
     if (global.owner.includes(number))
@@ -55,10 +61,7 @@ const handler = async (m, { conn, command, args }) => {
       `> • Añadido por: ${tagWho}\n` +
       `> • Fecha: ${now}`,
       m,
-      {
-        quoted: m,
-        mentions: [targetJid, who]
-      }
+      { quoted: m, mentions: [targetJid, who] }
     );
   }
 
@@ -80,10 +83,7 @@ const handler = async (m, { conn, command, args }) => {
       `> • Removido por: ${tagWho}\n` +
       `> • Fecha: ${now}`,
       m,
-      {
-        quoted: m,
-        mentions: [targetJid, who]
-      }
+      { quoted: m, mentions: [targetJid, who] }
     );
   }
 };
@@ -91,5 +91,5 @@ const handler = async (m, { conn, command, args }) => {
 handler.help = ["addowner", "delowner"];
 handler.tags = ["owner"];
 handler.command = ["addowner", "delowner"];
-handler.owner = true;
+
 export default handler;
