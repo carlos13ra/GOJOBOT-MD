@@ -36,7 +36,7 @@
 > **GOJOBOT-MD está hosteado oficialmente en Sky Ultra Plus** 🦋
 > Hosting premium 24/7 optimizado para WhatsApp Multi-Device
 > 
-> **Deploy en Sky Ultra Plus:** https://skyultraplus.com
+> **Deploy en Sky Ultra Plus:** https://dash.skyultraplus.com
 > Busca "GOJOBOT-MD" en la sección de Pre-Bots
 ---
 
