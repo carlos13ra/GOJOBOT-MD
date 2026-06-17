@@ -29,7 +29,7 @@ let handler = async (m, { conn, text, command }) => {
       m.chat, 
       videoUrl, 
       `${title}.mp4`, 
-      `🥢 \`Aquí tienes tu vídeo,\`\n🌵 *Título:* ${title}\n🍜 *Calidad:* ${randomQuality}\n*Duración*: ${duration}s\n*Canal*: ${json.data.channel}`, 
+      `🥢 \`Aquí tienes tu vídeo,\`\n🌵 *Título:* ${title}\n🍜 *Calidad:* ${randomQuality}\n🫒 *Duración*: ${duration}s\n🍃 *Canal*: ${json.data.channel}`, 
       m
     )
 
