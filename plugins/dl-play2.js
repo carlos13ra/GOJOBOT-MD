@@ -29,18 +29,18 @@ let handler = async (m, { conn, text, command }) => {
       `, ...fake
     }, { quoted: m })
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/ytconvert?url=${encodeURIComponent(video.url)}&type=mp4&quality=480p`)
+    const dlRes = await fetch(`${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(video.title)}&format=mp4&quality=480`)
     const dlJson = await dlRes.json()
 
-    if (!dlJson.status || !dlJson.data?.download)
+    if (!dlJson.status || !dlJson.result?.dl_url)
       throw 'No se pudo obtener el video.'
 
-    const videoUrl = dlJson.data.download
+    const videoUrl = dlJson.result.dl_url
 
     await conn.sendMessage(m.chat, {
       video: { url: videoUrl },
       mimetype: 'video/mp4',
-      fileName: `${video.title}.mp4`
+      fileName: `${dlJson.result.title}.mp4`
     }, { quoted: m })
 
     await m.react('✔️')
