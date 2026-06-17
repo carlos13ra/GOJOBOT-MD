@@ -1,3 +1,4 @@
+
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
@@ -6,11 +7,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   let statusMsg = await m.reply('🧊 *Descargando audio... espera*')
 
   try {
-    const api = `https://api--shadowcorexyz.replit.app/download/ytconvert?url=${encodeURIComponent(text)}&format=mp3&quality=128`
+    const api = `${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(text)}`
     const res = await fetch(api, { timeout: 25000 })
     const json = await res.json()
 
-    if (!json.status || !json.data?.download) {
+    if (!json.status || !json.data?.dl) {
       return conn.sendMessage(m.chat, {
         text: `✘ ${json.message || 'API falló o link inválido'}`,
         edit: statusMsg.key
@@ -20,7 +21,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const r = json.data
 
     await conn.sendMessage(m.chat, {
-      audio: { url: r.download },
+      audio: { url: r.dl },
       mimetype: 'audio/mpeg',
       fileName: `${r.title}.mp3`,
       ptt: false
@@ -29,10 +30,10 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, {
       text: `╭─❒ *YTMP3*
 │🎵 *Título:* ${r.title}
-│👤 *Canal:* ${r.author}
 │⏱️ *Duración:* ${r.duration}s
-│🎧 *Calidad:* ${r.requestedQuality}kbps
+│🎧 *Calidad:* ${r.quality}
 │📦 *Formato:* ${r.format}
+│💾 *Tamaño:* ${r.size}
 ╰─❒
 
 ✅ *Descarga completa*`,
@@ -44,7 +45,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   } catch (e) {
     console.error(e)
     await conn.sendMessage(m.chat, {
-      text: `✘ Error: ${e.message}\n\n• Replit dormido\n• YouTube bloqueó\n• Link inválido`,
+      text: `✘ Error: ${e.message}\n\n• Servidor no disponible\n• YouTube bloqueó\n• Link inválido`,
       edit: statusMsg.key
     })
     await m.react('❌')
