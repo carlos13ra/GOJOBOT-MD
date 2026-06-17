@@ -166,9 +166,8 @@ const handler = async (message, { conn, usedPrefix, command }) => {
   }
 };
 
-handler.tags = ['gacha', 'rw', 'rollwaifu'];
-handler.variants = ['gacha'];
-handler.command = ['rollwaifu', 'rw', 'delirius'];
-handler.help = true;
+handler.help = ['gacha', 'rw', 'rollwaifu'];
+handler.tags = ['gacha'];
+handler.command = ['rollwaifu', 'rw', 'rollwaifu'];
 
 export default handler;
