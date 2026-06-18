@@ -1,39 +1,17 @@
 import fetch from 'node-fetch'
 
-const apis = [
-  {
-    url: 'https://nexus-light.onrender.com/random/nsfw/waifu',
-    type: 'direct'
-  },
-  {
-    url: 'https://nexus-light.onrender.com/nsfw/hentai',
-    type: 'nested'
-  }
-]
-
 const handler = async (m, { conn }) => {
   try {
-    let image = null
+    const res = await fetch('https://nexus-light.onrender.com/random/nsfw/waifu?nsfw=true')
+    const json = await res.json()
 
-    for (const api of apis) {
-      try {
-        const res = await fetch(api.url)
-        const json = await res.json()
-
-        if (json.status) {
-          image = api.type === 'direct' ? json.result : json.result.url
-          if (image) break
-        }
-      } catch {}
-    }
-
-    if (!image) {
+    if (!json.status || !json.result) {
       throw new Error('No se obtuvo ninguna imagen')
     }
 
     await conn.sendFile(
       m.chat,
-      image,
+      json.result,
       'nsfw.jpg',
       '`Aquí tienes tu pack onichan 🥵`',
       m
