@@ -1,8 +1,18 @@
 import fetch from 'node-fetch'
 
 const apis = [
-  'https://api.waifu.im/search?included_tags=waifu&is_nsfw=true',
-  'https://api.waifu.im/search?included_tags=hentai&is_nsfw=true'
+  {
+    url: 'https://nexus-light.onrender.com/random/nsfw/waifu',
+    type: 'direct'
+  },
+  {
+    url: 'https://nexus-light.onrender.com/nsfw/hentai',
+    type: 'nested'
+  },
+  {
+    url: 'https://nexus-light.onrender.com/nsfw/yuri',
+    type: 'nested'
+  }
 ]
 
 const handler = async (m, { conn }) => {
@@ -11,12 +21,12 @@ const handler = async (m, { conn }) => {
 
     for (const api of apis) {
       try {
-        const res = await fetch(api)
+        const res = await fetch(api.url)
         const json = await res.json()
 
-        if (json.images && json.images.length > 0) {
-          image = json.images[0].url
-          break
+        if (json.status) {
+          image = api.type === 'direct' ? json.result : json.result.url
+          if (image) break
         }
       } catch {}
     }
