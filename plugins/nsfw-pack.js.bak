@@ -8,6 +8,10 @@ const apis = [
   {
     url: 'https://nexus-light.onrender.com/nsfw/hentai',
     type: 'nested'
+  },
+  {
+    url: 'https://nexus-light.onrender.com/nsfw/yuri',
+    type: 'nested'
   }
 ]
 
