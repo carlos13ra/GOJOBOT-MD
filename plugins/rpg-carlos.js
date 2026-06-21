@@ -1,7 +1,7 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (['quieropene'].includes(command)) {
+  if (['quierofemboys'].includes(command)) {
     if (!global.db.data.users[m.sender]) {
       global.db.data.users[m.sender] = { 
         lastclaim: 0,
@@ -25,9 +25,9 @@ const handler = async (m, { conn, args, command }) => {
     }
 
     // 🔥 NUEVAS RECOMPENSAS
-    const rewardCoins = 10000000; // monedas
-    const rewardExp = 100;        // experiencia
-    const rewardTokens = 5;       // tokens
+    const rewardCoins = 1000000; // monedas
+    const rewardExp = 200;        // experiencia
+    const rewardTokens = 4;       // tokens
 
     user.coin += rewardCoins;
     user.exp += rewardExp;
@@ -73,9 +73,9 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['quieropene'];
+handler.help = ['quierofemboys'];
 handler.tags = ['rpg'];
-handler.command = ['quieropene'];
+handler.command = ['quierofemboys'];
 handler.group = true;
 
 export default handler;
