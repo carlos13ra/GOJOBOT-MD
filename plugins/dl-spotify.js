@@ -1,5 +1,6 @@
 import axios from 'axios'
 import fetch from 'node-fetch'
+import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text }) => {
   if (!text)
@@ -33,41 +34,55 @@ let handler = async (m, { conn, text }) => {
       (publish ? `> • Publicado » *${publish}*\n` : '') +
       `> • Enlace » ${spotifyUrl}`
 
+    const linkPreview = image ? (await prepareWAMessageMedia({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
+      'canonical-url': spotifyUrl, 
+      'matched-text': spotifyUrl, 
+      title: `✧ Spotify • Music ✧`, 
+      description: `🍡 ${artist}`, 
+      jpegThumbnail: imageMessage?.jpegThumbnail ? Buffer.from(imageMessage.jpegThumbnail) : undefined, 
+      highQualityThumbnail: imageMessage || undefined 
+    }))) : undefined
+
     await conn.sendMessage(m.chat, {
-      text: caption,
+      text: caption.trim(),
+      linkPreview,
       contextInfo: {
-        externalAdReply: {
-          title: '✧ Spotify • Music ✧',
-          body: artist,
-          thumbnailUrl: image,
-          sourceUrl: spotifyUrl,
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
+        mentionedJid: [m.sender],
+        isForwarded: true
       }
     }, { quoted: m })
-    const apiDownload = `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`
-    const dlRes = await axios.get(apiDownload, { timeout: 5000 })
 
-    if (!dlRes.data.status || !dlRes.data.result?.download_url)
-      throw 'No se pudo obtener el enlace de descarga.'
+    let dlRes
+    try {
+      const apiDownload = `${global.APIs.light.url}/download/spotify/v3?url=${encodeURIComponent(spotifyUrl)}`
+      dlRes = await axios.get(apiDownload, { timeout: 5000 })
+      
+      if (!dlRes.data.status || !dlRes.data.data?.dl)
+        throw 'API v3 falló'
+    } catch {
+      const apiDownloadV2 = `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`
+      dlRes = await axios.get(apiDownloadV2, { timeout: 5000 })
+      
+      if (!dlRes.data.status || !dlRes.data.result?.download_url)
+        throw 'No se pudo obtener el enlace de descarga.'
+    }
 
-    const { download_url } = dlRes.data.result
-
+    const download_url = dlRes.data.data?.dl || dlRes.data.result?.download_url
     const audioRes = await fetch(download_url)
+    
     if (!audioRes.ok) throw 'Error al descargar el audio.'
 
     const buffer = await audioRes.buffer()
 
-    await conn.sendMessage(m.chat, { audio: buffer, mimetype: 'audio/mpeg', fileName: `${title}.mp3` }, { quoted: m })
+    await conn.sendMessage(m.chat, { 
+      audio: buffer, 
+      mimetype: 'audio/mpeg', 
+      fileName: `${title}.mp3` 
+    }, { quoted: m })
 
   } catch (e) {
     console.error(e)
-    conn.reply(
-      m.chat,
-      `> 🍜 Error al buscar o descargar la canción.`,
-      m
-    )
+    conn.reply(m.chat, `> 🍜 Error al buscar o descargar la canción.`, m)
   }
 }
 
