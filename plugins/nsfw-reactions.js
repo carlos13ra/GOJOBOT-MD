@@ -1,192 +1,124 @@
-/*
- ┌────────────────────────────┐
- │ * Author    :  お sʜᴀᴅᴏᴡ's xʏᴢ 彡
- │ * Project   :  Bot xD
- │ * GitHub    : https://github.com/shadox-xyz
- │ * Channel   : https://whatsapp.com/channel/0029VbC34Nt42DchIWA0q11f
- └────────────────────────────┘
-*/
-
 import fetch from 'node-fetch'
 
-let handler = async (m, { conn, command, usedPrefix }) => {
-if (!global.db.data.chats[m.chat].nsfw) return m.reply('✐ Los comandos de *NSFW* están desáctivados en este Grupo.')
-let mentionedJid = m.mentionedJid || []
-let userId = mentionedJid.length > 0
-  ? mentionedJid[0]
-  : m.quoted
-  ? m.quoted.sender
-  : m.sender
-
-let name2 = global.db.data.users[m.sender]?.name || m.sender.split('@')[0]
-let who = global.db.data.users[userId]?.name || userId.split('@')[0]
-
-let symbols = [
-  '(⁠◠⁠‿⁠◕⁠)', '˃͈◡˂͈', '૮(˶ᵔᵕᵔ˶)ა', '(づ｡◕‿‿◕｡)づ',
-  '(✿◡‿◡)', '(꒪⌓꒪)', '(✿✪‿✪｡)', '(*≧ω≦)',
-  '(✧ω◕)', '˃ 𖥦 ˂', '(⌒‿⌒)', '(¬‿¬)',
-  '(✧ω✧)', '✿(◕ ‿◕)✿', 'ʕ•́ᴥ•̀ʔっ',
-  '(ㅇㅅㅇ❀)', '(∩︵∩)', '(✪ω✪)',
-  '(✯◕‿◕✯)', '(•̀ᴗ•́)و ̑̑'
-]
-
-let getRandomSymbol = () =>
-  symbols[Math.floor(Math.random() * symbols.length)]
-
-let str, categoria
-switch (command) {
-
-case 'sixnine': case '69':
-str = name2 === who
-  ? `\`${name2}\` *está haciendo un 69* ${getRandomSymbol()}.`
-  : `\`${name2}\` *está haciendo un 69 con* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'sixnine'
-break
-
-case 'anal': case 'culiar':
-str = name2 === who
-  ? `\`${name2}\` *se la metió en el ano* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se la metió en el ano a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'anal'
-break
-
-case 'blowjob': case 'mamada':
-str = name2 === who
-  ? `\`${name2}\` *está dando una rica mamada* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le dio una mamada a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'blowjob'
-break
-
-case 'boobjob': case 'rusa':
-str = name2 === who
-  ? `\`${name2}\` *esta haciendo una rusa* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está haciendo una rusa a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'boobjob'
-break
-
-case 'cum': case 'leche':
-str = name2 === who
-  ? `\`${name2}\` *se vino dentro de... Omitiremos eso* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se vino dentro de* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'cum'
-break
-
-case 'fap': case 'paja':
-str = name2 === who
-  ? `\`${name2}\` *se está masturbando* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se está masturbando pensando en* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'fap'
-break
-
-case 'follar':
-str = name2 === who
-  ? `\`${name2}\` *está follando ricamente* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se la metió durísimo a la perrita de* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'follar'
-break
-
-case 'footjob': case 'pies':
-str = name2 === who
-  ? `\`${name2}\` *está haciendo una paja con los pies* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está haciendo una paja con los pies a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'footjob'
-break
-
-case 'fuck': case 'coger':
-str = name2 === who
-  ? `\`${name2}\` *se entrega al deseo* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se está cogiendo a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'fuck'
-break
-
-case 'grabboobs': case 'agarrartetas':
-str = name2 === who
-  ? `\`${name2}\` *está agarrando unas tetas* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está agarrando las tetas a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'grabboobs'
-break
-
-case 'grop': case 'grope': case 'manosear':
-str = name2 === who
-  ? `\`${name2}\` *se lo está manoseando* ${getRandomSymbol()}.`
-  : `\`${name2}\` *se lo está manoseando a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'grop'
-break
-
-case 'lickpussy': case 'coño':
-str = name2 === who
-  ? `\`${name2}\` *está lamiendo un coño* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está lamiendo el coño a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'lickpussy'
-break
-
-case 'sexo': case 'sex':
-str = name2 === who
-  ? `\`${name2}\` *tiene sexo apasionadamente.* ${getRandomSymbol()}.`
-  : `\`${name2}\` *tiene sexo fuertemente con* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'sexo'
-break
-
-case 'spank': case 'nalgada':
-str = name2 === who
-  ? `\`${name2}\` *está dando una nalgada* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está dando una nalgada a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'spank'
-break
-
-case 'suckboobs': case 'chupartetas':
-str = name2 === who
-  ? `\`${name2}\` *está chupando unas ricas tetas* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está chupando las tetas a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'suckboobs'
-break
-
-case 'undress': case 'encuerar':
-str = name2 === who
-  ? `\`${name2}\` *se está quitando la ropa* ${getRandomSymbol()}.`
-  : `\`${name2}\` *le está quitando la ropa a* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'undress'
-break
-
-case 'yuri': case 'lesbianas': case 'tijeras':
-str = name2 === who
-  ? `\`${name2}\` *está haciendo tijeras* ${getRandomSymbol()}.`
-  : `\`${name2}\` *está haciendo tijeras con* \`${who}\` ${getRandomSymbol()}.`
-categoria = 'yuri'
-break
-
-default:
-return
+const captions = {      
+  anal: (from, to) => from === to ? 'se la metió en el ano.' : 'se la metió en el ano a',
+  cum: (from, to) => from === to ? 'se vino dentro de... Omitiremos eso.' : 'se vino dentro de',
+  undress: (from, to) => from === to ? 'se está quitando la ropa' : 'le está quitando la ropa a',
+  fuck: (from, to) => from === to ? 'se entrega al deseo' : 'se está cogiendo a',
+  spank: (from, to) => from === to ? 'está dando una nalgada' : 'le está dando una nalgada a',
+  lickpussy: (from, to) => from === to ? 'está lamiendo un coño' : 'le está lamiendo el coño a',
+  fap: (from, to) => from === to ? 'se está masturbando' : 'se está masturbando pensando en',
+  grope: (from, to) => from === to ? 'se lo está manoseando' : 'se lo está manoseando a',
+  sixnine: (from, to) => from === to ? 'está haciendo un 69' : 'está haciendo un 69 con',
+  suckboobs: (from, to) => from === to ? 'está chupando unas ricas tetas' : 'le está chupando las tetas a',
+  grabboobs: (from, to) => from === to ? 'está agarrando unas tetas' : 'le está agarrando las tetas a',
+  blowjob: (from, to) => from === to ? 'está dando una rica mamada' : 'le dio una mamada a',
+  boobjob: (from, to) => from === to ? 'esta haciendo una rusa' : 'le está haciendo una rusa a',
+  footjob: (from, to) => from === to ? 'está haciendo una paja con los pies' : 'le está haciendo una paja con los pies a',
+  yuri: (from, to) => from === to ? 'está haciendo tijeras!' : 'hizo tijeras con',
+  cummouth: (from, to) => from === to ? 'está llenando la boca de alguien con cariño' : 'está llenando la boca de',
+  cumshot: (from, to) => from === to ? 'se la metió a alguien y ahora viene el regalo' : 'le dio un regalo sorpresa a',
+  handjob: (from, to) => from === to ? 'le da una paja a alguien con cariño' : 'le está haciendo una paja a',
+  lickass: (from, to) => from === to ? 'saborea un culo sin detenerse' : 'le está lamiendo el culo a',
+  lickdick: (from, to) => from === to ? 'chupa con ganas un pene' : 'se la mete todo en la boca para',
+  fingering: (from, to) => from === to ? 'se está metiendo los dedos' : 'le está metiendo los dedos a',
+  creampie: (from, to) => from === to ? 'terminó dentro sin avisar...' : 'terminó dentro de',
+  facesitting: (from, to) => from === to ? 'está sentándose en una cara' : 'se sentó en la cara de',
+  deepthroat: (from, to) => from === to ? 'se la traga hasta el fondo' : 'le está haciendo una garganta profunda a',
+  thighjob: (from, to) => from === to ? 'está frotando entre los muslos' : 'le está haciendo una entre piernas a',
+  bondage: (from, to) => from === to ? 'está atado y sin escapatoria...' : 'ató bien amarrado a',
+  pegging: (from, to) => from === to ? 'está recibiendo lo que no esperaba' : 'le está dando por detrás a',
+  futanari: (from, to) => from === to ? 'tiene lo mejor de los dos mundos' : 'le demostró lo que tiene a',
+  yaoi: (from, to) => from === to ? 'está disfrutando de un momento muy intenso' : 'se lo pasó genial con',
+  bukkake: (from, to) => from === to ? 'terminó solo... de una forma muy especial' : 'invitó a sus amigos a acabar encima de',
+  orgy: (from, to) => from === to ? 'está en una orgía' : 'organizó una orgía con',
+  squirting: (from, to) => from === to ? 'llegó al límite y se vino con todo' : 'la llevó al límite hasta que se vino con todo'
 }
 
-try {
-  const res = await fetch('https://raw.githubusercontent.com/shadox-xyz/Test/main/test/nsfw.json')
-  const json = await res.json()
+const symbols = ['(⁠◠⁠‿⁠◕⁠)', '˃͈◡˂͈', '૮(˶ᵔᵕᵔ˶)ა', '(づ｡◕‿‿◕｡)づ', '(✿◡‿◡)', '(꒪⌓꒪)', '(✿✪‿✪｡)', '(*≧ω≦)', '(✧ω◕)', '˃ 𖥦 ˂', '(⌒‿⌒)', '(¬‿¬)', '(✧ω✧)', '✿(◕ ‿◕)✿', 'ʕ•́ᴥ•̀ʔっ', '(ㅇㅅㅇ❀)', '(∩︵∩)', '(✪ω✪)', '(✯◕‿◕✯)', '(•̀ᴗ•́)و ̑̑']
 
-  const vids = json[categoria]?.videos
-  if (!vids) return m.reply('ꕥ No se encontraron resultados.')
-
-  const video = vids[Math.floor(Math.random() * vids.length)]
-
-  await conn.sendMessage(
-    m.chat,
-    {
-      video: { url: video },
-      gifPlayback: true,
-      caption: str,
-      mentions: userId !== m.sender ? [userId] : []
-    },
-    { quoted: m }
-  )
-
-} catch (e) {
-  m.reply(`⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n\n\n${e.message}`)
-}
+function getRandomSymbol() {
+  return symbols[Math.floor(Math.random() * symbols.length)]
 }
 
-handler.help = ['sixnine/69 + <mention>', 'anal/culiar + <mention>', 'blowjob/mamada + <mention>', 'boobjob/rusa + <mention>', 'cum/leche + <mention>', 'fap/paja + <mention>', 'follar + <mention>', 'footjob/pies + <mention>', 'fuck/coger + <mention>', 'grabboobs/agarrartetas + <mention>', 'grop/manosear + <mention>', 'lickpussy/coño + <mention>', 'sexo/sex + <mention>', 'spank/nalgada + <mention>', 'suckboobs/chupartetas + <mention>', 'undress/encuerar + <mention>', 'yuri/tijeras + <mention>']
+const alias = {
+  anal: ['anal','violar'],
+  cum: ['cum'],
+  undress: ['undress','encuerar'],
+  fuck: ['fuck','coger'],
+  spank: ['spank','nalgada'],
+  lickpussy: ['lickpussy'],
+  fap: ['fap','paja'],
+  grope: ['grope'],
+  sixnine: ['sixnine','69'],
+  suckboobs: ['suckboobs'],
+  grabboobs: ['grabboobs'],
+  blowjob: ['blowjob','mamada','bj'],
+  boobjob: ['boobjob'],
+  yuri: ['yuri','tijeras'],
+  footjob: ['footjob'],
+  cummouth: ['cummouth'],
+  cumshot: ['cumshot'],
+  handjob: ['handjob'],
+  lickass: ['lickass'],
+  lickdick: ['lickdick'],
+  fingering: ['fingering'],
+  creampie: ['creampie'],
+  facesitting: ['facesitting'],
+  deepthroat: ['deepthroat'],
+  thighjob: ['thighjob'],
+  bondage: ['bondage'],
+  pegging: ['pegging'],
+  futanari: ['futanari', 'futa'],
+  yaoi: ['yaoi'],
+  bukkake: ['bukkake'],
+  orgy: ['orgy', 'orgia'],
+  squirting: ['squirt', 'squirting']
+}
+
+let handler = async (m, { conn, usedPrefix, command }) => {
+  try {
+    await m.react('🕒')
+    
+    const currentCommand = Object.keys(alias).find(key => alias[key].includes(command)) || command
+    if (!captions[currentCommand]) {
+      await m.react('✖️')
+      return
+    }
+    
+    const who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender
+    const fromName = m.pushName || '@'+m.sender.split('@')[0]
+    const toName = m.mentionedJid?.[0] ? '@'+(m.mentionedJid[0].split('@')[0]) : m.quoted?.pushName || '@'+who.split('@')[0]
+    
+    const captionText = captions[currentCommand](fromName, toName)
+    const caption = who !== m.sender ? `\`${fromName}\` ${captionText} \`${toName}.\` ${getRandomSymbol()}.` : `\`${fromName}\` ${captionText} ${getRandomSymbol()}.`
+    
+    const apiUrl = `${${global.APIs.light.url}}/reaction/nsfw/${currentCommand}`
+    const response = await fetch(apiUrl)
+    const data = await response.json()
+    
+    if (!data.url) {
+      await m.react('✖️')
+      return conn.reply(m.chat, `⚠︎ No se pudo obtener el contenido.`, m)
+    }
+    
+    await conn.sendMessage(m.chat, { 
+      video: { url: data.url }, 
+      gifPlayback: true, 
+      caption, 
+      mentions: [who, m.sender] 
+    }, { quoted: m })
+    
+    await m.react('✔️')
+  } catch (e) {
+    await m.react('✖️')
+    await conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`, m)
+  }
+}
+
+handler.help = ['anal','violar','cum','undress','encuerar','fuck','coger','spank','nalgada','lickpussy','fap','paja','grope','sixnine','69','suckboobs','grabboobs','blowjob','mamada','bj','boobjob','yuri','tijeras','footjob','cummouth','cumshot','handjob','lickass','lickdick','fingering','creampie','facesitting','deepthroat','thighjob','bondage','pegging','futanari','futa','yaoi','bukkake','orgy','orgia','squirt','squirting']
 handler.tags = ['nsfw']
-handler.command = ['sixnine', '69', 'anal', 'culiar', 'blowjob', 'mamada', 'boobjob', 'rusa', 'cum', 'leche', 'fap', 'paja', 'follar', 'footjob', 'pies', 'fuck', 'coger', 'grabboobs', 'agarrartetas', 'grop', 'grope', 'manosear', 'lickpussy', 'coño', 'sexo', 'sex', 'spank', 'nalgada', 'suckboobs', 'chupartetas', 'undress', 'encuerar', 'yuri', 'lesbianas', 'tijeras']
+handler.command = ['anal','violar','cum','undress','encuerar','fuck','coger','spank','nalgada','lickpussy','fap','paja','grope','sixnine','69','suckboobs','grabboobs','blowjob','mamada','bj','boobjob','yuri','tijeras','footjob','cummouth','cumshot','handjob','lickass','lickdick','fingering','creampie','facesitting','deepthroat','thighjob','bondage','pegging','futanari','futa','yaoi','bukkake','orgy','orgia','squirt','squirting']
 handler.group = true
 
 export default handler
