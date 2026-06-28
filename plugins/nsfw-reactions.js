@@ -101,7 +101,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     }
     
     await conn.sendMessage(m.chat, { 
-      video: { url: data.url }, 
+      video: { url: data.dl }, 
       gifPlayback: true, 
       caption, 
       mentions: [who, m.sender] 
