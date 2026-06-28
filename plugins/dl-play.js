@@ -26,7 +26,7 @@ let handler = async (m, { conn, text, command }) => {
      
       _🥢 Descargando audio..._
       `,
-        linkPreview: video.thumbnail ? (await global.shadow(
+        linkPreview: video.thumbnail ? (await gojo(
         { image: { url: video.thumbnail }}, 
         { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }
       ).then(({ imageMessage }) => ({ 

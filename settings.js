@@ -2,6 +2,7 @@ import { watchFile, unwatchFile } from "fs"
 import chalk from "chalk"
 import { fileURLToPath } from "url"
 import fs from "fs"
+import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 global.botNumber = "" 
 global.owner = ["51935608082", "51934053286", "51978385249", "51972409783", "51966453839", "5213541145561"]
@@ -40,6 +41,7 @@ ch1: "120363421367237421@newsletter"
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
+global.gojo = prepareWAMessageMedia
 global.APIs = {
 xyro: { url: "https://xyro.site", key: null },
 yupra: { url: "https://api.yupra.my.id", key: null },

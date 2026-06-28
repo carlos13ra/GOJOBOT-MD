@@ -1,6 +1,5 @@
 import axios from 'axios'
 import fetch from 'node-fetch'
-import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text }) => {
   if (!text)
@@ -34,7 +33,7 @@ let handler = async (m, { conn, text }) => {
       (publish ? `> • Publicado » *${publish}*\n` : '') +
       `> • Enlace » ${spotifyUrl}`
 
-    const linkPreview = image ? (await prepareWAMessageMedia({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
+    const linkPreview = image ? (await gojo({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
       'canonical-url': spotifyUrl, 
       'matched-text': spotifyUrl, 
       title: `✧ Spotify • Music ✧`, 

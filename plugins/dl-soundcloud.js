@@ -1,6 +1,5 @@
 import axios from 'axios'
 import fetch from 'node-fetch'
-import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text }) => {
   if (!text)
@@ -17,7 +16,7 @@ let handler = async (m, { conn, text }) => {
     const { title, artist, duration, created, plays, likes, comments, genre, description, image, link, url
     } = data
 
-    const linkPreview = image ? (await prepareWAMessageMedia({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
+    const linkPreview = image ? (await gojo({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
       'canonical-url': link, 
       'matched-text': link, 
       title: `✧ Soundcloud • Music ✧`, 
