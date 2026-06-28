@@ -46,7 +46,7 @@ ${usedPrefix + command} worry`)
 
     if (command === 'playaudio') {
 
-      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.url)}&format=mp3&quality=128`
+      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.title)}&quality=128`
 
       const res2 = await fetch(api2)
       const json2 = await res2.json()
@@ -61,7 +61,7 @@ ${usedPrefix + command} worry`)
       fs.writeFileSync(tmpMp3, buffer)
 
       await execPromise(
-        `ffmpeg -i "${tmpMp3}" -c:a libopus -b:a 128k "${tmpOgg}" -y`
+        `ffmpeg -i "${tmpMp3}" -c:a libopus -b:a 64k "${tmpOgg}" -y`
       )
 
       await conn.sendMessage(m.chat, {
@@ -76,7 +76,7 @@ ${usedPrefix + command} worry`)
 
     if (command === 'playvideo') {
 
-      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.url)}&format=mp4&quality=480`
+      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.title)}&format=mp4&quality=480`
 
       const res2 = await fetch(api2)
       const json2 = await res2.json()
