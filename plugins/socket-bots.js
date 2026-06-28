@@ -1,5 +1,4 @@
 import ws from "ws"
-import fetch from 'node-fetch'
 
 const handler = async (m, { conn, command, usedPrefix, participants }) => {
 try {
@@ -19,6 +18,18 @@ function convertirMsADiasHorasMinutosSegundos(ms) {
   if (minRest) resultado += `${minRest}m `
   if (segRest) resultado += `${segRest}s`
   return resultado.trim() || '0s'
+}
+
+const rcanal = {
+  contextInfo: {
+    forwardingScore: 999,
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: '120363421367237421@newsletter',
+      newsletterName: 'ׄ﹙ׅ🍜﹚ּ 𝐆𝐨𝐣𝐨𝐁𝐨𝐭-𝐌𝐃 › 𝘊𝘩𝘢𝘯𝘯𝘦𝘭 𝘰𝘧𝘪𝘤𝘪𝘢𝘭 ᰔᩚ.ᐟ .ᐟ',
+      serverMessageId: -1
+    }
+  }
 }
 
 let groupBots = users.filter((bot) => participants.some((p) => p.id === bot))
@@ -41,29 +52,9 @@ ${botsGroup}
 
 > Usa .code para ser SubBot`
 const mentionList = groupBots.map(bot => bot.endsWith("@s.whatsapp.net") ? bot : `${bot}@s.whatsapp.net`)
-     const thumbBuf = await fetch(icono).then(r => r.buffer())
-     const b64 = Buffer.from(thumbBuf).toString('base64')
+rcanal.contextInfo.mentionedJid = mentionList
 
-     await conn.relayMessage(m.chat, {
-      extendedTextMessage: {
-        text: redes + message,
-        matchedText: redes,
-        description: dev,
-        title: botname,
-        previewType: 'PHOTO',
-        jpegThumbnail: b64,
-        contextInfo: {
-          quotedMessage: m.message,
-          participant: m.sender,
-          stanzaId: m.id,
-          remoteJid: m.chat,
-          mentionList,
-        }
-      }
-    },
-    { quoted: m })
-    
-    
+await conn.sendMessage(m.chat, { text: message,...rcanal }, { quoted: m })
 } catch (error) {
 console.log(error)
 m.reply(`⚠︎ Error en botlist:\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`)
