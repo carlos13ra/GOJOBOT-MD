@@ -41,10 +41,10 @@ ${botsGroup}
 
 > Usa .code para ser SubBot`
 const mentionList = groupBots.map(bot => bot.endsWith("@s.whatsapp.net") ? bot : `${bot}@s.whatsapp.net`)
-      const thumbBuf = await fetch(icono).then(r => r.buffer())
+     const thumbBuf = await fetch(icono).then(r => r.buffer())
      const b64 = Buffer.from(thumbBuf).toString('base64')
 
-     await client.relayMessage(m.chat, {
+     await conn.relayMessage(m.chat, {
       extendedTextMessage: {
         text: redes + message,
         matchedText: redes,
