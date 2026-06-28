@@ -19,7 +19,7 @@ if (!db.data.chats[m.chat].nsfw && m.isGroup) {
     const title = post.title;
     const author = post.author;
 
-    await conn.sendFile(m.chat, image, 'nsfw.jpg', `🔞 *${title}*\n👤 u/${author}\n📍 r/nsfw`, m);
+    await conn.sendFile(m.chat, image, 'nsfw.jpg', `🍡 *${title}*\n👤 u/${author}\n📍 r/nsfw`, m);
   } catch (e) {
     console.error(e);
     conn.reply(m.chat, '❌ Hubo un error al obtener el contenido NSFW.', m);
