@@ -17,8 +17,7 @@ let handler = async (m, { conn, text, command }) => {
     }
 
     await conn.sendMessage(m.chat, {
-      image: { url: video.thumbnail },
-      caption: `› \`𝗍í𝗍ᥙᥣ᥆ :\` ${video.title}
+        text: `› \`𝗍í𝗍ᥙᥣ᥆ :\` ${video.title}
 › \`ᥲᥙ𝗍᥆r :\` ${video.author?.name || 'Desconocido'}
 › \`᥎іs𝗍ᥲs :\` ${formatViews(video.views)}
 › \`ძᥙrᥲᥴіóᥒ :\` ${video.timestamp}
@@ -26,8 +25,28 @@ let handler = async (m, { conn, text, command }) => {
 › \`ᥱᥒᥣᥲᥴᥱ :\` ${video.url}
      
       _🥢 Descargando audio..._
-      `, ...fake
-    }, { quoted: m })
+      `,
+        linkPreview: video.thumbnail ? (await global.shadow(
+        { image: { url: video.thumbnail }}, 
+        { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }
+      ).then(({ imageMessage }) => ({ 
+        'canonical-url': video.url,
+        'matched-text': video.url,
+        title: `𖹭  ׄ  ְ 🍡 Y O U T U B E - M U S I C   ݁      ✩   ݂      ݁  `, 
+        description: botname, 
+        jpegThumbnail: imageMessage?.jpegThumbnail ? Buffer.from(imageMessage.jpegThumbnail) : undefined, 
+        highQualityThumbnail: imageMessage || undefined 
+      }))) : undefined,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: channelRD.id,
+            serverMessageId: '',
+            newsletterName: channelRD.name
+          },
+        }
+      }, { quoted: m });
 
     const dlRes = await fetch(`${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(video.url)}&type=audio&quality=128`)
     const dlJson = await dlRes.json()
