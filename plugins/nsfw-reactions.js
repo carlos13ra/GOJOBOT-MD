@@ -115,7 +115,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       video: { url: data.data.dl },
       gifPlayback: true,
       caption,
-      mentions: [who, m.sender]
+      mentions: [who, m.sender], ...fake
     }, { quoted: m })
 
     await m.react('✔️')
