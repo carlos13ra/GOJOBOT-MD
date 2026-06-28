@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 const captions = {      
-  anal: (from, to) => from === to ? 'se la metió en el ano.' : 'se la metió en el ano a',
+  anal: (from, to) => from === to ? 'se la metió en el ano.' : 'se la metió en el ano a.. ',
   cum: (from, to) => from === to ? 'se vino dentro de... Omitiremos eso.' : 'se vino dentro de',
   undress: (from, to) => from === to ? 'se está quitando la ropa' : 'le está quitando la ropa a',
   fuck: (from, to) => from === to ? 'se entrega al deseo' : 'se está cogiendo a',
@@ -82,6 +82,7 @@ const alias = {
 
 let handler = async (m, { conn, usedPrefix, command }) => {
   try {
+  if (!db.data.chats[m.chat].nsfw && m.isGroup) return m.reply(`ꕥ El contenido *NSFW* está desactivado en este grupo.\n\nUn *administrador* puede activarlo con:\n» *${usedPrefix}nsfw on*`)
     const currentCommand = Object.keys(alias).find(key => alias[key].includes(command)) || command
 
     if (!captions[currentCommand]) {
