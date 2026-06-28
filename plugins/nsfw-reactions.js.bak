@@ -91,7 +91,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     const captionText = captions[currentCommand](fromName, toName)
     const caption = who !== m.sender ? `\`${fromName}\` ${captionText} \`${toName}.\` ${getRandomSymbol()}.` : `\`${fromName}\` ${captionText} ${getRandomSymbol()}.`
     
-    const apiUrl = `${global.APIs.light.url}/reaction/nsfw/${currentCommand}`
+    const apiUrl = `${${global.APIs.light.url}}/reaction/nsfw/${currentCommand}`
     const response = await fetch(apiUrl)
     const data = await response.json()
     
