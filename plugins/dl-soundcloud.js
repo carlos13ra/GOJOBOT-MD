@@ -51,20 +51,9 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, {
       audio: buffer,
       mimetype: 'audio/mpeg',
-      fileName: `${title}.mp3`,
-      ptt: false,
-      contextInfo: {
-        externalAdReply: {
-          title: title,
-          body: artist,
-          thumbnailUrl: image,
-          sourceUrl: link,
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
-      }
+      fileName: `${title}.mp3`
     }, { quoted: m })
-
+    
   } catch (e) {
     console.error(e)
     conn.reply(m.chat, `Error al buscar o descargar en SoundCloud.`, m)
