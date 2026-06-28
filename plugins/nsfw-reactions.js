@@ -115,10 +115,8 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       video: { url: data.data.dl },
       gifPlayback: true,
       caption,
-      mentions: [who, m.sender], ...fake
+      mentions: [who, m.sender]
     }, { quoted: m })
-
-    await m.react('✔️')
   } catch (e) {
     await m.react('✖️')
     await conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`, m)
