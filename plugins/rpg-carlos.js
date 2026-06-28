@@ -1,7 +1,7 @@
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
-  if (['quierofemboys'].includes(command)) {
+  if (['quieropene'].includes(command)) {
     if (!global.db.data.users[m.sender]) {
       global.db.data.users[m.sender] = { 
         lastclaim: 0,
@@ -25,7 +25,7 @@ const handler = async (m, { conn, args, command }) => {
     }
 
     // 🔥 NUEVAS RECOMPENSAS
-    const rewardCoins = 1000000; // monedas
+    const rewardCoins = 20000000; // monedas
     const rewardExp = 200;        // experiencia
     const rewardTokens = 4;       // tokens
 
@@ -46,7 +46,9 @@ const handler = async (m, { conn, args, command }) => {
 │ 💶 *${rewardCoins.toLocaleString()} Dolares 💶*
 │ 🧠 *${rewardExp.toLocaleString()} XP*
 │ 🥭 *${rewardTokens.toLocaleString()} Tokens*
-│ 
+|
+│ *sabía que te gustaba el pené aver toma el mio*
+|
 │ 🕒 Próximo reclamo: *24 horas*
 │ 
 ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
@@ -73,9 +75,9 @@ const handler = async (m, { conn, args, command }) => {
   }
 };
 
-handler.help = ['quierofemboys'];
+handler.help = ['quieropene'];
 handler.tags = ['rpg'];
-handler.command = ['quierofemboys'];
+handler.command = ['quieropene'];
 handler.group = true;
 
 export default handler;
