@@ -57,7 +57,7 @@ const mentionList = groupBots.map(bot => bot.endsWith("@s.whatsapp.net") ? bot :
           participant: m.sender,
           stanzaId: m.id,
           remoteJid: m.chat,
-          mentionList,
+          mentionedJid: mentionList,
         }
       }
     },
