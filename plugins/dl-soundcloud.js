@@ -1,5 +1,6 @@
 import axios from 'axios'
 import fetch from 'node-fetch'
+import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text }) => {
   if (!text)
@@ -16,6 +17,15 @@ let handler = async (m, { conn, text }) => {
     const { title, artist, duration, created, plays, likes, comments, genre, description, image, link, url
     } = data
 
+    const linkPreview = image ? (await prepareWAMessageMedia({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
+      'canonical-url': link, 
+      'matched-text': link, 
+      title: `✧ Soundcloud • Music ✧`, 
+      description: `🍡 ${artist}`, 
+      jpegThumbnail: imageMessage?.jpegThumbnail ? Buffer.from(imageMessage.jpegThumbnail) : undefined, 
+      highQualityThumbnail: imageMessage || undefined 
+    }))) : undefined
+
     await conn.sendMessage(m.chat, {
       text: `ׄ⬭ *Título :* ${title}
 ׄ⬭ *Artista :* ${artist}
@@ -26,15 +36,10 @@ let handler = async (m, { conn, text }) => {
 ׄ⬭ *Genero :* ${genre}
 ׄ⬭ *Publicado :* ${created}
 ׄ⬭ *link :* ${link}`,
+      linkPreview,
       contextInfo: {
-        externalAdReply: {
-          title: 'ꕥ 𝐒𝐨𝐮𝐧𝐝𝐂𝐥𝐨𝐮𝐝 -:- 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐞𝐫 ✰',
-          body: description, //`Like » ${likes} | Comments » ${comments}`,
-          thumbnailUrl: image,
-          sourceUrl: link,
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
+        mentionedJid: [m.sender],
+        isForwarded: true
       }
     }, { quoted: m })
 
