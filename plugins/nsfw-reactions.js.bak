@@ -41,6 +41,10 @@ function getRandomSymbol() {
   return symbols[Math.floor(Math.random() * symbols.length)]
 }
 
+const endpointMap = {
+  cummouth: 'cummoth'
+}
+
 const alias = {
   anal: ['anal','violar'],
   cum: ['cum'],
@@ -57,7 +61,7 @@ const alias = {
   boobjob: ['boobjob'],
   yuri: ['yuri','tijeras'],
   footjob: ['footjob'],
-  cummouth: ['cummouth'],
+  cummouth: ['cummouth','cummoth'],
   cumshot: ['cumshot'],
   handjob: ['handjob'],
   lickass: ['lickass'],
@@ -69,44 +73,50 @@ const alias = {
   thighjob: ['thighjob'],
   bondage: ['bondage'],
   pegging: ['pegging'],
-  futanari: ['futanari', 'futa'],
+  futanari: ['futanari','futa'],
   yaoi: ['yaoi'],
   bukkake: ['bukkake'],
-  orgy: ['orgy', 'orgia'],
-  squirting: ['squirt', 'squirting']
+  orgy: ['orgy','orgia'],
+  squirting: ['squirt','squirting']
 }
 
 let handler = async (m, { conn, usedPrefix, command }) => {
   try {
     const currentCommand = Object.keys(alias).find(key => alias[key].includes(command)) || command
+
     if (!captions[currentCommand]) {
       await m.react('✖️')
       return
     }
-    
+
     const who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender
-    const fromName = m.pushName || '@'+m.sender.split('@')[0]
-    const toName = m.mentionedJid?.[0] ? '@'+(m.mentionedJid[0].split('@')[0]) : m.quoted?.pushName || '@'+who.split('@')[0]
-    
+    const fromName = m.pushName || '@' + m.sender.split('@')[0]
+    const toName = m.mentionedJid?.[0]
+      ? '@' + (m.mentionedJid[0].split('@')[0])
+      : m.quoted?.pushName || '@' + who.split('@')[0]
+
     const captionText = captions[currentCommand](fromName, toName)
-    const caption = who !== m.sender ? `\`${fromName}\` ${captionText} \`${toName}.\` ${getRandomSymbol()}.` : `\`${fromName}\` ${captionText} ${getRandomSymbol()}.`
-    
-    const apiUrl = `${global.APIs.light.url}/reaction/nsfw/${currentCommand}`
+    const caption = who !== m.sender
+      ? `\`${fromName}\` ${captionText} \`${toName}.\` ${getRandomSymbol()}.`
+      : `\`${fromName}\` ${captionText} ${getRandomSymbol()}.`
+
+    const apiEndpoint = endpointMap[currentCommand] || currentCommand
+    const apiUrl = `${global.APIs.light.url}/reaction/nsfw/${apiEndpoint}`
     const response = await fetch(apiUrl)
     const data = await response.json()
-    
-    if (!data.url) {
+
+    if (!data.data?.dl) {
       await m.react('✖️')
       return conn.reply(m.chat, `⚠︎ No se pudo obtener el contenido.`, m)
     }
-    
-    await conn.sendMessage(m.chat, { 
-      video: { url: data.url }, 
-      gifPlayback: true, 
-      caption, 
-      mentions: [who, m.sender] 
+
+    await conn.sendMessage(m.chat, {
+      video: { url: data.data.dl },
+      gifPlayback: true,
+      caption,
+      mentions: [who, m.sender]
     }, { quoted: m })
-    
+
     await m.react('✔️')
   } catch (e) {
     await m.react('✖️')
@@ -114,9 +124,4 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['anal','violar','cum','undress','encuerar','fuck','coger','spank','nalgada','lickpussy','fap','paja','grope','sixnine','69','suckboobs','grabboobs','blowjob','mamada','bj','boobjob','yuri','tijeras','footjob','cummouth','cumshot','handjob','lickass','lickdick','fingering','creampie','facesitting','deepthroat','thighjob','bondage','pegging','futanari','futa','yaoi','bukkake','orgy','orgia','squirt','squirting']
-handler.tags = ['nsfw']
-handler.command = ['anal','violar','cum','undress','encuerar','fuck','coger','spank','nalgada','lickpussy','fap','paja','grope','sixnine','69','suckboobs','grabboobs','blowjob','mamada','bj','boobjob','yuri','tijeras','footjob','cummouth','cumshot','handjob','lickass','lickdick','fingering','creampie','facesitting','deepthroat','thighjob','bondage','pegging','futanari','futa','yaoi','bukkake','orgy','orgia','squirt','squirting']
-handler.group = true
-
-export default handler
+handler.help = ['anal','violar','cum','undress',
