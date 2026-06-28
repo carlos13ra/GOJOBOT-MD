@@ -28,9 +28,7 @@ async function generarBienvenida({ conn, userId, groupMetadata, chat }) {
  𓃉 *Miembros :* ${groupSize}
  𓃉 *Date :* ${fecha}, ${hora}
 
-${customMsg}
-> *Usa #help para ver los comandos disponibles*
-  `.trim()
+> ${customMsg}`.trim()
   
   return { pp, caption, mentions: [userId] }
 }
@@ -63,9 +61,7 @@ async function generarDespedida({ conn, userId, groupMetadata, chat }) {
  𓃉 *Miembros Restantes :* ${groupSize}
  𓃉 *Fecha :* ${fecha}, ${hora}
 
-${customMsg}
-
-> *Te esperamos pronto ${username}! ¡Vuelve cuando quieras!*
+> ${customMsg}
   `.trim()
   
   return { pp, caption, mentions: [userId] }
