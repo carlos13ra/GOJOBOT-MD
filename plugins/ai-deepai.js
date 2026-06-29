@@ -1,8 +1,16 @@
 import fetch from 'node-fetch'
 import FormData from 'form-data'
 
+async function uploadImage(buffer, mime) {
+  const body = new FormData()
+  body.append('files[]', buffer, `file.${mime.split('/')[1]}`)
+  const res = await fetch('https://uguu.se/upload.php', { method: 'POST', body, headers: body.getHeaders() })
+  const json = await res.json()
+  return json.files?.[0]?.url
+}
+
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `Por favor ingresa el texto/prompt para editar la imagen.\n\n*Ejemplo:* ${usedPrefix + command} conviértelo en anime`, m)
+  if (!text) return conn.reply(m.chat, `Por favor ingresa el texto/prompt para editar la imagen.\n\n*Ejemplo:* ${usedPrefix + command} conviérte a imagen a versión anime`, m)
   let q = m.quoted ? m.quoted : m
   let mimeType = (q.msg || q).mimetype || ''
   if (!/image\/(jest|jpeg|png|webp)/.test(mimeType)) return conn.reply(m.chat, `🥢 Por favor responde o etiqueta una **imagen** con el comando.`, m)
@@ -11,17 +19,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     const imgBuffer = await q.download()
-    const ext = mimeType.split('/')[1] || 'jpeg'
+    const imgUrl = await uploadImage(imgBuffer, mimeType)
+    if (!imgUrl) throw new Error('No se pudo subir la imagen a uguu.se')
 
-    const form = new FormData()
-    form.append('image', imgBuffer, { filename: `image.${ext}`, contentType: `image/${ext}` })
-    form.append('prompt', text)
-
-    const res = await fetch(`${global.APIs.light.url}/ai/deepai-edit`, {
-      method: 'POST',
-      body: form,
-      headers: { ...form.getHeaders() }
-    })
+    const apiUrl = `${global.APIs.light.url}/ai/deepai-edit?img=${encodeURIComponent(imgUrl)}&prompt=${encodeURIComponent(text)}`
+    const res = await fetch(apiUrl)
     const json = await res.json()
 
     if (!json.status || !json.data?.output_url) {
