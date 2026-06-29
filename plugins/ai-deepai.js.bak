@@ -9,6 +9,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('🕒')
 
   try {
+    // Subir imagen a un host para obtener URL
     let imgBuffer = await q.download()
     const uploadRes = await fetch('https://telegra.ph/upload', {
       method: 'POST',
