@@ -33,11 +33,9 @@ let handler = async (m, { conn, text, usedPrefix }) => {
     }
   }
 
-  // Intenta con API primaria (aio/v2), si falla o da 403 usa la secundaria (ytmp4)
   const fetchVideo = async (url) => {
-    // ── API PRIMARIA ──
     try {
-      const res = await fetch(`https://api--shadowcorexyz.replit.app/download/aio/v2?url=${encodeURIComponent(url)}`, { timeout: 15000 })
+      const res = await fetch(`${global.APIs.light.url}/download/aio/v2?url=${encodeURIComponent(url)}`, { timeout: 15000 })
       const json = await res.json()
 
       if (!json.status || !json.result?.data?.medias) throw new Error('sin datos')
@@ -46,7 +44,6 @@ let handler = async (m, { conn, text, usedPrefix }) => {
       const video360 = data.medias.find(v => v.quality === 'mp4 (360p)' && v.type === 'video')
       if (!video360) throw new Error('sin 360p')
 
-      // Verificar que el link no dé 403
       const check = await fetch(video360.url, { method: 'HEAD' })
       if (!check.ok) throw new Error(`link 403 o caído (${check.status})`)
 
@@ -55,14 +52,13 @@ let handler = async (m, { conn, text, usedPrefix }) => {
         duration: data.duration,
         dlUrl: video360.url,
         creator: json.creator || 'Shadow',
-        source: 'API1'
+        source: 'Nexu\'s Light'
       }
     } catch (e1) {
       console.log('[ytv] API1 falló:', e1.message, '— intentando API2...')
     }
-
-    // ── API SECUNDARIA ──
-    const res2 = await fetch(`https://api--shadowcorexyz.replit.app/download/ytmp4?url=${encodeURIComponent(url)}&quality=360p`, { timeout: 15000 })
+    
+    const res2 = await fetch(`${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(url)}&quality=360p`, { timeout: 15000 })
     const json2 = await res2.json()
 
     if (!json2.status || !json2.data?.dl) throw new Error('API2 sin datos')
@@ -72,7 +68,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
       duration: json2.data.duration,
       dlUrl: json2.data.dl,
       creator: json2.creator || 'Shadow',
-      source: 'API2'
+      source: 'Nexu\'s Light V2'
     }
   }
 
@@ -116,7 +112,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
 
 handler.help = ['ytvdoc <url>']
 handler.tags = ['download']
-handler.command = ['ytvdoc', 'ytmp4doc']
+handler.command = ['ytvdoc']
 handler.group = true
 
 export default handler
