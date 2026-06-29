@@ -9,17 +9,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('🕒')
 
   try {
-    let imgBuffer = await q.download()
-    const uploadRes = await fetch('https://telegra.ph/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'image/jpeg' },
-      body: imgBuffer
-    })
-    const uploadJson = await uploadRes.json()
-    if (!uploadJson?.[0]?.src) throw new Error('No se pudo subir la imagen')
-    const imgUrl = 'https://telegra.ph' + uploadJson[0].src
+    const imgBuffer = await q.download()
+    const ext = mimeType.split('/')[1] || 'jpeg'
+    const base64 = `data:image/${ext};base64,${imgBuffer.toString('base64')}`
 
-    const apiUrl = `${global.APIs.light.url}/ai/deepai-edit?img=${encodeURIComponent(imgUrl)}&prompt=${encodeURIComponent(text)}`
+    const apiUrl = `${global.APIs.light.url}/ai/deepai-edit?img=${encodeURIComponent(base64)}&prompt=${encodeURIComponent(text)}`
     const res = await fetch(apiUrl)
     const json = await res.json()
 
@@ -27,9 +21,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       throw new Error(JSON.stringify(json))
     }
 
-    const outputUrl = json.data.output_url
-    const editedBuffer = await (await fetch(outputUrl)).buffer()
-
+    const editedBuffer = await (await fetch(json.data.output_url)).buffer()
     await conn.sendFile(m.chat, editedBuffer, 'edited.jpg', `🌵 *¡Imagen editada con éxito!*\n\n*Prompt:* ${text}`, m)
     await m.react('✔️')
 
