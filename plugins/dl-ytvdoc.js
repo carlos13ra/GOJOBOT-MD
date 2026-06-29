@@ -35,7 +35,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
 
   const fetchVideo = async (url) => {
     try {
-      const res = await fetch(`${global.APIs.light.url}/download/aio/v2?url=${encodeURIComponent(url)}`, { timeout: 15000 })
+      const res = await fetch(`${global.APIs.light.url}/download/aio/v2?url=${encodeURIComponent(url)}`, { timeout: 5000 })
       const json = await res.json()
 
       if (!json.status || !json.result?.data?.medias) throw new Error('sin datos')
@@ -58,7 +58,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
       console.log('[ytv] API1 falló:', e1.message, '— intentando API2...')
     }
     
-    const res2 = await fetch(`${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(url)}&quality=360p`, { timeout: 15000 })
+    const res2 = await fetch(`${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(url)}&quality=360p`, { timeout: 100000 })
     const json2 = await res2.json()
 
     if (!json2.status || !json2.data?.dl) throw new Error('API2 sin datos')
