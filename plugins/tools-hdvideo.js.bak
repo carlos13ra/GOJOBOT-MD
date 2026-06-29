@@ -34,15 +34,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const buffer = await q.download()
 
-
+    // Subir video
     const videoUrl = await uploadVideo(buffer, mimeType)
     if (!videoUrl) throw new Error('No se pudo subir el video')
 
     await conn.sendMessage(m.chat, {
-      text: toFancy(`乂 HD VIDEO 乂\n✩ Procesando en ${resolution.toUpperCase()}...\n✩ Esto puede tardar unos minutos`),
+      text: toFancy(`乂 HD VIDEO 乂\n✩ Procesando en ${resolution.toUpperCase()}...\n✩ Esto puede tardar unos segundos`),
       edit: msg.key
     })
 
+    // Llamar API
     const apiUrl = `${global.APIs.light.url}/tools/hdvideo?url=${encodeURIComponent(videoUrl)}&resolution=${resolution}`
     const res = await fetch(apiUrl, { timeout: 120000 })
     const json = await res.json()
