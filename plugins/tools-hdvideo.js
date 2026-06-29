@@ -34,7 +34,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const buffer = await q.download()
 
-
     const videoUrl = await uploadVideo(buffer, mimeType)
     if (!videoUrl) throw new Error('No se pudo subir el video')
 
@@ -43,11 +42,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       edit: msg.key
     })
 
-    const apiUrl = `${global.APIs.light.url}/tools/hdvideo?url=${encodeURIComponent(videoUrl)}&resolution=${resolution}`
+    const apiUrl = `${global.APIs.light.url}/tools/video-enhancer?url=${encodeURIComponent(videoUrl)}&resolution=${resolution}`
     const res = await fetch(apiUrl, { timeout: 120000 })
     const json = await res.json()
 
-    if (!json.status || !json.output) throw new Error(JSON.stringify(json))
+    if (!json.status || !json.data?.download) throw new Error(JSON.stringify(json))
 
     await conn.sendMessage(m.chat, {
       text: toFancy(`乂 HD VIDEO 乂\n✩ Enviando resultado...`),
@@ -55,10 +54,10 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     })
 
     await conn.sendMessage(m.chat, {
-      video: { url: json.output },
+      video: { url: json.data.download },
       mimetype: 'video/mp4',
       fileName: `hdvideo_${resolution}.mp4`,
-      caption: toFancy(`\`乂 HD VIDEO  -  ENHANCE 乂\`\n*✩ Resolución:* ${resolution.toUpperCase()}\n*✩ Job ID:* ${json.job_id}`)
+      caption: toFancy(`\`乂 HD VIDEO  -  ENHANCE 乂\`\n*✩ Resolución:* ${resolution.toUpperCase()}\n*✩ Job ID:* ${json.data.job_id}\n*✩ Usos restantes:* ${json.data.remaining_free_times}`)
     }, { quoted: m })
 
     await conn.sendMessage(m.chat, {
