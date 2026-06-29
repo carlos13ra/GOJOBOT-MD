@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import FormData from 'form-data'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return conn.reply(m.chat, `Por favor ingresa el texto/prompt para editar la imagen.\n\n*Ejemplo:* ${usedPrefix + command} conviértelo en anime`, m)
@@ -11,10 +12,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const imgBuffer = await q.download()
     const ext = mimeType.split('/')[1] || 'jpeg'
-    const base64 = `data:image/${ext};base64,${imgBuffer.toString('base64')}`
 
-    const apiUrl = `${global.APIs.light.url}/ai/deepai-edit?img=${encodeURIComponent(base64)}&prompt=${encodeURIComponent(text)}`
-    const res = await fetch(apiUrl)
+    const form = new FormData()
+    form.append('image', imgBuffer, { filename: `image.${ext}`, contentType: `image/${ext}` })
+    form.append('prompt', text)
+
+    const res = await fetch(`${global.APIs.light.url}/ai/deepai-edit`, {
+      method: 'POST',
+      body: form,
+      headers: { ...form.getHeaders() }
+    })
     const json = await res.json()
 
     if (!json.status || !json.data?.output_url) {
