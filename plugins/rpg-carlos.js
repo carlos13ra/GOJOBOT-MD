@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 const handler = async (m, { conn, args, command }) => {
   const senderNumber = m.sender.split('@')[0];
 
@@ -54,24 +56,29 @@ const handler = async (m, { conn, args, command }) => {
 ╰━━━〔 💫 𝐆𝐨𝐣𝐨𝐁𝐨𝐭 - 𝐌𝐃 🗿 〕━━⬣
 `;
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        text: texto,
-        mentions: [m.sender],
+    const thumbBuf = await fetch(banner).then(r => r.buffer())
+  const b64 = Buffer.from(thumbBuf).toString('base64')
+
+  await conn.relayMessage(
+    m.chat,
+    {
+      extendedTextMessage: {
+        text: redes + texto,
+        matchedText: redes,
+        description: '🥢 Welcome, to Satoru Gojo.',
+        title: botname,
+        previewType: 'shadow',
+        jpegThumbnail: b64,
         contextInfo: {
-          externalAdReply: {
-            title: '🎁 Recompensa de GojoBot',
-            body: 'Tus recompensas han sido entregadas!',
-            thumbnailUrl: 'https://files.catbox.moe/ob2s0m.jpg',
-            sourceUrl: 'https://github.com/Carlos13ra',
-            mediaType: 1,
-            renderLargerThumbnail: true
-          }
+          quotedMessage: m.message,
+          participant: m.sender,
+          stanzaId: m.id,
+          remoteJid: m.chat
         }
-      },
-      { quoted: m }
-    );
+      }
+    },
+    { quoted: m }
+  );
   }
 };
 
