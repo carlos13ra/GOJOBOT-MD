@@ -41,8 +41,7 @@ const handler = async (m, { conn, args, command }) => {
     const texto = `
 ╭━━━〔 🎁 𝐑𝐄𝐂𝐎𝐌𝐏𝐄𝐍𝐒𝐀 💰 〕━━⬣ 
 │ 
-│ 🗿 *Usuario:* @${senderNumber}
-│ 🗣️ *Nombre:* ${senderName}
+│ 🗣️ *name:* ${senderName}
 │ 
 │ 💫 *Has recibido:*
 │ 💶 *${rewardCoins.toLocaleString()} Dolares 💶*
