@@ -102,12 +102,10 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   const mime = quoted.mimetype || quoted.msg?.mimetype || ''
 
   if (!/image\/(jpe?g|png)/i.test(mime)) {
-    await conn.sendMessage(m.chat, { react: { text: '❗', key: m.key } })
-    return m.reply(`🥭 Por favor, envie una imagen o responda a la imagen utilizando el comando.`)
+    return m.reply(`🥢 Por favor, envie una imagen o responda a la imagen utilizando el comando.`)
   }
 
   try {
-    await conn.sendMessage(m.chat, { react: { text: '🍃', key: m.key } })
     conn.reply(m.chat, `*✧ Mejorando la calidad de la imagen....*`, m)
 
     const media = await quoted.download()
@@ -117,13 +115,11 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
     await conn.sendMessage(m.chat, {
       image: resultBuffer,
-      caption: `🍃 *𝙰𝚀𝚄𝙸 𝚃𝙸𝙴𝙽𝙴𝚂 𝚃𝚄 𝙸𝙼𝙰𝙶𝙴𝙽 𝙴𝙽 𝙷𝙳* 🚀\n> ${global.textbot || ''}`.trim()
+      caption: `🎋 *𝙰𝚀𝚄𝙸 𝚃𝙸𝙴𝙽𝙴𝚂 𝚃𝚄 𝙸𝙼𝙰𝙶𝙴𝙽 𝙴𝙽 𝙷𝙳*`.trim()
     }, { quoted: m })
 
-    await conn.sendMessage(m.chat, { react: { text: '🚀', key: m.key } })
   } catch (err) {
-    await conn.sendMessage(m.chat, { react: { text: '❌', key: m.key } })
-    m.reply(`❌ Ocurrio un error:\n${err.message || err}`)
+    m.reply(` Ocurrio un error:\n${err.message || err}`)
   }
 }
 

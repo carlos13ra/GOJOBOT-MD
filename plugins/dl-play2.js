@@ -17,8 +17,7 @@ let handler = async (m, { conn, text, command }) => {
     }
 
     await conn.sendMessage(m.chat, {
-      image: { url: video.thumbnail },
-      caption: `› \`𝗍í𝗍ᥙᥣ᥆ :\` ${video.title}
+        text: `› \`𝗍í𝗍ᥙᥣ᥆ :\` ${video.title}
 › \`ᥲᥙ𝗍᥆r :\` ${video.author?.name || 'Desconocido'}
 › \`᥎іs𝗍ᥲs :\` ${formatViews(video.views)}
 › \`ძᥙrᥲᥴіóᥒ :\` ${video.timestamp}
@@ -26,21 +25,39 @@ let handler = async (m, { conn, text, command }) => {
 › \`ᥱᥒᥣᥲᥴᥱ :\` ${video.url}
      
       _🥢 Descargando video..._
-      `, ...fake
-    }, { quoted: m })
+      `,
+        linkPreview: video.thumbnail ? (await gojo(
+        { image: { url: video.thumbnail }}, 
+        { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }
+      ).then(({ imageMessage }) => ({ 
+        'canonical-url': video.url,
+        'matched-text': video.url,
+        title: `𖹭  ׄ  ְ 🍡 Y O U T U B E - M U S I C   ݁      ✩   ݂      ݁  `, 
+        description: botname, 
+        jpegThumbnail: imageMessage?.jpegThumbnail ? Buffer.from(imageMessage.jpegThumbnail) : undefined, 
+        highQualityThumbnail: imageMessage || undefined 
+      }))) : undefined,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: channelRD.id,
+            serverMessageId: '',
+            newsletterName: channelRD.name
+          },
+        }
+      }, { quoted: m });
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(video.title)}&format=mp4&quality=480`)
+    const dlRes = await fetch(`${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(video.url)}`)
     const dlJson = await dlRes.json()
 
-    if (!dlJson.status || !dlJson.result?.dl_url)
+    if (!dlJson.status || !dlJson.data?.dl)
       throw 'No se pudo obtener el video.'
 
-    const videoUrl = dlJson.result.dl_url
-
     await conn.sendMessage(m.chat, {
-      video: { url: videoUrl },
+      video: { url: dlJson.data.dl },
       mimetype: 'video/mp4',
-      fileName: `${dlJson.result.title}.mp4`
+      fileName: `${dlJson.data.title}.mp4`
     }, { quoted: m })
 
     await m.react('✔️')
