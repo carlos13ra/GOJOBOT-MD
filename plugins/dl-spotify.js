@@ -51,24 +51,41 @@ let handler = async (m, { conn, text }) => {
       }
     }, { quoted: m })
 
-    let dlRes
-    try {
-      const apiDownload = `${global.APIs.light.url}/download/spotify/v3?url=${encodeURIComponent(spotifyUrl)}`
-      dlRes = await axios.get(apiDownload, { timeout: 5000 })
-      
-      if (!dlRes.data.status || !dlRes.data.data?.dl)
-        throw 'API v3 falló'
-    } catch {
-      const apiDownloadV2 = `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`
-      dlRes = await axios.get(apiDownloadV2, { timeout: 5000 })
-      
-      if (!dlRes.data.status || !dlRes.data.result?.download_url)
-        throw 'No se pudo obtener el enlace de descarga.'
+    const apis = [
+      {
+        url: `${global.APIs.light.url}/download/spotify/v3?url=${encodeURIComponent(spotifyUrl)}`,
+        getDl: (d) => d.data?.dl
+      },
+      {
+        url: `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`,
+        getDl: (d) => d.data?.dl
+      },
+      {
+        url: `${global.APIs.light.url}/download/spotify?url=${encodeURIComponent(spotifyUrl)}`,
+        getDl: (d) => d.data?.download
+      }
+    ]
+
+    let download_url = null
+    let lastError = 'Todas las APIs fallaron'
+
+    for (const api of apis) {
+      try {
+        const dlRes = await axios.get(api.url, { timeout: 5000 })
+        const dl = api.getDl(dlRes.data)
+        if (dlRes.data.status && dl) {
+          download_url = dl
+          break
+        }
+      } catch (e) {
+        lastError = e.message
+        continue
+      }
     }
 
-    const download_url = dlRes.data.data?.dl || dlRes.data.result?.download_url
+    if (!download_url) throw lastError
+
     const audioRes = await fetch(download_url)
-    
     if (!audioRes.ok) throw 'Error al descargar el audio.'
 
     const buffer = await audioRes.buffer()

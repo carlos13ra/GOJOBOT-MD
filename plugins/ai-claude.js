@@ -15,7 +15,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
             await conn.sendMessage(m.chat, { text: respuestaAI }, { quoted: m });
             await m.react('✅');
         } else {
-            throw 'La API no devolvió el formato esperado. 😿';
+            throw 'La API no devolvió el formato esperado. xdf';
         }
 
     } catch (error) {
