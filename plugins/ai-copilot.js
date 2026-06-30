@@ -6,7 +6,7 @@ var shadow = async (m, { text, usedPrefix, command }) => {
     await m.react('💬')
 
     try {
-        const url = `${global.APIs.light.url}/ai/copilot?text=${encodeURIComponent(text)}`
+        const url = `${global.APIs.light.url}/ai/copilot?text=${encodeURIComponent(text)}&model=default`
         
         const res = await fetch(url)
         const json = await res.json()

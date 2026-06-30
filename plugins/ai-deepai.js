@@ -10,7 +10,7 @@ async function uploadImage(buffer, mime) {
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `Por favor ingresa el texto/prompt para editar la imagen.\n\n*Ejemplo:* ${usedPrefix + command} conviérte a imagen a versión anime`, m)
+  if (!text) return conn.reply(m.chat, `Por favor ingresa el texto/prompt para editar la imagen.\n\n*Ejemplo:* ${usedPrefix + command} conviérte esta imagen a versión anime`, m)
   let q = m.quoted ? m.quoted : m
   let mimeType = (q.msg || q).mimetype || ''
   if (!/image\/(jest|jpeg|png|webp)/.test(mimeType)) return conn.reply(m.chat, `🥢 Por favor responde o etiqueta una **imagen** con el comando.`, m)
