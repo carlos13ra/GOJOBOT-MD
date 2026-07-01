@@ -17,39 +17,7 @@ const users = m.messageStubParameters[0]
 const usuario = await resolveLidToRealJid(m?.sender, conn, m?.chat)
 const groupAdmins = participants.filter(p => p.admin)
 
-  const getThumbnail = async () => {
-    const res = await axios.get("https://files.catbox.moe/e6br3k.jpg", { responseType: "arraybuffer" })
-    return Buffer.from(res.data, "binary")
-  }
-
-  const thumbnail = await getThumbnail()
-  const shadow_xyz = {
-    key: {
-      fromMe: false,
-      participant: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast"
-    },
-    message: {
-      productMessage: {
-        product: {
-          productImage: {
-            mimetype: "image/jpeg",
-            jpegThumbnail: thumbnail
-          },
-          title: "𐔌 . ⋮ ᗩ ᐯ I Տ O .ᐟ ֹ ₊ ꒱",
-          description: dev,
-          currencyCode: "USD",
-          priceAmount1000: 5000,
-          retailerId: "ShadowCore",
-          productImageCount: 1
-        },
-        businessOwnerJid: "51900922660@s.whatsapp.net"
-      }
-    }
-  }
-  
-  
-const rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '（つ  / ♡. ㅤ•*゜・。... 🄶🄾🄹🄾 🄱🄾🅃 - 🄼🄳💫⃤꙰ ꒱* ', newsletterName: channelRD.name }, externalAdReply: { title: "", body: textbot, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
+const rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '（つ  / ♡. ㅤ•*゜・。... 🄶🄾🄹🄾 🄱🄾🅃 - 🄼🄳💫⃤꙰ ꒱* ', newsletterName: channelRD.name }, externalAdReply: { title: "", body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
 const pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || 'https://files.catbox.moe/5biv5v.jpg'
 const nombre = `> ❀ @${usuario.split('@')[0]} Ha cambiado el nombre del grupo.\n> ✦ Ahora el grupo se llama:\n> *${m.messageStubParameters[0]}*.`
 
