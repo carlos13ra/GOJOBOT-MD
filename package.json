@@ -1,12 +1,19 @@
 {
-  "name": "nao-tomori",
-  "version": "3.0",
+  "name": "Gojo-Bot-MD",
+  "version": "2.0",
   "description": "WhatsApp Bot Multi Device",
   "main": "index.js",
   "type": "module",
+  "directories": {
+    "lib": "lib",
+    "plugins": "plugins"
+  },
   "scripts": {
-    "format": "prettier --write .",
     "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Carlos13ra/GOJOBOT-MD.git"
   },
   "keywords": [
     "whatsapp-bot",
@@ -14,43 +21,54 @@
     "bot-wa",
     "multi-device"
   ],
-  "author": "nadie",
-  "license": "MIT",
-  "engines": {
-    "node": ">=21.7.3",
-    "npm": ">=10.9.4"
+  "author": "Carlos",
+  "license": "MIT-License",
+  "bugs": {
+    "url": "https://github.com/Carlos13ra/GOJOBOT-MD/issues"
   },
+  "homepage": "https://github.com/Carlos13ra/GOJOBOT-MD#readme",
   "dependencies": {
-    "awesome-phonenumber": "^4.4.0",
-    "acrcloud": "^1.4.0",
+    "@hapi/boom": "^10.0.1",
     "@vitalets/google-translate-api": "^8.0.0",
-    "@whiskeysockets/baileys": "github:this-xys/baileys",
-    "axios": "^0.24.0",
-    "cfonts": "latest",
-    "file-type": "^16.5.4",
-    "chalk": "^4.1.2",
+    "@whiskeysockets/baileys": "npm:baileys-leet",
+    "acrcloud": "^1.4.0",
+    "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
+    "awesome-phonenumber": "^3.4.0",
+    "axios": "^1.13.5",
+    "cfonts": "^3.3.0",
+    "chalk": "^5.1.0",
     "cheerio": "npm:cheerio@1.0.0-rc.12",
+    "file-type": "^18.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
-    "gradient-string": "^2.0.2",
-    "grapheme-splitter": "^1.0.4",
+    "formdata-node": "^5.0.0",
+    "google-libphonenumber": "3.2.38",
     "human-readable": "^0.2.1",
-    "jimp": "latest",
+    "jsdom": "^20.0.1",
+    "jszip": "^3.10.1",
+    "jimp": "^0.16.1",
     "lodash": "latest",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.37",
+    "lowdb": "^3.0.0",
+    "megajs": "^1.1.3",
+    "mime-types": "^3.0.1",
     "node-cache": "latest",
     "node-fetch": "^3.2.10",
-    "node-webpmux": "^3.2.0",
+    "node-webpmux": "^3.1.3",
+    "performance-now": "^2.1.0",
     "pino": "^8.8.0",
     "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0",
-    "readline-sync": "^1.4.10",
     "syntax-error": "^1.4.0",
+    "terminal-image": "^2.0.0",
+    "url-regex-safe": "^3.0.0",
     "ws": "^8.18.3",
-    "yargs": "^18.0.0",
-    "yt-search": "^2.10.4",
-    "undici": "*",
-    "uuid": "^13.0.0"
+    "yargs": "^17.3.1",
+    "yt-search": "^2.13.1"
+  },
+  "optionalDependencies": {
+    "moment-timezone": "^0.5.37",
+    "wa-sticker-formatter": "^4.3.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
