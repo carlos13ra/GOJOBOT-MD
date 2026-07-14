@@ -18,9 +18,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
  * @type {import("baileys")}
  */
 const {
-    default: _makeWaSocket,
+    default: _makeWASocket, // <-- usa el default y renombralo
     makeWALegacySocket,
-    _makeWASocket,
     proto,
     downloadContentFromMessage,
     jidDecode,
@@ -35,9 +34,8 @@ const {
     prepareWAMessageMedia,
     WA_DEFAULT_EPHEMERAL,
     PHONENUMBER_MCC,
-} = (await import('@whiskeysockets/baileys')).default
-
-export function makeWASocket(connectionOptions, options = {}) {
+} = (await import('./lib/index.js')).default // <-- OJO: es ./lib/index.js del fork, no @whiskeysockets/baileys
+export function _makeWASocket(connectionOptions, options = {}) {
     /**
      * @type {import("baileys").WASocket | import("baileys").WALegacySocket}
      */
