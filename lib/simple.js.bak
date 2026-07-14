@@ -11,7 +11,8 @@ import { fileURLToPath } from 'url'
 import store from './store.js'
 import pino from 'pino'
 import * as baileys from "@whiskeysockets/baileys"
-import _makeWaSocket, { makeWALegacySocket,
+import _makeWaSocket, {
+    makeWALegacySocket,
     downloadContentFromMessage,
     jidDecode,
     areJidsSameUser,
