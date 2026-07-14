@@ -11,38 +11,46 @@ const ytdlpPath = path.join(__dirname, '..', 'yt-dlp')
 async function downloadMedia(url, type, quality = 'best') {
   return new Promise((resolve, reject) => {
     let args = []
+    const filename = `${Date.now()}_%(title)s.%(ext)s`
+    const outputPath = path.join(downloadDir, filename)
 
     if (type === 'mp3') {
-      args = ['-x', '--audio-format', 'mp3', '--audio-quality', '0']
+      args = [
+        '-x',
+        '--audio-format', 'mp3',
+        '--audio-quality', '0',
+        '--progress',
+        '-o', outputPath,
+        url
+      ]
     } else if (type === 'mp4') {
       if (quality === '360p') args = ['-f', '18']
       else if (quality === '720p') args = ['-f', '22']
       else args = ['-f', 'best[ext=mp4]']
+
+      args.push('--progress', '-o', outputPath, url)
     }
 
-    // Igual que el script que funciona: %(title)s.%(ext)s directo
-    args.push('--progress', '-o', `${downloadDir}/%(title)s.%(ext)s`, url)
-
-    const snapBefore = new Set(fs.readdirSync(downloadDir))
-    const proc = spawn(ytdlpPath, args)
+    const proc = spawn(ytdlpPath, args, { cwd: downloadDir })
     let output = ''
 
-    proc.stdout.on('data', d => { output += d.toString() })
-    proc.stderr.on('data', d => { output += d.toString() })
+    proc.stdout.on('data', (data) => { output += data.toString() })
+    proc.stderr.on('data', (data) => { output += data.toString() })
 
-    proc.on('close', code => {
+    proc.on('close', (code) => {
       if (code === 0) {
-        // Encuentra el archivo nuevo comparando con snapshot anterior
-        const snapAfter = fs.readdirSync(downloadDir)
-        const newFile = snapAfter.find(f => !snapBefore.has(f))
-        if (newFile) {
-          resolve(path.join(downloadDir, newFile))
+        const files = fs.readdirSync(downloadDir)
+        const latestFile = files
+          .map(f => ({
+            name: f,
+            time: fs.statSync(path.join(downloadDir, f)).mtime.getTime()
+          }))
+          .sort((a, b) => b.time - a.time)[0]
+
+        if (latestFile) {
+          resolve(path.join(downloadDir, latestFile.name))
         } else {
-          // Fallback: el más reciente
-          const latest = snapAfter
-            .map(f => ({ name: f, time: fs.statSync(path.join(downloadDir, f)).mtime.getTime() }))
-            .sort((a, b) => b.time - a.time)[0]
-          latest ? resolve(path.join(downloadDir, latest.name)) : reject(new Error('No se encontró el archivo'))
+          reject(new Error('No se encontró el archivo descargado'))
         }
       } else {
         reject(new Error(`Error en descarga: ${output}`))
@@ -57,8 +65,10 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
   try {
 
     if (command === 'ytaa') {
-      if (!text) return await conn.reply(m.chat,
-        `🎵 Uso: *${usedPrefix}ytaa <url o búsqueda>*\n\nEjemplo:\n${usedPrefix}ytaa anime\n${usedPrefix}ytaa https://youtube.com/watch?v=...`, m)
+      if (!text) {
+        return await conn.reply(m.chat,
+          `🎵 Uso: *${usedPrefix}ytaa <url o búsqueda>*\n\nEjemplo:\n${usedPrefix}ytaa anime\n${usedPrefix}ytaa https://youtube.com/watch?v=...`, m)
+      }
 
       await m.react('🕒')
 
@@ -78,7 +88,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
         videoInfo = result.videos[0]
       }
 
-      await conn.reply(m.chat, `
+      const infoMsg = `
 📌 *Título:* ${videoInfo.title}
 👤 *Canal:* ${videoInfo.author.name}
 ⏱️ *Duración:* ${videoInfo.timestamp}
@@ -86,7 +96,10 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
 🍡 *Fecha:* ${videoInfo.ago}
 🔗 *URL:* ${videoInfo.url}
 
-⏳ Descargando audio...`.trim(), m)
+⏳ Descargando audio...
+      `.trim()
+
+      await conn.reply(m.chat, infoMsg, m)
 
       const filePath = await downloadMedia(url, 'mp3')
       const fileSize = (fs.statSync(filePath).size / 1024 / 1024).toFixed(2)
@@ -98,14 +111,16 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
       await m.react('✔️')
 
     } else if (command === 'ytvv') {
-      if (!text) return await conn.reply(m.chat,
-        `🎬 Uso: *${usedPrefix}ytvv <url|query>|[calidad]*\n\nCalidades: 360p, 720p, best\n\nEjemplo:\n${usedPrefix}ytvv despacito|720p`, m)
+      if (!text) {
+        return await conn.reply(m.chat,
+          `🎬 Uso: *${usedPrefix}ytvv <url|query> [calidad]*\n\nCalidades: 360p, 720p, best\n\nEjemplo:\n${usedPrefix}ytvv despacito|720p`, m)
+      }
 
       await m.react('🕒')
 
-      const parts = text.split('|')
-      const query = parts[0].trim()
-      const quality = parts[1]?.trim() || 'best'
+      const args = text.split('|')
+      const query = args[0].trim()
+      const quality = args[1]?.trim() || 'best'
 
       let url = query
       let videoInfo = null
@@ -123,7 +138,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
         videoInfo = result.videos[0]
       }
 
-      await conn.reply(m.chat, `
+      const infoMsg = `
 📌 *Título:* ${videoInfo.title}
 👤 *Canal:* ${videoInfo.author.name}
 ⏱️ *Duración:* ${videoInfo.timestamp}
@@ -132,7 +147,10 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
 🎬 *Calidad:* ${quality}
 🔗 *URL:* ${videoInfo.url}
 
-⏳ Descargando video...`.trim(), m)
+⏳ Descargando video...
+      `.trim()
+
+      await conn.reply(m.chat, infoMsg, m)
 
       const filePath = await downloadMedia(url, 'mp4', quality)
       const fileSize = (fs.statSync(filePath).size / 1024 / 1024).toFixed(2)
@@ -160,7 +178,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
   }
 }
 
-handler.help = ['ytaa <url|query>', 'ytvv <url|query>|[calidad]']
+handler.help = ['ytaa <url|query>', 'ytvv <url|query> [calidad]']
 handler.tags = ['downloader']
 handler.command = ['ytaa', 'ytvv']
 handler.group = true
