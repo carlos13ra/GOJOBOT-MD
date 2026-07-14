@@ -6,6 +6,7 @@ import ytSearch from 'yt-search'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const downloadDir = path.join(__dirname, '..', 'tmp')
+const ytdlpPath = path.join(__dirname, '..', 'yt-dlp')
 
 async function downloadMedia(url, type, quality = 'best') {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ async function downloadMedia(url, type, quality = 'best') {
       args.push('--progress', '-o', outputPath, url)
     }
 
-    const proc = spawn('./yt-dlp', args, { cwd: downloadDir })
+    const proc = spawn(ytdlpPath, args, { cwd: downloadDir })
     let output = ''
 
     proc.stdout.on('data', (data) => { output += data.toString() })
@@ -112,7 +113,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     } else if (command === 'ytvv') {
       if (!text) {
         return await conn.reply(m.chat,
-          `🎬 Uso: *${usedPrefix}ytvv <url|query> [calidad]*\n\nCalidades: 360p, 720p, best\n\nEjemplo:\n${usedPrefix}ytvv despacito 720p`, m)
+          `🎬 Uso: *${usedPrefix}ytvv <url|query> [calidad]*\n\nCalidades: 360p, 720p, best\n\nEjemplo:\n${usedPrefix}ytvv despacito|720p`, m)
       }
 
       await m.react('🕒')
