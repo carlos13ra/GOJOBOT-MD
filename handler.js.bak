@@ -159,8 +159,8 @@ export async function handler(chatUpdate) {
 
     if (m.isBaileys) return
 
-if (!m.id) return
-if (m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20)) return
+    if (m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20)) return
+
     m.exp += Math.ceil(Math.random() * 10)
     let usedPrefix
 
