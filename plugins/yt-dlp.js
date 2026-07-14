@@ -30,7 +30,7 @@ async function downloadMedia(url, type, quality = 'best') {
       args.push('--progress', '-o', outputPath, url)
     }
 
-    const proc = spawn('yt-dlp', args, { cwd: downloadDir })
+    const proc = spawn('./yt-dlp', args, { cwd: downloadDir })
     let output = ''
 
     proc.stdout.on('data', (data) => { output += data.toString() })
