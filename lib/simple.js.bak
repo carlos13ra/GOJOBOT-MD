@@ -40,7 +40,7 @@ export function makeWASocket(connectionOptions, options = {}) {
     /**
      * @type {import("baileys").WASocket | import("baileys").WALegacySocket}
      */
-    const conn = (global.opts["legacy"] ? makeWALegacySocket : _makeWaSocket)(
+    const conn = (global.opts["legacy"] ? makeWALegacySocket : _makeWASocket)(
         connectionOptions,
     );
 
