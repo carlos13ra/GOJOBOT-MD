@@ -20,6 +20,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const {
     default: _makeWaSocket,
     makeWALegacySocket,
+    _makeWASocket,
     proto,
     downloadContentFromMessage,
     jidDecode,
