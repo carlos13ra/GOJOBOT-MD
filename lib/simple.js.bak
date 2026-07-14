@@ -2207,7 +2207,8 @@ export function serialize() {
     const safeSplit = (str, separator) =>
         typeof str === "string" ? str.split(separator) : [];
 
-    return Object.defineProperties(proto.Message?.WebMessageInfo?.prototype || {}, {
+    if(!proto?.Message?.WebMessageInfo) return {}
+return Object.defineProperties(proto.Message.WebMessageInfo.prototype, {
         conn: {
             value: undefined,
             enumerable: false,
