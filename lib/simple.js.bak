@@ -11,18 +11,7 @@ import { fileURLToPath } from 'url'
 import store from './store.js'
 import pino from 'pino'
 import * as baileys from "@whiskeysockets/baileys"
-
-import _makeWaSocket from '@whiskeysockets/baileys'
-import { makeWALegacySocket, proto } from '@whiskeysockets/baileys'
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-/**
- * @type {import("baileys")}
- */
-const {
-    default:
-    makeWALegacySocket,
-    proto,
+import _makeWaSocket, { makeWALegacySocket,
     downloadContentFromMessage,
     jidDecode,
     areJidsSameUser,
@@ -35,8 +24,13 @@ const {
     getAggregateVotesInPollMessage,
     prepareWAMessageMedia,
     WA_DEFAULT_EPHEMERAL,
-    PHONENUMBER_MCC,
-} = (await import('@whiskeysockets/baileys')).default // <-- OJO: es ./lib/index.js del fork, no @whiskeysockets/baileys
+    PHONENUMBER_MCC, proto, } from '@whiskeysockets/baileys'
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * @type {import("baileys")}
+ */
+
 export function makeWASocket(connectionOptions, options = {}) {
     /**
      * @type {import("baileys").WASocket | import("baileys").WALegacySocket}
