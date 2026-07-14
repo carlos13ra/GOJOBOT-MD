@@ -34,7 +34,7 @@ const {
     prepareWAMessageMedia,
     WA_DEFAULT_EPHEMERAL,
     PHONENUMBER_MCC,
-} = (await import('./lib/index.js')).default // <-- OJO: es ./lib/index.js del fork, no @whiskeysockets/baileys
+} = (await import('@whiskeysockets/baileys')).default // <-- OJO: es ./lib/index.js del fork, no @whiskeysockets/baileys
 export function makeWASocket(connectionOptions, options = {}) {
     /**
      * @type {import("baileys").WASocket | import("baileys").WALegacySocket}
