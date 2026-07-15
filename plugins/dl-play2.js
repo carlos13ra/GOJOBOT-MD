@@ -48,17 +48,30 @@ let handler = async (m, { conn, text, command }) => {
         }
       }, { quoted: m });
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(video.url)}`)
+    const dlRes = await fetch(`${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(video.url)}&type=video&quality=480p`)
     const dlJson = await dlRes.json()
 
     if (!dlJson.status || !dlJson.data?.dl)
       throw 'No se pudo obtener el video.'
 
-    await conn.sendMessage(m.chat, {
-      video: { url: dlJson.data.dl },
-      mimetype: 'video/mp4',
-      fileName: `${dlJson.data.title}.mp4`
-    }, { quoted: m })
+    const sizeMB = (dlJson.data.duration * 1.5)
+    const isHeavy = dlJson.data.dl ? await fetch(dlJson.data.dl, { method: 'HEAD' })
+      .then(r => parseInt(r.headers.get('content-length') || 0) > 100 * 1024 * 1024)
+      .catch(() => false) : false
+
+    if (isHeavy) {
+      await conn.sendMessage(m.chat, {
+        document: { url: dlJson.data.dl },
+        mimetype: 'video/mp4',
+        fileName: `${dlJson.data.title}.mp4`
+      }, { quoted: m })
+    } else {
+      await conn.sendMessage(m.chat, {
+        video: { url: dlJson.data.dl },
+        mimetype: 'video/mp4',
+        fileName: `${dlJson.data.title}.mp4`
+      }, { quoted: m })
+    }
 
     await m.react('✔️')
 
