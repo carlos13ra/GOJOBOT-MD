@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 import ytSearch from 'yt-search'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const downloadDir = path.join(__dirname, '..', '..', 'tmp')
+const downloadDir = path.join(__dirname, '..', 'tmp')
 
 if (!fs.existsSync(downloadDir)) {
   fs.mkdirSync(downloadDir, { recursive: true })
