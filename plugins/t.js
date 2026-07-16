@@ -1,41 +1,61 @@
-import fetch from 'node-fetch'
+const BASE_URL = "https://api.kyzzz.eu.cc"
+const API_KEY = "ambil_sendiri"
 
-let handler = async (m, { conn, usedPrefix, command, text }) => {
-  try {
-    if (!text?.startsWith('http')) return m.reply(`Uso: ${usedPrefix}${command} <url de stordl>`)
+let handler = async (m, { conn, usedPrefix, command }) => {
+    const q = m.quoted || m
+    const mime = (q.msg || q).mimetype || ""
 
-    await m.react('🕒')
+    if (!/image/i.test(mime)) {
+        return m.reply(
+            `Reply atau kirim gambar dengan caption:\n${usedPrefix + command}`
+        )
+    }
 
-    // Extraer id y name de la URL
-    const urlObj = new URL(text.trim())
-    const id = urlObj.pathname.replace('/', '')
-    const name = urlObj.searchParams.get('name') || ''
+    try {
+        await m.reply("⏳ Processing...")
 
-    // Obtener direct link
-    const apiUrl = `https://stordl.halahgan.com/${id}?action=file-url&id=${id}&name=${encodeURIComponent(name)}`
-    const res = await fetch(apiUrl)
-    const json = await res.json()
+        const buffer = await q.download()
 
-    if (!json.ok || !json.url) throw new Error(json.error || 'No se obtuvo el link')
+        const form = new FormData()
+        form.append(
+            "image",
+            new Blob([buffer], { type: mime }),
+            "image.jpg"
+        )
 
-    await conn.sendMessage(m.chat, {
-      document: { url: json.url },
-      mimetype: 'video/mp4',
-      fileName: name || `${id}.mp4`,
-      caption: `🍡 *${name || id}*`
-    }, { quoted: m })
+        const res = await fetch(
+            `${BASE_URL}/api/ai-image/toanime?apikey=${API_KEY}`,
+            {
+                method: "POST",
+                body: form
+            }
+        )
 
-    await m.react('✔️')
+        if (!res.ok) {
+            throw new Error(await res.text())
+        }
 
-  } catch (e) {
-    await m.react('✖️')
-    m.reply(`🍡 Error:\n\`\`\`${e.message}\`\`\``)
-  }
+        const result = Buffer.from(await res.arrayBuffer())
+
+        await conn.sendMessage(
+            m.chat,
+            {
+                image: result,
+                caption: "✨ Done"
+            },
+            { quoted: m }
+        )
+
+    } catch (e) {
+        console.error(e)
+        m.reply(`❌ ${e.message}`)
+    }
 }
 
-handler.help = ['stordl <url>']
-handler.tags = ['download']
-handler.command = ['stordl', 'stor']
-handler.group = true
+handler.help = ["toanime"]
+handler.tags = ["image"]
+handler.command = /^(toanime|animefy)$/i
+handler.limit = true
+handler.register = true
 
 export default handler
