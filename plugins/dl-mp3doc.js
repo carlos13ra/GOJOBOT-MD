@@ -34,20 +34,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       caption
     }, { quoted: m })
 
-    const api2 = `https://nexus-light.onrender.com/download/ytdl/v2?url=${encodeURIComponent(data.url)}&format=mp3&quality=mp3`
+    const api2 = `${global.APIs.light.url}/download/toptu?url=${encodeURIComponent(data.url)}`
 
     const res2 = await fetch(api2)
     const json2 = await res2.json()
 
-    if (!json2.status || !json2.result?.download) {
+    if (!json2.status || !json2.download) {
       throw 'Error al obtener el audio'
     }
 
-    const fileName = `${(json2.result.title || 'audio')
+    const fileName = `${(json2.title || data.title || 'audio')
       .replace(/[\\/:*?"<>|]/g, '')}.mp3`
 
     await conn.sendMessage(m.chat, {
-      document: { url: json2.result.download },
+      document: { url: json2.download },
       mimetype: 'audio/mpeg',
       fileName,
       caption: `🫒 Descarga completa`
