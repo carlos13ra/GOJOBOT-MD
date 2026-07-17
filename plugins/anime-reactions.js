@@ -120,7 +120,7 @@ let captionFn = captions[action]
 let str = `\`${from}\` ${captionFn(from, who, genero)} ${from!== who? `\`${who}\`` : ''} ${getRandomSymbol()}`
 
 try {
-const res = await fetch(`https://nexus-light.onrender.com/reaction/${action}`)
+const res = await fetch(`${global.APIs.light.url}/reaction/${action}`)
 const json = await res.json()
 
 if (!json.status ||!json.data?.dl) return m.reply('ꕥ No se encontró el gif.')
