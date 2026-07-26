@@ -12,25 +12,23 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     await m.react('🕒')
-    const api = `https://nexus-light.onrender.com/download/ytdl/v2?url=${encodeURIComponent(text)}&format=mp4&quality=sd&key=Dev_shadow`
+    const api = `https://api--shadowcorexyz.replit.app/download/ytmp4?url=${encodeURIComponent(text)}`
     const res = await fetch(api)
     const json = await res.json()
 
-    if (!json.status || !json.result?.download) {
+    if (!json.status || !json.data?.dl) {
       throw 'Error al obtener el video'
     }
 
-    const data = json.result
+    const data = json.data
 
     let caption =
 `🎬 *YouTube MP4*
 
 🧊 *Título:* ${data.title}
-👤 *Autor:* ${data.uploader}
-⏱️ *Duración:* ${data.duration}
-👁️ *Vistas:* ${data.views}
-📦 *Peso:* ${data.size}
-📺 *Calidad:* ${data.quality}
+👤 *Autor:* ${data.channel}
+⏱️ *Duración:* ${data.duration}s
+🎬 *Calidad:* 720p
 🔗 *Link:* ${text}`
 
     await conn.sendMessage(m.chat, {
@@ -38,11 +36,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       caption
     }, { quoted: m })
 
-    const fileName = `${(data.title || 'video')
-      .replace(/[\\/:*?"<>|]/g, '')}.mp4`
+    const fileName = `${(data.filename || 'video')
+      .replace(/[\\/:*?"<>|]/g, '')}`
 
     await conn.sendMessage(m.chat, {
-      document: { url: data.download },
+      document: { url: data.dl },
       mimetype: 'video/mp4',
       fileName,
       caption: '🫒 Descarga completa'
