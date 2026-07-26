@@ -49,7 +49,7 @@ let handler = async (m, { conn, text }) => {
     const buffer = await audioRes.buffer()
 
     await conn.sendMessage(m.chat, {
-      audio: buffer,
+      document: buffer,
       mimetype: 'audio/mpeg',
       fileName: `${title}.mp3`
     }, { quoted: m })
