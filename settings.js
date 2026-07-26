@@ -48,7 +48,7 @@ vreden: { url: "https://api.vreden.web.id", key: null },
 delirius: { url: "https://api.delirius.store", key: null },
 siputzx: { url: "https://api.siputzx.my.id", key: null },
 stellar: { url: "https://api.stellarwa.xyz", key: "this-xyz"},
-light: { url: "https://nexus-light.onrender.com", key: "miku_sakura" } // poble att: el creador 
+light: { url: "https://api--shadowcorexyz.replit.app", key: "miku_sakura" } // poble att: el creador 
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
