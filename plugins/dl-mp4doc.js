@@ -12,7 +12,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     await m.react('🕒')
-    const api = `https://api--shadowcorexyz.replit.app/download/ytmp4?url=${encodeURIComponent(text)}`
+    const api = `/download/ytmp4?url=${encodeURIComponent(text)}`
     const res = await fetch(api)
     const json = await res.json()
 
