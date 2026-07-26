@@ -48,7 +48,7 @@ let handler = async (m, { conn, text, command }) => {
         }
       }, { quoted: m })
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/ytvideo?url=${encodeURIComponent(video.url)}`)
+    const dlRes = await fetch(`https://nexus-light-sikf.onrender.com/download/ytvideo?url=${encodeURIComponent(video.url)}`)
     const dlJson = await dlRes.json()
 
     if (!dlJson.status || !dlJson.data?.downloadUrl)
