@@ -48,30 +48,29 @@ let handler = async (m, { conn, text, command }) => {
         }
       }, { quoted: m })
 
-    const dlRes = await fetch(`https://nexus-light-sikf.onrender.com/download/ytvideo?url=${encodeURIComponent(video.url)}`)
+    const dlRes = await fetch(`${global.APIs.light2.url}/download/savetube?url=${encodeURIComponent(video.url)}&type=video`)
     const dlJson = await dlRes.json()
 
-    if (!dlJson.status || !dlJson.data?.downloadUrl)
+    if (!dlJson.status || !dlJson.data?.dl)
       throw 'No se pudo obtener el video.'
 
-    const isHeavy = await fetch(dlJson.data.downloadUrl, { method: 'HEAD' })
+    const isHeavy = await fetch(dlJson.data.dl, { method: 'HEAD' })
       .then(r => parseInt(r.headers.get('content-length') || 0) > 100 * 1024 * 1024)
       .catch(() => false)
 
     if (isHeavy) {
       await conn.sendMessage(m.chat, {
-        document: { url: dlJson.data.downloadUrl },
+        document: { url: dlJson.data.dl },
         mimetype: 'video/mp4',
         fileName: `${dlJson.data.title}.mp4`
       }, { quoted: m })
     } else {
       await conn.sendMessage(m.chat, {
-        video: { url: dlJson.data.downloadUrl },
+        video: { url: dlJson.data.dl },
         mimetype: 'video/mp4',
         fileName: `${dlJson.data.title}.mp4`
       }, { quoted: m })
     }
-
     await m.react('✔️')
 
   } catch (e) {
