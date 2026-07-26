@@ -12,7 +12,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
     await m.react('🕒')
-    const api = `${globalAPIs.light.url}/download/ytmp4?url=${encodeURIComponent(text)}`
+    const api = `${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(text)}`
     const res = await fetch(api)
     const json = await res.json()
 
