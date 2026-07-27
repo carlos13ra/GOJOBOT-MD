@@ -10,7 +10,7 @@ let handler = async (m, { command, usedPrefix, conn, text, args }) => {
 
   try {
     m.react('🕒')
-    const res = await fetch(`https://nexus-light.onrender.com/download/terabox?url=${encodeURIComponent(text)}`)
+    const res = await fetch(`${global.APIs.light.url}/download/terabox?url=${encodeURIComponent(text)}`)
     const json = await res.json()
 
     if (!json.status || !json.files?.length) throw new Error('No se encontraron archivos.')
