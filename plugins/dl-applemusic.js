@@ -95,7 +95,7 @@ let handler = async (m, { conn, text }) => {
     }
 
     await conn.sendMessage(m.chat, {
-      audio: { url: dl },
+      document: { url: dl },
       mimetype: 'audio/mp4',
       fileName: `${title}.m4a`
     }, { quoted: m })
