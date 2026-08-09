@@ -18,7 +18,7 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
 let rtx = "*❀ SER BOT • MODE QR*\n\n✰ Con otro celular o en la PC escanea este QR para convertirte en un *Sub-Bot* Temporal.\n\n\`1\` » Haga clic en los tres puntos en la esquina superior derecha\n\n\`2\` » Toque dispositivos vinculados\n\n\`3\` » Escanee este codigo QR para iniciar sesion con el bot\n\n✧ ¡Este código QR expira en 45 segundos!."
-let rtx2 = "*❀ SER BOT • MODE CODE*\n\n✰ Usa este Código para convertirte en un *Sub-Bot* Temporal.\n\n\`1\` » Haga clic en los tres puntos en la esquina superior derecha\n\n\`2\` » Toque dispositivos vinculados\n\n\`3\` » Selecciona Vincular con el número de teléfono\n\n\`4\` » Escriba el Código para iniciar sesion con el bot\n\n✧ No es recomendable usar tu cuenta principal."
+let rtx2 = "🍡 *Enviando..*"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const kanekiAIJBOptions = {}
@@ -125,10 +125,19 @@ let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("-")
 
 
-txtCode = await conn.sendMessage(m.chat, {text : rtx2, ...fake }, { quoted: m })
+txtCode = await conn.sendMessage(m.chat, {text : rtx2 }, { quoted: m })
 
 //codeBot = await m.reply(secret)
-codeBot = await conn.sendMessage(m.chat, { text: `          \n     ${secret}      \n          `, title: "Código De vinculación", footer: dev, interactiveButtons: [ { name: "cta_copy", buttonParamsJson: JSON.stringify({ display_text: secret, copy_code: secret, }), }, ], }, { quoted: m });
+codeBot = await conn.sendMessage(m.chat, { text: `> ✰ ᥙsᥲ ᥱs𝗍ᥱ ᥴóძіg᥆ ⍴ᥲrᥲ ᥴ᥆ᥒ᥎ᥱr𝗍іr𝗍ᥱ ᥱᥒ ᥙᥒ *sᥙᑲ-ᑲ᥆𝗍* 𝗍ᥱm⍴᥆rᥲᥣ.   ₍⃬ᐢᐢ⃭
+
+  ♡  \`1\` һᥲgᥲ ᥴᥣіᥴ ᥱᥒ ᥣ᥆s 𝗍rᥱs ⍴ᥙᥒ𝗍᥆s ᥱᥒ ᥣᥲ ᥱs𝗊ᥙіᥒᥲ sᥙ⍴ᥱrі᥆r ძᥱrᥱᥴһᥲ
+  ♡ \`2\` 𝗍᥆𝗊ᥙᥱ ძіs⍴᥆sі𝗍і᥎᥆s ᥎іᥒᥴᥙᥣᥲძ᥆s
+  ♡ \`3\` sᥱᥣᥱᥴᥴі᥆ᥒᥲ ᥎іᥒᥴᥙᥣᥲr ᥴ᥆ᥒ ᥱᥣ ᥒúmᥱr᥆ ძᥱ 𝗍ᥱᥣé𝖿᥆ᥒ᥆
+  ♡ \`4\` ᥱsᥴrіᑲᥲ ᥱᥣ ᥴóძіg᥆ ⍴ᥲrᥲ іᥒіᥴіᥲr sᥱsі᥆ᥒ ᥴ᥆ᥒ ᥱᥣ ᑲ᥆𝗍
+
+   ꒢᷼ᑎ   ׂ *Código :*  \`${secret}\`    ׅ     🍡ᩚ
+
+> *✿ᩧ  ᥒ᥆ ᥱs rᥱᥴ᥆mᥱᥒძᥲᑲᥣᥱ ᥙsᥲr 𝗍ᥙ ᥴᥙᥱᥒ𝗍ᥲ ⍴rіᥒᥴі⍴ᥲᥣ ᐢ•ﻌ•ᐢ*`, title: "  𖥅     ׂ  SER BOT   ׅ   MODE CODE  🌷    ᩝ  ", footer: dev, interactiveButtons: [ { name: "cta_copy", buttonParamsJson: JSON.stringify({ display_text: 'ᴄᴏᴘʏ  -  ᴄᴏᴅᴇ', copy_code: secret, }), }, ], }, { quoted: m });
         
 console.log(secret)
 }

@@ -37,9 +37,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     }
 
     const secciones = Object.entries(grupos).map(([tag, cmds]) => {
-      return `*╭─ ✿ ${tag.toUpperCase()} ༘*\n`
-        + cmds.map(cmd => `*├ ｡* ${cmd}`).join('\n') 
-        + `\n*╰─────────────┈⟢*`
+      return `   ⎯       *【  _${tag.toUpperCase()}_ 】*\n`
+        + cmds.map(cmd => `*╭─*\n*│  °* ${cmd}`).join('\n') 
+        + `\n*╰─┈⟢*`
     }).join('\n\n')
 
     let menu = ` 🍡 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨, 𝐒𝐚𝐭𝐨𝐫𝐮 𝐆𝐨𝐣𝐨𝐮 (${(conn.user.jid == global.conn.user.jid ? '𝐎𝐟𝐢𝐜𝐢𝐚𝐥' : '𝐒𝐮𝐛-𝐁𝐨𝐭')}) 𔗨𔗨

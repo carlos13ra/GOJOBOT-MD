@@ -44,7 +44,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
           return conn.reply(m.chat, `⚠︎ Error al subir la imagen.`, m)
         }
 
-        const apiUrl = `https://nexus-light.onrender.com/ai/nanobanana?image=${encodeURIComponent(imageUrl)}&prompt=${encodeURIComponent(text)}`
+        const apiUrl = `${global.APIs.light.url}/ai/nanobanana?image=${encodeURIComponent(imageUrl)}&prompt=${encodeURIComponent(text)}`
         
         const res = await fetch(apiUrl)
         const json = await res.json()

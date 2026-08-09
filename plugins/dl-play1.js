@@ -46,16 +46,16 @@ ${usedPrefix + command} worry`)
 
     if (command === 'playaudio') {
 
-      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.title)}&quality=128`
+      const api2 = `${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(data.url)}&type=audio`
 
       const res2 = await fetch(api2)
       const json2 = await res2.json()
 
-      if (!json2.status || !json2.result?.dl_url) {
+      if (!json2.status || !json2.data?.dl) {
         throw 'Error al obtener el audio'
       }
 
-      const audioRes = await fetch(json2.result.dl_url)
+      const audioRes = await fetch(json2.data.dl)
       const buffer = Buffer.from(await audioRes.arrayBuffer())
 
       fs.writeFileSync(tmpMp3, buffer)

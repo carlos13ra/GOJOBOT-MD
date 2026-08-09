@@ -7,6 +7,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
     'a':'ᥲ','b':'ᑲ','c':'ᥴ','d':'ძ','e':'ᥱ','f':'𝖿','g':'g','h':'һ','i':'і','j':'ȷ','k':'k','l':'ᥣ','m':'m','n':'ᥒ','o':'᥆','p':'⍴','q':'𝗊','r':'r','s':'s','t':'𝗍','u':'ᥙ','v':'᥎','w':'ᥕ','x':'᥊','y':'ᥡ','z':'z','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','0':'0',
     'A':'ᥲ','B':'ᑲ','C':'ᥴ','D':'ძ','E':'ᥱ','F':'𝖿','G':'g','H':'һ','I':'і','J':'ȷ','K':'k','L':'ᥣ','M':'m','N':'ᥒ','O':'᥆','P':'⍴','Q':'𝗊','R':'r','S':'s','T':'𝗍','U':'ᥙ','V':'᥎','W':'ᥕ','X':'᥊','Y':'ᥡ','Z':'z'
   }
+  
   const toFancy = (str) => fancyMode ? str.split('').map(c => fontMap[c] || c).join('') : str
 
   const formatDuration = (sec) => {
@@ -35,54 +36,46 @@ let handler = async (m, { conn, text, usedPrefix }) => {
 
   const fetchVideo = async (url) => {
     try {
-      const res = await fetch(`${global.APIs.light.url}/download/aio/v2?url=${encodeURIComponent(url)}`, { timeout: 5000 })
+      const res = await fetch(`${global.APIs.light.url}/download/yt-dlp?url=${encodeURIComponent(url)}`, { timeout: 15000 })
       const json = await res.json()
 
-      if (!json.status || !json.result?.data?.medias) throw new Error('sin datos')
+      if (!json.status || !json.data) throw new Error('API sin datos')
 
-      const data = json.result.data
-      const video360 = data.medias.find(v => v.quality === 'mp4 (360p)' && v.type === 'video')
-      if (!video360) throw new Error('sin 360p')
+      const data = json.data
+      
+      const dlUrl = data.best || data.bestAudio
+      if (!dlUrl) throw new Error('No hay enlace de descarga disponible')
 
-      const check = await fetch(video360.url, { method: 'HEAD' })
-      if (!check.ok) throw new Error(`link 403 o caído (${check.status})`)
+      const check = await fetch(dlUrl, { method: 'HEAD' })
+      if (!check.ok) throw new Error(`Link caído (${check.status})`)
 
       return {
-        title: data.title,
-        duration: data.duration,
-        dlUrl: video360.url,
+        title: data.title || 'Video sin título',
+        duration: data.duration || 0,
+        dlUrl: dlUrl,
+        uploader: data.uploader || 'Desconocido',
+        thumbnail: data.thumbnail,
+        viewCount: data.viewCount || 0,
+        likeCount: data.likeCount || 0,
         creator: json.creator || 'Shadow',
-        source: 'Nexu\'s Light'
+        source: data.source || 'yt-dlp'
       }
-    } catch (e1) {
-      console.log('[ytv] API1 falló:', e1.message, '— intentando API2...')
-    }
-    
-    const res2 = await fetch(`${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(url)}&quality=360p`, { timeout: 100000 })
-    const json2 = await res2.json()
-
-    if (!json2.status || !json2.data?.dl) throw new Error('API2 sin datos')
-
-    return {
-      title: json2.data.title,
-      duration: json2.data.duration,
-      dlUrl: json2.data.dl,
-      creator: json2.creator || 'Shadow',
-      source: 'Nexu\'s Light V2'
+    } catch (e) {
+      throw new Error(`Error en descarga: ${e.message}`)
     }
   }
 
-  if (!text) return conn.reply(m.chat, toFancy(`❀ Manda el link de YouTube\nEj: ${usedPrefix}ytvdoc https://youtube.com/shorts/xxx`), m)
+  if (!text) return conn.reply(m.chat, toFancy(`❀ Manda el link de YouTube\nEj: ${usedPrefix}ytvdoc https://youtu.be/QqYRYtV_90c`), m)
 
   const startTime = Date.now()
   await m.react('🕒')
-  let msg = await conn.sendMessage(m.chat, { text: toFancy(`乂 YT DOWNLOAD 乂\n✩ Buscando 360p...`) }, { quoted: m })
+  let msg = await conn.sendMessage(m.chat, { text: toFancy(`乂 YT DOWNLOAD 乂\n✩ Procesando video...`) }, { quoted: m })
 
   try {
-    const { title, duration, dlUrl, creator, source } = await fetchVideo(text.trim())
+    const { title, duration, dlUrl, uploader, thumbnail, viewCount, likeCount, creator, source } = await fetchVideo(text.trim())
 
     await conn.sendMessage(m.chat, {
-      text: toFancy(`\`乂 YOUTUBE - DOWNLOAD 乂\`\n✩ Enviando 360p...\n✩ Título: ${title.slice(0, 40)}`),
+      text: toFancy(`乂 YOUTUBE - DOWNLOAD 乂\n✩ Descargando...\n✩ Título: ${title.slice(0, 40)}`),
       edit: msg.key
     })
 
@@ -91,13 +84,26 @@ let handler = async (m, { conn, text, usedPrefix }) => {
     await conn.sendMessage(m.chat, {
       document: { url: dlUrl },
       mimetype: 'video/mp4',
-      caption: toFancy(`\`乂 YOUTUBE  -  DOWNLOAD 乂\`\n*✩ Título:* ${title}\n*✩ Calidad:* 360p\n*✩ Duración:* ${formatDuration(duration)}\n*✩ Tamaño:* ${sizeReal}\n> ${dev}`),
+      caption: toFancy(`\`乂 YOUTUBE  -  DOWNLOAD 乂\`
+*✩ Título:* ${title}
+*✩ Canal:* ${uploader}
+*✩ Duración:* ${formatDuration(duration)}
+*✩ Tamaño:* ${sizeReal}
+*✩ Vistas:* ${viewCount.toLocaleString()}
+*✩ Likes:* ${likeCount.toLocaleString()}
+*✩ Source:* ${source}
+> 🌱 Archivo enviado correctamente`),
       fileName: `${title.slice(0, 30)}.mp4`
     }, { quoted: m })
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(2)
     await conn.sendMessage(m.chat, {
-      text: toFancy(`\`乂 YOUTUBE  -  DOWNLOAD 乂\`\n> ✅ Descarga completa...\n\`🥢 Fetch:\` ${timeTaken} seg\n\`🌵 Calidad:\` 360p\n\`🧊 Tamaño:\` ${sizeReal}\n\`🔌 Source:\` ${source}\n🌱 Archivo enviado correctamente.`),
+      text: toFancy(`\`乂 YOUTUBE  -  DOWNLOAD 乂\`
+> ✅ Descarga completada
+\`🥢 Tiempo:\` ${timeTaken} seg
+\`🌵 Formato:\` MP4 (360p)
+\`🧊 Tamaño:\` ${sizeReal}
+🌱 ¡Disfruta tu video!`),
       edit: msg.key
     })
 
@@ -112,7 +118,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
 
 handler.help = ['ytvdoc <url>']
 handler.tags = ['download']
-handler.command = ['ytvdoc']
+handler.command = ['ytvdoc', 'ytdoc', 'yt']
 handler.group = true
 
 export default handler

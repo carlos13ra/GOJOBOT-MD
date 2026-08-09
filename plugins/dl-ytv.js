@@ -36,7 +36,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   } catch (e) {
     console.error(e)
     await conn.sendMessage(m.chat, {
-      text: `✘ Error: ${e.message}\n\n• Servidor no disponible\n• YouTube bloqueó\n• Link inválido`,
+      text: `✘ Error: ${e.message}`,
       edit: statusMsg.key
     })
   }

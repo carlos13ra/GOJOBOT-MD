@@ -1,110 +1,149 @@
-import axios from 'axios'
 import fetch from 'node-fetch'
+import Jimp from 'jimp'
 
-let handler = async (m, { conn, text }) => {
-  if (!text)
-    return conn.reply(m.chat, `ꕥ *Por favor, proporciona el nombre de una canción o artista.*`, m)
+let handler = async (m, { command, usedPrefix, conn, text, args }) => {
+  if (!text) return m.reply(`ꕥ *Por favor, proporciona el nombre de una canción o artista.*`)
 
   try {
-    const searchUrl = `${global.APIs.delirius.url}/search/spotify?q=${encodeURIComponent(text)}&limit=1`
-    const search = await axios.get(searchUrl, { timeout: 2000 })
+    m.react('🕒')
+    const res = await fetch(`https://api.delirius.online/search/spotify?q=${encodeURIComponent(text)}`)
+    const json = await res.json()
 
-    if (!search.data.status || !search.data.data?.length)
-      throw 'No se encontró la canción.'
+    if (!json.status || !json.data?.length) throw new Error('No se encontraron canciones.')
 
-    const data = search.data.data[0]
-    const {
-      title,
-      artist,
-      album,
-      duration,
-      popularity,
-      publish,
-      url: spotifyUrl,
-      image
-    } = data
+    const songs = json.data.slice(0, 10)
 
-    const caption =
-      `✰ Descargando *<${title}>*\n\n` +
-      `> • Autor » *${artist}*\n` +
-      (album ? `> • Álbum » *${album}*\n` : '') +
-      (duration ? `> • Duración » *${duration}*\n` : '') +
-      (popularity ? `> • Popularidad » *${popularity}*\n` : '') +
-      (publish ? `> • Publicado » *${publish}*\n` : '') +
-      `> • Enlace » ${spotifyUrl}`
+    let caption = `乂 \`S P O T I F Y - S E A R C H\`\n\n`
+    caption += `≡ *Total resultados :* ${songs.length}\n\n`
 
-    const linkPreview = image ? (await gojo({ image: { url: image }}, { upload: conn.waUploadToServer, mediaTypeOverride: 'thumbnail-link' }).then(({ imageMessage }) => ({ 
-      'canonical-url': spotifyUrl, 
-      'matched-text': spotifyUrl, 
-      title: `✧ Spotify • Music ✧`, 
-      description: `🍡 ${artist}`, 
-      jpegThumbnail: imageMessage?.jpegThumbnail ? Buffer.from(imageMessage.jpegThumbnail) : undefined, 
-      highQualityThumbnail: imageMessage || undefined 
-    }))) : undefined
+    songs.forEach((song, i) => {
+      caption += `\`${i + 1}\` *${song.title}*\n`
+      caption += ` *｡ Artista :* ${song.artist}\n`
+      caption += ` *｡ Álbum :* ${song.album}\n`
+      caption += ` *｡ Duración :* ${song.duration}\n`
+      caption += ` *｡ Date :* ${song.publish}\n\n`
+    })
 
-    await conn.sendMessage(m.chat, {
-      text: caption.trim(),
-      linkPreview,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        isForwarded: true
-      }
-    }, { quoted: m })
+    caption += `> Responde con números separados por coma para descargar múltiples.\n> Ejemplo: *1,2,3* o solo *1*`
 
-    const apis = [
-      {
-        url: `${global.APIs.light.url}/download/spotify/v3?url=${encodeURIComponent(spotifyUrl)}`,
-        getDl: (d) => d.data?.dl
-      },
-      {
-        url: `${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(spotifyUrl)}`,
-        getDl: (d) => d.data?.dl
-      },
-      {
-        url: `${global.APIs.light.url}/download/spotify?url=${encodeURIComponent(spotifyUrl)}`,
-        getDl: (d) => d.data?.download
-      }
-    ]
+    const sent = await conn.sendMessage(m.chat, { text: caption }, { quoted: m })
 
-    let download_url = null
-    let lastError = 'Todas las APIs fallaron'
-
-    for (const api of apis) {
-      try {
-        const dlRes = await axios.get(api.url, { timeout: 5000 })
-        const dl = api.getDl(dlRes.data)
-        if (dlRes.data.status && dl) {
-          download_url = dl
-          break
-        }
-      } catch (e) {
-        lastError = e.message
-        continue
-      }
+    conn.spotify = conn.spotify || {}
+    conn.spotify[m.sender] = {
+      songs,
+      key: sent.key,
+      downloading: false,
+      timeout: setTimeout(() => delete conn.spotify[m.sender], 600_000)
     }
 
-    if (!download_url) throw lastError
-
-    const audioRes = await fetch(download_url)
-    if (!audioRes.ok) throw 'Error al descargar el audio.'
-
-    const buffer = await audioRes.buffer()
-
-    await conn.sendMessage(m.chat, { 
-      document: buffer, 
-      mimetype: 'audio/mpeg', 
-      fileName: `${title}.mp3` 
-    }, { quoted: m })
-
+    m.react('✅')
   } catch (e) {
-    console.error(e)
-    conn.reply(m.chat, `> 🍜 Error al buscar o descargar la canción.`, m)
+    m.reply(' Error: ' + e.message)
   }
 }
 
-handler.help = ['spotify *« query/url »*']
+handler.before = async (m, { conn }) => {
+  conn.spotify = conn.spotify || {}
+  const session = conn.spotify[m.sender]
+
+  if (!session || !m.quoted || m.quoted.id !== session.key.id) return
+
+  if (session.downloading) return m.reply('🌷 Ya hay una descarga en curso.')
+
+  const nums = m.text.trim().split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n))
+  
+  if (nums.length === 0 || nums.some(n => n < 1 || n > session.songs.length))
+    return m.reply(`🌵 Números inválidos. Elige entre 1 y ${session.songs.length}.\nEjemplo: 1,2,3`)
+
+  session.downloading = true
+  m.react('📥')
+
+  const selectedSongs = nums.map(n => session.songs[n - 1])
+
+  for (const song of selectedSongs) {
+    try {
+     
+      // await m.reply(`❀ Descargando *${song.title}* - ${song.artist}...`)
+      
+      const thumbBuf = await fetch(song.image).then(r => r.buffer())
+    const b64 = Buffer.from(thumbBuf).toString('base64')
+      await conn.relayMessage(m.chat, { extendedTextMessage: { text: `https://api--shadowcorexyz.replit.app\n❀ Descargando *${song.title}* - ${song.artist}...`, matchedText: 'https://api--shadowcorexyz.replit.app', description: namebot, title: '𖹭  ׄ  ְ 🧊 Spotify - Music ✩', previewType: 'shadow', jpegThumbnail: b64, contextInfo: { quotedMessage: m.message, participant: m.sender, stanzaId: m.id, remoteJid: m.chat, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363421367237421@newsletter', serverMessageId: '', newsletterName: botname }, } }}, { quoted: m })
+
+      let lyrics = null
+      try {
+        const lyricsRes = await fetch(`${global.APIs.light.url}/search/spotify-lyrics?url=${encodeURIComponent(song.url)}`)
+        const lyricsJson = await lyricsRes.json()
+        if (lyricsJson.status && lyricsJson.data?.syncedLyrics) {
+          lyrics = lyricsJson.data.syncedLyrics
+        }
+      } catch (err) {
+        console.log('No se encontraron lyrics')
+      }
+
+      let downloadUrl = null
+      let title = song.title
+      let artist = song.artist
+      let thumbnail = song.image
+
+      try {
+        const dlRes = await fetch(`${global.APIs.light.url}/download/spotify/v2?url=${encodeURIComponent(song.url)}`)
+        const dlJson = await dlRes.json()
+        if (dlJson.status && dlJson.data?.dl) {
+          downloadUrl = dlJson.data.dl
+          title = dlJson.data.title
+          artist = dlJson.data.artist
+        }
+      } catch (err) {
+        const dlRes2 = await fetch(`${global.APIs.light.url}/download/spotify/v3?url=${encodeURIComponent(song.url)}`)
+        const dlJson2 = await dlRes2.json()
+        if (dlJson2.status && dlJson2.data?.dl) {
+          downloadUrl = dlJson2.data.dl
+          title = dlJson2.data.title
+          artist = dlJson2.data.artist
+        }
+      }
+
+      if (!downloadUrl) throw new Error('No se pudo obtener el enlace.')
+
+      
+      let thumbDoc = null
+      try {
+        const img = await Jimp.read(thumbnail)
+        img.resize(300, Jimp.AUTO).quality(70)
+        thumbDoc = await img.getBufferAsync(Jimp.MIME_JPEG)
+      } catch (err) {
+        console.log("⚠️ Error al procesar miniatura:", err.message)
+        thumbDoc = Buffer.alloc(0)
+      }
+
+      await conn.sendMessage(m.chat, { 
+        document: { url: downloadUrl }, 
+        mimetype: 'audio/m4a', 
+        fileName: `${title}.m4a`,
+        caption: `╭𖹭╮𝅄𖹠  _Downloader from spotify_
+│𐂗│  Título : ${title}
+│𐂗│  Artist : ${artist}
+╰──────────𖹭╯`,
+        jpegThumbnail: thumbDoc
+      }, { quoted: m })
+
+      if (lyrics) {
+        const lyricsCaption = `🍡 *LYRICS*\n\n${lyrics.substring(0, 10000)}`
+        await conn.sendMessage(m.chat, { text: lyricsCaption }, { quoted: m })
+      }
+
+      m.react('✅')
+    } catch (err) {
+      await m.reply(` Error: ${song.title}: ${err.message}`)
+    }
+  }
+
+  clearTimeout(session.timeout)
+  delete conn.spotify[m.sender]
+}
+
+handler.command = ['spotify', 'spot', 'spdl', 'sp']
 handler.tags = ['download']
-handler.command = ['spotify', 'splay', 'spdl']
-handler.group = true
+handler.help = ['spotify  *« query/url »*']
 
 export default handler

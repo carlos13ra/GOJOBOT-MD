@@ -1,78 +1,109 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix }) => {
-if (!text) {
-return conn.reply(m.chat, `❀ Te faltó el link de una imagen/video de twitter.`, m)
-}
+  if (!text) {
+    return conn.reply(m.chat, `❀ Te faltó el link de una imagen/video de twitter.`, m)
+  }
 
-try {
-await m.react('🕒')
-const api = `${global.APIs.light.url}/download/twitter?url=${encodeURIComponent(text)}&type=info`
-const res = await fetch(api)
-const result = await res.json()
+  try {
+    await m.react('🕒')
+    const api = `${global.APIs.light.url}/download/twitter?url=${encodeURIComponent(text)}`
+    const res = await fetch(api)
+    const result = await res.json()
 
-if (!result.status || !result.result) {
-return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido de Twitter`, m)
-}
-const data = result.result
+    if (!result.status) {
+      return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido de Twitter`, m)
+    }
 
-const duration = data.videos?.[0]?.duracionMs
-? `${(data.videos[0].duracionMs / 1000).toFixed(0)}s`
-: '-'
-let caption = `❀ Twitter - Download ❀
+    const data = result
+    const video = data.videos?.[0]
+    const autor = data.autor
+    const stats = data.stats
 
-> ✦ ID » ${data.id}
-> 🜸 Likes » ${data.likes}
-> ⴵ Retweets » ${data.retweets}
-> ✇ Replies » ${data.replies}
-> 👁️ Vistas » ${data.vistas}
-> ⏱️ Duración » ${duration}
-> 📅 Fecha » ${data.fecha}
-> 🜸 URL » ${text}
+    const formatNumber = (num) => {
+      if (!num) return "0"
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+
+    const formatDate = (dateStr) => {
+      if (!dateStr) return "N/A"
+      const date = new Date(dateStr)
+      return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+
+    const formatDuration = (dur) => {
+      return dur || "N/A"
+    }
+
+    let statsCaption = `╭─ 𝗧𝗪𝗜𝗧𝗧𝗘𝗥/𝗫 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗥
+│
+│ ° Autor: ${autor?.nombre || 'Desconocido'}
+│ ° @${autor?.username || 'N/A'} ${autor?.verificado ? '✓' : ''}
+│ ° Seguidores: ${formatNumber(autor?.seguidores)}
+│ ° Siguiendo: ${formatNumber(autor?.siguiendo)}
+│
+│ ° Likes: ${formatNumber(stats?.likes)}
+│ ° Retweets: ${formatNumber(stats?.retweets)}
+│ ° Replies: ${formatNumber(stats?.replies)}
+│ ° Citas: ${formatNumber(stats?.citas)}
+│ ° Vistas: ${formatNumber(stats?.vistas)}
+│
+│ ° Fecha: ${formatDate(data.fecha)}
+│ ° URL: ${data.url_tweet}
+│
+╰─────────────────
 
 📝 Texto:
-${data.texto || 'Sin texto'}`
+${data.texto || 'Sin texto'}
+`
+    await conn.sendFile(m.chat, video.thumbnail, 'xd.jpg', statsCaption, m)
+    
+    if (data.tiene_video && video) {
+      try {
+        const downloadUrl = video.url
+        const title = data.texto?.substring(0, 50) || 'video'
 
-if (data.tieneVideo && data.videos?.length) {
+        await conn.sendMessage(m.chat, {
+          video: { url: downloadUrl },
+          mimetype: 'video/mp4',
+          fileName: `${title}.mp4`,
+          caption: `╭𖹭╮𝅄𖹠  _Twitter Downloader_
+│🍡│  Duración : ${formatDuration(video.duracion)}
+│🍃│  Resolución : ${video.resolucion?.ancho}x${video.resolucion?.alto}
+│🌷│  Bitrate : ${video.bitrate}
+╰──────────𖹭╯`
+        }, { quoted: m })
 
-await conn.sendMessage(m.chat, {
-image: { url: data.videos[0].thumbnail },
-caption
-}, { quoted: m })
+        await m.react('✅')
+      } catch (err) {
+        console.log("Error descargando video:", err.message)
+        await m.react('⚠️')
+      }
+    } else {
+      await m.react('⚠️')
+    }
 
-await conn.sendFile(
-m.chat,
-data.videos[0].url,
-'video.mp4',
-`🍜 Descarga completa`,
-m
-)
-
-await m.react('✔️')
-} else {
-await conn.reply(
-m.chat,
-`⚠︎ No se encontró video en el tweet.`,
-m
-)
-
-await m.react('✖️')
-}
-
-} catch (e) {
-await m.react('✖️')
-return conn.reply(
-m.chat,
-`⚠︎ Se ha producido un problema.
+  } catch (e) {
+    await m.react('✖️')
+    return conn.reply(
+      m.chat,
+      `⚠︎ Se ha producido un problema.
 > Usa *${usedPrefix}report* para informarlo.
 
 ${e.message || e}`,
-m
-)
-}}
+      m
+    )
+  }
+}
 
-handler.command = ['x', 'twitter', 'xdl']
-handler.help = ['twitter']
+handler.command = ['x', 'twitter', 'xdl', 'twdl']
+handler.help = ['twitter <url>']
 handler.tags = ['download']
 handler.group = true
 

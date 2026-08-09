@@ -18,16 +18,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     await m.react('📥')
 
-    const api2 = `${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(data.url)}&type=audio`
+    const api2 = `${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(data.url)}`
     const res2 = await fetch(api2)
     const json2 = await res2.json()
     if (!json2.status ||!json2.data?.dl) throw 'Error al obtener el audio'
 
-    const fileName = `${json2.data.title.replace(/[\\/:*?"<>|]/g, '')}.m4a`
+    const fileName = `${json2.data.title.replace(/[\\/:*?"<>|]/g, '')}.mp3`
 
     await conn.sendMessage(m.chat, {
       document: { url: json2.data.dl },
-      mimetype: 'audio/m4a',
+      mimetype: 'audio/mpeg',
       fileName,
       caption: `🫒 *${json2.data.title}*\n\nDescarga completa`
     }, { quoted: m })
