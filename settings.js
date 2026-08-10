@@ -5,7 +5,7 @@ import fs from "fs"
 import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
 global.botNumber = "" 
-global.owner = ["51963315293", "51934053286", "51922902497", "51966453839", "5213541145561", "51930958596"]
+global.owner = ["51963315293", "51934053286", "51922902497", "51966453839", "5213541145561", "51930958596", "51919194987"]
 global.suittag = ["51963315293"] 
 global.prems = ["51934053286"]
 
