@@ -76,20 +76,16 @@ ${usedPrefix + command} worry`)
 
     if (command === 'playvideo') {
 
-      const api2 = `${global.APIs.light.url}/download/ytdl?q=${encodeURIComponent(data.title)}&format=mp4&quality=480`
+      const api2 = `${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(data.url)}`
 
       const res2 = await fetch(api2)
-      const json2 = await res2.json()
-
-      if (!json2.status || !json2.result?.dl_url) {
-        throw 'Error al obtener el video'
-      }
+      const buffer = Buffer.from(await res2.arrayBuffer())
 
       await conn.sendFile(
         m.chat,
-        json2.result.dl_url,
-        `${json2.result.title}.mp4`,
-        `🎞️ ${json2.result.title}`,
+        buffer,
+        `${data.title}.mp4`,
+        `🎞️ ${data.title}`,
         m
       )
     }
