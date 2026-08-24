@@ -48,19 +48,19 @@ let handler = async (m, { conn, text, command }) => {
         }
       }, { quoted: m })
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/savetube?url=${encodeURIComponent(video.url)}&type=video`)
+    const dlRes = await fetch(`${global.APIs.light.url}/download/ytdl?url=${encodeURIComponent(video.url)}&format=mp4`)
     const dlJson = await dlRes.json()
 
-    if (!dlJson.status || !dlJson.data?.dl)
+    if (!dlJson.status || !dlJson.data?.downloadUrl)
       throw 'No se pudo obtener el video.'
 
-    const isHeavy = await fetch(dlJson.data.dl, { method: 'HEAD' })
+    const isHeavy = await fetch(dlJson.data.downloadUrl, { method: 'HEAD' })
       .then(r => parseInt(r.headers.get('content-length') || 0) > 100 * 1024 * 1024)
       .catch(() => false)
 
     if (isHeavy) {
       await conn.sendMessage(m.chat, {
-        document: { url: dlJson.data.dl },
+        document: { url: dlJson.data.downloadUrl },
         mimetype: 'video/mp4',
         fileName: `${dlJson.data.title}.mp4`
       }, { quoted: m })
@@ -78,7 +78,7 @@ let handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = ['play2', 'video']
+handler.command = ['play2', 'video', 'mp4']
 handler.tags = ['download']
 handler.help = ['play2 + <query/url>']
 handler.group = true
