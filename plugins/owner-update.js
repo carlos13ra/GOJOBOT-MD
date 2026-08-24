@@ -1,10 +1,11 @@
-import { execSync } from 'child_process'
+import { execSync, execFileSync } from 'child_process'
 
 var handler = async (m, { conn, text, isROwner }) => {
 if (!isROwner) return
 await m.react('🕒')
 try {
-const stdout = execSync('git pull' + (m.fromMe && text ? ' ' + text : ''));
+const args = m.fromMe && text ? text.trim().split(/\s+/) : [];
+const stdout = execFileSync('git', ['pull', ...args]);
 let messager = stdout.toString()
 if (messager.includes('❀ Ya está cargada la actualización.')) messager = '❀ Los datos ya están actualizados a la última versión.'
 if (messager.includes('ꕥ Actualizando.')) messager = '❀ Procesando, espere un momento mientras me actualizo.\n\n' + stdout.toString()
