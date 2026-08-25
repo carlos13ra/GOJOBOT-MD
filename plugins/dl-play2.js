@@ -48,29 +48,20 @@ let handler = async (m, { conn, text, command }) => {
         }
       }, { quoted: m })
 
-    const dlRes = await fetch(`${global.APIs.light.url}/download/ytdl?url=${encodeURIComponent(video.url)}&format=mp4`)
-    const dlJson = await dlRes.json()
+    const dlJson = await fetch(`${global.APIs.light.url}/download/ytdl?url=${video.url}&format=mp4`).then(r => r.json())
+    
+    if (!dlJson.data.downloadUrl) throw 'No se pudo obtener el enlace de descarga'
 
-    if (!dlJson.status || !dlJson.data?.downloadUrl)
-      throw 'No se pudo obtener el video.'
+    const videoBuffer = await fetch(dlJson.data.downloadUrl).then(r => r.buffer())
+    const fileSize = videoBuffer.length / (1024 * 1024)
 
-    const isHeavy = await fetch(dlJson.data.downloadUrl, { method: 'HEAD' })
-      .then(r => parseInt(r.headers.get('content-length') || 0) > 100 * 1024 * 1024)
-      .catch(() => false)
-
-    if (isHeavy) {
-      await conn.sendMessage(m.chat, {
-        document: { url: dlJson.data.downloadUrl },
-        mimetype: 'video/mp4',
-        fileName: `${dlJson.data.title}.mp4`
-      }, { quoted: m })
-    } else {
-      await conn.sendMessage(m.chat, {
-        video: { url: dlJson.data.dl },
-        mimetype: 'video/mp4',
-        fileName: `${dlJson.data.title}.mp4`
-      }, { quoted: m })
+    if (fileSize > 150) {
+      throw `El video es muy pesado (${fileSize.toFixed(2)}MB). Límite: 150MB`
     }
+
+    const fileName = `${dlJson.data.title}.mp4`
+    await conn.sendFile(m.chat, videoBuffer, fileName, '', m)
+    
     await m.react('✔️')
 
   } catch (e) {
