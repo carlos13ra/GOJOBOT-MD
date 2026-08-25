@@ -6,7 +6,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   let statusMsg = await m.reply('🍡 *Descargando video... espera*')
 
   try {
-    const api = `${global.APIs.light.url}/download/ytmp3?url=${encodeURIComponent(text)}&format=mp4`
+    const api = `${global.APIs.light.url}/download/ytmp4?url=${encodeURIComponent(text)}`
     const res = await fetch(api, { timeout: 25000 })
     const json = await res.json()
 
