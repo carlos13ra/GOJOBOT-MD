@@ -37,7 +37,8 @@ global.links = {
 }
 
 global.ch = {
-  ch1: "120363421367237421@newsletter"
+  ch1: "120363421367237421@newsletter",
+  ch2: "120363421367237421@newsletter"
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -48,7 +49,7 @@ vreden: { url: "https://api.vreden.web.id", key: null },
 delirius: { url: "https://api.delirius.store", key: null },
 siputzx: { url: "https://api.siputzx.my.id", key: null },
 stellar: { url: "https://api.stellarwa.xyz", key: "this-xyz"},
-light: { url: "https://nexus--shadowxyz189.replit.app", key: "shadow" } // poble att: el creador 
+light: { url: "https://nexus-light-7uyb.onrender.com", key: "shadow" } // poble att: el creador 
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
