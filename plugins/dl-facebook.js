@@ -3,11 +3,24 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 
 const execPromise = promisify(exec)
+function formatDate(timestamp) {
+  if (!timestamp) return 'Desconocido'
+  const date = new Date(timestamp * 1000)
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Lima'
+  }
+  return date.toLocaleString('es-PE', options)
+}
 
 let handler = async (m, { conn, args }) => {
   try {
     if (!args.length) {
-      return m.reply('《✧》 Ingresa un enlace de Facebook\n\nEjemplo: .fb https://www.facebook.com/share/r/1D4xJCtgNT/')
+      return m.reply('《✧》 Ingresa un enlace de Facebook\n\nEjemplo:.fb https://www.facebook.com/share/r/1D4xJCtgNT/')
     }
 
     const url = args[0]
@@ -22,7 +35,7 @@ let handler = async (m, { conn, args }) => {
     )
     const data = await res.json()
 
-    if (!data.status || !data.result?.download?.url) {
+    if (!data.status ||!data.result?.download?.url) {
       return m.reply('《✧》 No se pudo descargar el video')
     }
 
@@ -57,8 +70,8 @@ let handler = async (m, { conn, args }) => {
       }
 
       try {
-        const head = await fetch(videoUrl, { 
-          method: 'HEAD', 
+        const head = await fetch(videoUrl, {
+          method: 'HEAD',
           timeout: 10000,
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -86,17 +99,21 @@ let handler = async (m, { conn, args }) => {
       console.log('Error al extraer info:', e.message)
     }
 
-    const mb = bytes ? (bytes / 1024 / 1024).toFixed(2) : 'N/A'
+    const mb = bytes? (bytes / 1024 / 1024).toFixed(2) : 'N/A'
     const horas = Math.floor(segundos / 3600)
     const min = Math.floor((segundos % 3600) / 60)
     const seg = Math.floor(segundos % 60)
     const duracion = horas > 0
-      ? `${horas}:${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`
+     ? `${horas}:${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`
       : `${min}:${seg.toString().padStart(2, '0')}`
 
-    const info = `   🍡 *Facebook Download 𑜅* 
+    const author = result.author || result.title || 'Desconocido'
+    const fecha = formatDate(result.date)
+    
+    const info = ` 🍡 *Facebook Download 𑜅*
 > 🌵 ${result.description?.replace(/&#x[0-9A-Fa-f]+;/g, '') || 'Sin descripción'}
 
+ *｡ Autor:* ${author}
  *｡ Vistas:* ${result.views || '0'}
  *｡ Likes:* ${result.likes || '0'}
  *｡ Comments:* ${result.comments || '0'}
@@ -104,9 +121,8 @@ let handler = async (m, { conn, args }) => {
  *｡ Duración:* ${segundos}s (${duracion})
  *｡ Tamaño:* ${mb} MB
  *｡ Calidad:* 720p (HD)
- *｡ Enlace:* ${result.facebook || url}
- 
-> ${dev}`
+ *｡ Fecha:* ${fecha}
+ *｡ Enlace:* ${result.facebook || url}`
 
     await conn.sendFile(m.chat, videoUrl, 'Miku_sakura.mp4', info, m)
 
@@ -118,5 +134,6 @@ let handler = async (m, { conn, args }) => {
 handler.help = ['fb *« ᴜʀʟ »*', 'facebook *« ᴜʀʟ »*']
 handler.tags = ['downloader']
 handler.command = ['fb', 'facebook', 'fbdl']
+handler.limit = true
 
 export default handler
