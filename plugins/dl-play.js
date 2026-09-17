@@ -39,12 +39,12 @@ let handler = async (m, { conn, text, command }) => {
       }))) : undefined,
         contextInfo: {
           mentionedJid: [m.sender],
-          isForwarded: true,
+          isForwarded: false/*,
           forwardedNewsletterMessageInfo: {
             newsletterJid: channelRD.id,
             serverMessageId: '',
             newsletterName: channelRD.name
-          },
+          },*/
         }
       }, { quoted: m });
 
