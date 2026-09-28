@@ -19,8 +19,6 @@ let handler = async (m, { conn, text }) => {
 ▢ *Álbum:* ${song.album}
 ▢ *Duración:* ${song.duration}
 ▢ *Fecha:* ${song.date}
-▢ *Rank:* ${song.rank}
-▢ *Explícito:* ${song.explicit ? "Sí" : "No"}
 ▢ *ID:* ${song.id}
 ▢ *Link:* ${song.link}
 
